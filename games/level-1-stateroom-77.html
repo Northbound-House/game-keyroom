@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stateroom 77 — An Escape Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0A1622;
+  --hull:#122436;
+  --brass:#C9A227;
+  --brass-dim:#8a6f1d;
+  --parchment:#E8DCC3;
+  --oxblood:#6E2B2B;
+  --fog:#3E6B6B;
+  --ink:#1a1408;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--night);
+  color:var(--parchment);
+  font-family:'Cormorant Garamond',serif;
+  overflow:hidden;
+  user-select:none;
+}
+button{font-family:inherit;cursor:pointer}
+
+/* ---------- Art-deco frame ---------- */
+.deco-frame{
+  position:fixed;inset:8px;
+  border:1px solid var(--brass-dim);
+  outline:1px solid rgba(201,162,39,.25);
+  outline-offset:4px;
+  pointer-events:none;z-index:50;
+}
+.deco-frame::before,.deco-frame::after{
+  content:"";position:absolute;width:26px;height:26px;
+  border:1px solid var(--brass);
+}
+.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+/* ---------- Screens ---------- */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;z-index:40}
+.screen.active{display:flex}
+#intro{background:radial-gradient(ellipse at 50% 120%, #16334a 0%, var(--night) 65%)}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
+  text-transform:uppercase;color:var(--brass);margin-bottom:18px;
+}
+h1{
+  font-family:'Poiret One',cursive;font-weight:400;
+  font-size:clamp(42px,9vw,84px);letter-spacing:.08em;line-height:1.05;
+}
+h1 .num{color:var(--brass)}
+.intro-story{
+  max-width:520px;font-size:clamp(17px,2.4vw,21px);line-height:1.55;
+  margin:26px 0 34px;color:#d8ccb2;font-style:italic;
+}
+.btn{
+  background:none;border:1px solid var(--brass);color:var(--brass);
+  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.3em;
+  text-transform:uppercase;padding:14px 34px;transition:all .25s;
+}
+.btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
+.btn.small{padding:8px 18px;font-size:11px;letter-spacing:.2em}
+
+/* ---------- HUD ---------- */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:none;justify-content:space-between;align-items:center;
+  padding:22px 30px 10px;
+}
+#hud.on{display:flex}
+#timer{
+  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.15em;
+  color:var(--brass);
+}
+#timer.late{color:#c96a4a;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.45}}
+#hud .title-sm{
+  font-family:'Poiret One',cursive;font-size:16px;letter-spacing:.25em;opacity:.7
+}
+#hud .hud-right{display:flex;gap:10px;align-items:center}
+.icon-btn{
+  background:none;border:1px solid rgba(201,162,39,.4);color:var(--brass);
+  width:34px;height:34px;font-size:15px;line-height:1;border-radius:0;
+  transition:border-color .2s;
+}
+.icon-btn:hover{border-color:var(--brass)}
+
+/* ---------- Room ---------- */
+#room-wrap{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  padding:64px 16px 96px;
+}
+#room-wrap.on{display:flex}
+#room{
+  width:min(96vw,900px);aspect-ratio:16/10;max-height:calc(100vh - 170px);
+  position:relative;
+}
+#room svg{width:100%;height:100%;display:block}
+.hotspot{cursor:pointer;transition:filter .2s}
+.hotspot:hover{filter:brightness(1.35) drop-shadow(0 0 6px rgba(201,162,39,.55))}
+.hotspot.done{cursor:default}
+.hotspot.done:hover{filter:none}
+
+/* ---------- Inventory ---------- */
+#inventory{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+  justify-content:center;gap:12px;padding:16px 20px 22px;
+  background:linear-gradient(transparent, rgba(6,12,19,.92) 40%);
+}
+#inventory.on{display:flex}
+.inv-item{
+  width:56px;height:56px;border:1px solid rgba(201,162,39,.45);
+  background:rgba(18,36,54,.8);display:flex;align-items:center;justify-content:center;
+  font-size:24px;position:relative;transition:border-color .2s, transform .15s;
+}
+.inv-item:hover{border-color:var(--brass);transform:translateY(-2px)}
+.inv-item .tag{
+  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;
+  color:var(--brass);white-space:nowrap;text-transform:uppercase;
+}
+#inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
+
+/* ---------- Modal ---------- */
+#modal-veil{
+  position:fixed;inset:0;background:rgba(4,9,15,.78);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(2px);
+}
+#modal-veil.on{display:flex}
+#modal{
+  width:min(92vw,460px);max-height:86vh;overflow-y:auto;
+  background:var(--hull);border:1px solid var(--brass-dim);
+  padding:30px 28px 26px;position:relative;text-align:center;
+}
+#modal::before{
+  content:"";position:absolute;inset:6px;border:1px solid rgba(201,162,39,.2);
+  pointer-events:none;
+}
+#modal h2{
+  font-family:'Poiret One',cursive;font-weight:400;font-size:26px;
+  letter-spacing:.12em;color:var(--brass);margin-bottom:14px;
+}
+#modal .body{font-size:18px;line-height:1.55;color:#dfd4bc;margin-bottom:18px}
+#modal .body em{color:var(--parchment)}
+.paper{
+  background:var(--parchment);color:var(--ink);padding:18px 16px;margin:14px 0;
+  font-size:17px;line-height:1.5;font-style:italic;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);
+  transform:rotate(-.6deg);
+}
+.paper .mono{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:14px;letter-spacing:.08em}
+.code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.code-input{
+  width:52px;height:60px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:26px;background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
+  color:var(--parchment);caret-color:var(--brass);text-transform:uppercase;
+}
+.code-input:focus{outline:none;border-color:var(--brass)}
+.feedback{min-height:22px;font-size:15px;font-style:italic;margin-bottom:6px}
+.feedback.bad{color:#c96a4a}
+.feedback.good{color:#8fbf8f}
+.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.hint-link{
+  background:none;border:none;color:var(--fog);font-size:14px;font-style:italic;
+  text-decoration:underline;text-underline-offset:3px;margin-top:14px;
+}
+.hint-link:hover{color:var(--brass)}
+.hint-text{
+  font-size:15px;color:#a8c2c2;font-style:italic;margin-top:10px;line-height:1.5;
+  border-top:1px dashed rgba(62,107,107,.5);padding-top:10px;
+}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ---------- Victory ---------- */
+#victory{background:radial-gradient(ellipse at 50% -20%, #1b3a54 0%, var(--night) 70%)}
+.stats{
+  display:flex;gap:36px;margin:26px 0 34px;
+}
+.stat .v{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--brass)}
+.stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;margin-top:6px}
+
+@media (max-width:600px){
+  #hud .title-sm{display:none}
+  .stats{gap:22px}
+  #room-wrap{padding:58px 8px 92px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">S.S. Meridian · July 1934</div>
+  <h1>STATEROOM <span class="num">77</span></h1>
+  <p class="intro-story">You wake to the low thrum of engines. The stateroom is not yours — and the door is locked from the outside. In your pocket, a note in handwriting you almost recognize: <em>"Find what I left you before we reach open water."</em></p>
+  <button class="btn" id="start-btn">Begin</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.5;font-style:italic">Everything you need is in this room. No outside knowledge required.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">20:00</div>
+  <div class="title-sm">STATEROOM 77</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="A 1930s ship stateroom">
+    <!-- walls & floor -->
+    <rect x="0" y="0" width="800" height="380" fill="#16293c"/>
+    <rect x="0" y="0" width="800" height="380" fill="url(#wallgrad)"/>
+    <rect x="0" y="380" width="800" height="120" fill="#241a10"/>
+    <g opacity=".35" stroke="#3a2b18" stroke-width="2">
+      <line x1="0" y1="405" x2="800" y2="405"/><line x1="0" y1="435" x2="800" y2="435"/><line x1="0" y1="470" x2="800" y2="470"/>
+    </g>
+    <defs>
+      <radialGradient id="wallgrad" cx="50%" cy="35%" r="80%">
+        <stop offset="0%" stop-color="#1d3852"/>
+        <stop offset="100%" stop-color="#0d1c2b"/>
+      </radialGradient>
+      <radialGradient id="portglow" cx="50%" cy="50%" r="55%">
+        <stop offset="0%" stop-color="#0e2438"/>
+        <stop offset="100%" stop-color="#050d16"/>
+      </radialGradient>
+    </defs>
+    <!-- wainscoting -->
+    <rect x="0" y="330" width="800" height="50" fill="#2c3f52" opacity=".6"/>
+    <line x1="0" y1="330" x2="800" y2="330" stroke="#C9A227" stroke-width="1.5" opacity=".5"/>
+
+    <!-- DOOR -->
+    <g id="hs-door" class="hotspot" tabindex="0" role="button" aria-label="Cabin door">
+      <rect x="40" y="90" width="120" height="290" fill="#3d2a16" stroke="#C9A227" stroke-width="2"/>
+      <rect x="52" y="104" width="96" height="120" fill="none" stroke="#8a6f1d" stroke-width="1.5"/>
+      <rect x="52" y="238" width="96" height="128" fill="none" stroke="#8a6f1d" stroke-width="1.5"/>
+      <circle cx="146" cy="238" r="6" fill="#C9A227"/>
+      <rect x="80" y="120" width="40" height="18" fill="#C9A227" opacity=".9"/>
+      <text x="100" y="133" text-anchor="middle" font-family="monospace" font-size="12" fill="#1a1408">77</text>
+    </g>
+
+    <!-- PORTHOLE -->
+    <g id="hs-porthole" class="hotspot" tabindex="0" role="button" aria-label="Porthole">
+      <circle cx="410" cy="150" r="58" fill="#C9A227"/>
+      <circle cx="410" cy="150" r="48" fill="url(#portglow)"/>
+      <g fill="#e9e2c8">
+        <circle cx="392" cy="128" r="2.4"/><circle cx="404" cy="140" r="2"/><circle cx="386" cy="146" r="1.8"/>
+        <circle cx="425" cy="126" r="1.7"/><circle cx="433" cy="134" r="1.7"/>
+        <circle cx="420" cy="168" r="1.5"/><circle cx="430" cy="176" r="1.5"/><circle cx="440" cy="168" r="1.5"/>
+        <circle cx="398" cy="176" r="1.3"/><circle cx="388" cy="168" r="1.3"/>
+      </g>
+      <g stroke="#C9A227" stroke-width="1"><circle cx="410" cy="97" r="3"/><circle cx="410" cy="203" r="3"/><circle cx="357" cy="150" r="3"/><circle cx="463" cy="150" r="3"/></g>
+    </g>
+
+    <!-- PAINTING -->
+    <g id="hs-painting" class="hotspot" tabindex="0" role="button" aria-label="Framed painting, slightly crooked">
+      <g transform="rotate(-2 640 160)">
+        <rect x="575" y="105" width="130" height="105" fill="#C9A227"/>
+        <rect x="583" y="113" width="114" height="89" fill="#1c3a4a"/>
+        <path d="M583 180 q28-18 57-8 t57-14 v44 h-114 z" fill="#2b5568"/>
+        <path d="M600 150 l14-22 14 22 z M660 158 l11-18 11 18 z" fill="#0f2530"/>
+        <circle cx="675" cy="128" r="8" fill="#e8dcc3" opacity=".85"/>
+      </g>
+    </g>
+
+    <!-- SAFE (hidden until painting moved) -->
+    <g id="hs-safe" class="hotspot" tabindex="0" role="button" aria-label="Wall safe" style="display:none">
+      <rect x="588" y="112" width="104" height="92" fill="#20242a" stroke="#C9A227" stroke-width="2"/>
+      <circle cx="640" cy="158" r="22" fill="#31363e" stroke="#C9A227" stroke-width="2"/>
+      <circle cx="640" cy="158" r="4" fill="#C9A227"/>
+      <line x1="640" y1="140" x2="640" y2="150" stroke="#C9A227" stroke-width="2"/>
+    </g>
+
+    <!-- DESK -->
+    <g id="hs-desk" class="hotspot" tabindex="0" role="button" aria-label="Writing desk with a locked drawer">
+      <rect x="540" y="268" width="200" height="14" fill="#4a341c"/>
+      <rect x="552" y="282" width="176" height="52" fill="#3d2a16"/>
+      <rect x="566" y="290" width="148" height="34" fill="#4a341c" stroke="#8a6f1d" stroke-width="1.5"/>
+      <circle cx="640" cy="307" r="4" fill="#C9A227"/>
+      <rect x="556" y="334" width="12" height="52" fill="#3d2a16"/>
+      <rect x="712" y="334" width="12" height="52" fill="#3d2a16"/>
+      <!-- telegram on top -->
+      <rect x="560" y="252" width="52" height="18" fill="#E8DCC3" transform="rotate(-6 586 261)"/>
+    </g>
+
+    <!-- BED + NIGHTSTAND -->
+    <g id="hs-nightstand" class="hotspot" tabindex="0" role="button" aria-label="Nightstand with a postcard">
+      <rect x="196" y="300" width="70" height="86" fill="#3d2a16"/>
+      <rect x="196" y="300" width="70" height="16" fill="#4a341c" stroke="#8a6f1d" stroke-width="1"/>
+      <rect x="206" y="286" width="50" height="16" fill="#E8DCC3" transform="rotate(4 231 294)"/>
+      <circle cx="231" cy="308" r="3.5" fill="#C9A227"/>
+    </g>
+    <g>
+      <rect x="272" y="316" width="200" height="72" fill="#274157"/>
+      <rect x="272" y="300" width="200" height="24" rx="8" fill="#E8DCC3" opacity=".9"/>
+      <rect x="272" y="384" width="200" height="10" fill="#3d2a16"/>
+      <rect x="264" y="292" width="14" height="100" fill="#3d2a16"/>
+      <rect x="466" y="292" width="14" height="100" fill="#3d2a16"/>
+    </g>
+
+    <!-- SUITCASE -->
+    <g id="hs-suitcase" class="hotspot" tabindex="0" role="button" aria-label="Leather suitcase with a combination lock">
+      <rect x="330" y="398" width="120" height="70" rx="6" fill="#6E2B2B" stroke="#3d1414" stroke-width="2"/>
+      <rect x="330" y="428" width="120" height="4" fill="#3d1414"/>
+      <rect x="374" y="390" width="32" height="12" rx="5" fill="none" stroke="#3d1414" stroke-width="4"/>
+      <rect x="352" y="420" width="20" height="14" fill="#C9A227"/>
+      <rect x="408" y="420" width="20" height="14" fill="#C9A227"/>
+    </g>
+
+    <!-- CLOCK -->
+    <g opacity=".9">
+      <circle cx="260" cy="140" r="26" fill="#C9A227"/>
+      <circle cx="260" cy="140" r="21" fill="#E8DCC3"/>
+      <line x1="260" y1="140" x2="260" y2="125" stroke="#1a1408" stroke-width="2.5"/>
+      <line x1="260" y1="140" x2="271" y2="146" stroke="#1a1408" stroke-width="2"/>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"><span id="inv-empty">Your pockets are empty.</span></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">The gangway, moments before departure</div>
+  <h1>YOU MADE <span class="num">IT</span></h1>
+  <p class="intro-story" id="victory-story">Manifest in hand, you step off the S.S. Meridian as her horn sounds. Whoever left it for you knew you'd find your way out. You were never a passenger — you were the courier all along.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <button class="btn" onclick="location.reload()">Play Again</button>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:20*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  inv:{},            // key: {icon,label}
+  flags:{ suitcase:false, drawer:false, paintingMoved:false, safe:false, door:false, sawPostcard:false, sawChart:false },
+  hintLevel:{},      // puzzleId -> 0..3
+  soundOn:false, audioCtx:null, noiseNode:null,
+};
+
+/* ================= TIMER ================= */
+function fmt(t){const neg=t<0;t=Math.abs(t);const m=Math.floor(t/60),s=t%60;return (neg?'+':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function tick(){
+  S.t--;
+  const el=document.getElementById('timer');
+  el.textContent=fmt(S.t);
+  if(S.t<0){el.classList.add('late'); if(!S.overtime){S.overtime=true; toast('The engines change pitch — she\'s pulling away from the pier. Keep going.');}}
+  else if(S.t<=120){el.classList.add('late');}
+}
+
+/* ================= SOUND (subtle ocean hum) ================= */
+function toggleSound(){
+  if(!S.audioCtx){
+    const C=new (window.AudioContext||window.webkitAudioContext)();
+    const bufferSize=2*C.sampleRate;
+    const buffer=C.createBuffer(1,bufferSize,C.sampleRate);
+    const data=buffer.getChannelData(0);
+    let last=0;
+    for(let i=0;i<bufferSize;i++){const w=Math.random()*2-1;data[i]=(last+ .02*w)/1.02;last=data[i];data[i]*=2.8;}
+    const src=C.createBufferSource();src.buffer=buffer;src.loop=true;
+    const filt=C.createBiquadFilter();filt.type='lowpass';filt.frequency.value=220;
+    const gain=C.createGain();gain.gain.value=0.05;
+    src.connect(filt).connect(gain).connect(C.destination);src.start();
+    S.audioCtx=C;S.noiseNode=gain;S.soundOn=true;
+  } else {
+    S.soundOn=!S.soundOn;
+    S.noiseNode.gain.value=S.soundOn?0.05:0;
+  }
+  document.getElementById('sound-btn').style.opacity=S.soundOn?1:.4;
+}
+document.getElementById('sound-btn').addEventListener('click',toggleSound);
+document.getElementById('sound-btn').style.opacity=.4;
+
+/* ================= INVENTORY ================= */
+function addItem(key,icon,label){
+  if(S.inv[key])return;
+  S.inv[key]={icon,label};
+  renderInv();
+}
+function renderInv(){
+  const inv=document.getElementById('inventory');
+  inv.innerHTML='';
+  const keys=Object.keys(S.inv);
+  if(!keys.length){inv.innerHTML='<span id="inv-empty">Your pockets are empty.</span>';return;}
+  keys.forEach(k=>{
+    const it=S.inv[k];
+    const d=document.createElement('button');
+    d.className='inv-item';d.innerHTML=it.icon+'<span class="tag">'+it.label+'</span>';
+    d.setAttribute('aria-label',it.label);
+    d.addEventListener('click',()=>inspectItem(k));
+    inv.appendChild(d);
+  });
+}
+function inspectItem(k){
+  if(k==='key') openModal({title:'Brass Key',body:'A small brass key, stamped <em>"C-DECK · DESK"</em>. It should fit the writing desk drawer.',actions:[closeBtn()]});
+  if(k==='chart') showChart();
+  if(k==='manifest') openModal({title:'The Manifest',body:'A sealed ledger of names — the reason you\'re aboard. Now you just need to get it <em>off</em> this ship. The door is the only way out.',actions:[closeBtn()]});
+}
+
+/* ================= MODAL ================= */
+const veil=document.getElementById('modal-veil');
+function openModal({title,body,extra='',actions=[],puzzleId=null,onOpen=null}){
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-body').innerHTML=body;
+  document.getElementById('m-extra').innerHTML=extra;
+  const fb=document.getElementById('m-feedback');fb.textContent='';fb.className='feedback';
+  const act=document.getElementById('m-actions');act.innerHTML='';
+  actions.forEach(a=>act.appendChild(a));
+  renderHints(puzzleId);
+  veil.classList.add('on');
+  if(onOpen)onOpen();
+}
+function closeModal(){veil.classList.remove('on');}
+veil.addEventListener('click',e=>{if(e.target===veil)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function closeBtn(txt='Step back'){const b=document.createElement('button');b.className='btn small';b.textContent=txt;b.addEventListener('click',closeModal);return b;}
+function feedback(msg,ok){const fb=document.getElementById('m-feedback');fb.textContent=msg;fb.className='feedback '+(ok?'good':'bad');if(!ok){document.getElementById('modal').classList.add('shake');setTimeout(()=>document.getElementById('modal').classList.remove('shake'),380);}}
+function toast(msg){
+  openModal({title:'…',body:msg,actions:[closeBtn('Continue')]});
+}
+
+/* ================= HINTS (3 tiers, in-story via the speaking tube) ================= */
+const HINTS={
+  suitcase:[
+    'The steward\'s voice crackles through the speaking tube: <em>"Travelers set their locks to dates they can\'t forget."</em>',
+    '<em>"Something on the nightstand mentions the day this trip began."</em>',
+    '<em>"The postcard says you boarded July 14th. Month, then day: 0-7-1-4."</em>'
+  ],
+  safe:[
+    '<em>"The note from the drawer said the stars keep the count — look through the porthole."</em>',
+    '<em>"Count the stars in each constellation on the chart. Enter them in the order the note gives: bright, paired, scattered."</em>',
+    '<em>"The Lantern has 3 stars, the Twins have 8, the Spindrift has 5. Try 3-8-5."</em>'
+  ],
+  door:[
+    '<em>"The luggage tag in the safe names a year. The captain\'s note tells you how to read it."</em>',
+    '<em>"Stern to bow means back to front. Read the year in reverse."</em>',
+    '<em>"1934, read backwards, is 4-3-9-1."</em>'
+  ],
+  drawer:[
+    '<em>"That drawer wants a key, not a guess. Have you opened everything else in the room?"</em>',
+    '<em>"Heavy luggage often hides small things. Check the suitcase first."</em>',
+    '<em>"The brass key is inside the suitcase. The suitcase combination comes from the postcard."</em>'
+  ]
+};
+function renderHints(pid){
+  const z=document.getElementById('m-hintzone');z.innerHTML='';
+  if(!pid||!HINTS[pid])return;
+  const lvl=S.hintLevel[pid]||0;
+  for(let i=0;i<lvl;i++){const p=document.createElement('div');p.className='hint-text';p.innerHTML=HINTS[pid][i];z.appendChild(p);}
+  if(lvl<3){
+    const b=document.createElement('button');b.className='hint-link';
+    b.textContent=lvl===0?'Ask the steward (speaking tube)':'Ask again — be more direct';
+    b.addEventListener('click',()=>{S.hintLevel[pid]=lvl+1;S.hintsUsed++;renderHints(pid);});
+    z.appendChild(b);
+  }
+}
+
+/* ================= CODE ENTRY BUILDER ================= */
+function codeRow(n,type='num'){
+  const wrap=document.createElement('div');wrap.className='code-row';
+  for(let i=0;i<n;i++){
+    const inp=document.createElement('input');
+    inp.className='code-input';inp.maxLength=1;
+    inp.inputMode=type==='num'?'numeric':'text';
+    inp.addEventListener('input',()=>{inp.value=inp.value.replace(type==='num'?/[^0-9]/g:/[^a-zA-Z]/g,'');if(inp.value&&inp.nextElementSibling)inp.nextElementSibling.focus();});
+    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&inp.previousElementSibling)inp.previousElementSibling.focus();});
+    wrap.appendChild(inp);
+  }
+  return wrap;
+}
+function readCode(wrap){return [...wrap.querySelectorAll('input')].map(i=>i.value).join('');}
+
+/* ================= ROOM OBJECTS ================= */
+function bindHotspot(id,fn){
+  const el=document.getElementById(id);
+  el.addEventListener('click',fn);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});
+}
+
+/* --- Nightstand / postcard --- */
+bindHotspot('hs-nightstand',()=>{
+  S.flags.sawPostcard=true;
+  openModal({
+    title:'The Nightstand',
+    body:'A postcard rests against the lamp — a photograph of the Barcelona pier.',
+    extra:'<div class="paper">"My darling — can you believe we finally boarded on <span class="mono">July 14th</span>? A date worth keeping under lock and key. — R."</div>',
+    actions:[closeBtn()]
+  });
+});
+
+/* --- Suitcase (0714) --- */
+bindHotspot('hs-suitcase',()=>{
+  if(S.flags.suitcase){
+    openModal({title:'The Suitcase',body:'Empty now, save for the smell of old leather. You already took the key and the star chart.',actions:[closeBtn()]});
+    return;
+  }
+  const row=codeRow(4);
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Try the lock';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='0714'){
+      S.flags.suitcase=true;
+      addItem('key','🗝','Brass key');
+      addItem('chart','✶','Star chart');
+      feedback('The clasps spring open.',true);
+      setTimeout(()=>openModal({
+        title:'Inside the Suitcase',
+        body:'Beneath folded shirts: a <em>brass key</em> and a rolled <em>star chart</em>. A slip of paper is pinned to the chart:',
+        extra:'<div class="paper">"The stars keep the count. The dial keeps the order: <span class="mono">bright, then paired, then scattered</span>."</div>',
+        actions:[closeBtn('Take everything')]
+      }),700);
+    } else feedback('The dials spin, but the clasps hold fast.',false);
+  });
+  openModal({
+    title:'The Suitcase',
+    body:'Oxblood leather, well traveled. A four-digit combination lock holds it shut.',
+    actions:[submit,closeBtn()],
+    puzzleId:'suitcase',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* --- Desk / drawer (needs key) --- */
+bindHotspot('hs-desk',()=>{
+  if(!S.flags.drawer){
+    if(S.inv.key){
+      S.flags.drawer=true;
+      S.flags.sawChart=true;
+      openModal({
+        title:'The Desk Drawer',
+        body:'The brass key turns with a satisfying click. Inside, a telegram on Meridian letterhead:',
+        extra:'<div class="paper"><span class="mono">WESTERN UNION — TO STATEROOM 77</span><br><br>"What you seek sleeps behind the crooked sea. The stars will tell you how to wake it."</div>',
+        actions:[closeBtn('Pocket the telegram')]
+      });
+    } else {
+      openModal({
+        title:'The Writing Desk',
+        body:'A telegram envelope pokes from the locked drawer, just out of reach. The drawer wants a small key.',
+        actions:[closeBtn()],
+        puzzleId:'drawer'
+      });
+    }
+  } else {
+    openModal({
+      title:'The Desk Drawer',
+      body:'The telegram again:',
+      extra:'<div class="paper">"What you seek sleeps behind the crooked sea. The stars will tell you how to wake it."</div>',
+      actions:[closeBtn()]
+    });
+  }
+});
+
+/* --- Porthole (constellations) --- */
+bindHotspot('hs-porthole',()=>{
+  const chartNote=S.inv.chart
+    ?'<div class="paper">Star chart in hand, the shapes resolve:<br><span class="mono">THE LANTERN</span> — the bright trio high to the left · <em>3 stars</em><br><span class="mono">THE TWINS</span> — the paired cluster to the right · <em>8 stars</em><br><span class="mono">THE SPINDRIFT</span> — the scattered drift below · <em>5 stars</em></div>'
+    :'<div style="font-style:italic;opacity:.75">Clusters of stars — a bright trio, a tight pair of groups, a loose scatter. Without a chart, they\'re just weather.</div>';
+  openModal({
+    title:'The Porthole',
+    body:'Black water, black sky. The stars are startlingly clear out here.',
+    extra:chartNote,
+    actions:[closeBtn()]
+  });
+});
+function showChart(){
+  openModal({
+    title:'The Star Chart',
+    body:'Hand-inked constellations over this stretch of the Mediterranean:',
+    extra:'<div class="paper"><span class="mono">THE LANTERN</span> · 3 stars · "the bright one"<br><span class="mono">THE TWINS</span> · 8 stars · "the paired one"<br><span class="mono">THE SPINDRIFT</span> · 5 stars · "the scattered one"<br><br><em>Best viewed through glass at night.</em></div>',
+    actions:[closeBtn()]
+  });
+}
+
+/* --- Painting → safe --- */
+bindHotspot('hs-painting',()=>{
+  if(!S.flags.paintingMoved){
+    S.flags.paintingMoved=true;
+    document.getElementById('hs-painting').style.display='none';
+    document.getElementById('hs-safe').style.display='';
+    openModal({
+      title:'The Crooked Sea',
+      body:'A seascape, hanging just off-level — <em>the crooked sea</em>. You lift it from its hook. Set into the wall behind it: a small steel safe with a three-number dial.',
+      actions:[closeBtn('Examine the safe')]
+    });
+  }
+});
+
+/* --- Safe (3-8-5) --- */
+bindHotspot('hs-safe',()=>{
+  if(S.flags.safe){
+    openModal({title:'The Safe',body:'Empty. You have what it was keeping.',actions:[closeBtn()]});
+    return;
+  }
+  const row=codeRow(3);
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Turn the dial';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='385'){
+      S.flags.safe=true;
+      addItem('manifest','📜','Manifest');
+      feedback('The dial gives. The door swings wide.',true);
+      setTimeout(()=>openModal({
+        title:'Inside the Safe',
+        body:'A sealed <em>manifest</em> — and the truth. A luggage tag and a note in the captain\'s hand:',
+        extra:'<div class="paper"><span class="mono">S.S. MERIDIAN · MAIDEN VOYAGE 1934 · STATEROOM 77</span></div><div class="paper">"You were never a passenger. Take the manifest and go. The door reads the year as the sea does — <span class="mono">stern to bow</span>."</div>',
+        actions:[closeBtn('Take the manifest')]
+      }),700);
+    } else feedback('The dial resists. Wrong sequence.',false);
+  });
+  openModal({
+    title:'The Wall Safe',
+    body:'Three numbers, one order. The telegram said the stars would tell you how to wake it.',
+    actions:[submit,closeBtn()],
+    puzzleId:'safe',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* --- Door (4391) --- */
+bindHotspot('hs-door',()=>{
+  const row=codeRow(4);
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Enter code';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='4391'){
+      if(!S.inv.manifest){
+        feedback('The lock clicks — but the note said to take the manifest. It\'s still in the safe.',false);
+        return;
+      }
+      win();
+    } else feedback('The mechanism whirs, then stops. Not it.',false);
+  });
+  openModal({
+    title:'The Cabin Door',
+    body:'Locked from the corridor side — but a four-digit mechanical keypad is set into the frame. Odd, for 1934. Odder still that it faces <em>inward</em>.',
+    actions:[submit,closeBtn()],
+    puzzleId:'door',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* ================= WIN ================= */
+function win(){
+  closeModal();
+  clearInterval(S.timerId);
+  document.getElementById('hud').classList.remove('on');
+  document.getElementById('room-wrap').classList.remove('on');
+  document.getElementById('inventory').classList.remove('on');
+  const used=20*60-S.t;
+  document.getElementById('stat-time').textContent=fmt(used);
+  document.getElementById('stat-hints').textContent=S.hintsUsed;
+  let rank='Deckhand';
+  if(used<=8*60&&S.hintsUsed===0)rank='Stowaway Legend';
+  else if(used<=12*60&&S.hintsUsed<=2)rank='First Mate';
+  else if(used<=20*60)rank='Able Seaman';
+  document.getElementById('stat-rank').textContent=rank;
+  document.getElementById('victory').classList.add('active');
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click',()=>{
+  document.getElementById('intro').classList.remove('active');
+  document.getElementById('hud').classList.add('on');
+  document.getElementById('room-wrap').classList.add('on');
+  document.getElementById('inventory').classList.add('on');
+  S.started=true;
+  S.timerId=setInterval(tick,1000);
+});
+</script>
+</body>
+</html>

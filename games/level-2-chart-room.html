@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Chart Room — Stateroom 77, Level II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0A1622;
+  --hull:#122436;
+  --brass:#C9A227;
+  --brass-dim:#8a6f1d;
+  --parchment:#E8DCC3;
+  --oxblood:#6E2B2B;
+  --fog:#3E6B6B;
+  --ink:#1a1408;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--night);
+  color:var(--parchment);
+  font-family:'Cormorant Garamond',serif;
+  overflow:hidden;
+  user-select:none;
+}
+button{font-family:inherit;cursor:pointer}
+
+.deco-frame{
+  position:fixed;inset:8px;
+  border:1px solid var(--brass-dim);
+  outline:1px solid rgba(201,162,39,.25);
+  outline-offset:4px;
+  pointer-events:none;z-index:50;
+}
+.deco-frame::before,.deco-frame::after{
+  content:"";position:absolute;width:26px;height:26px;
+  border:1px solid var(--brass);
+}
+.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;z-index:40;overflow-y:auto}
+.screen.active{display:flex}
+#intro{background:radial-gradient(ellipse at 50% 120%, #16334a 0%, var(--night) 65%)}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
+  text-transform:uppercase;color:var(--brass);margin-bottom:18px;
+}
+h1{
+  font-family:'Poiret One',cursive;font-weight:400;
+  font-size:clamp(38px,8vw,74px);letter-spacing:.08em;line-height:1.05;
+}
+h1 .num{color:var(--brass)}
+.intro-story{
+  max-width:540px;font-size:clamp(16px,2.3vw,20px);line-height:1.55;
+  margin:24px 0 30px;color:#d8ccb2;font-style:italic;
+}
+.btn{
+  background:none;border:1px solid var(--brass);color:var(--brass);
+  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.3em;
+  text-transform:uppercase;padding:14px 34px;transition:all .25s;
+}
+.btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
+.btn.small{padding:8px 18px;font-size:11px;letter-spacing:.2em}
+
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:none;justify-content:space-between;align-items:center;
+  padding:22px 30px 10px;
+}
+#hud.on{display:flex}
+#timer{
+  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.15em;
+  color:var(--brass);
+}
+#timer.late{color:#c96a4a;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.45}}
+#hud .title-sm{
+  font-family:'Poiret One',cursive;font-size:16px;letter-spacing:.25em;opacity:.7
+}
+#hud .hud-right{display:flex;gap:10px;align-items:center}
+.icon-btn{
+  background:none;border:1px solid rgba(201,162,39,.4);color:var(--brass);
+  width:34px;height:34px;font-size:15px;line-height:1;
+  transition:border-color .2s;
+}
+.icon-btn:hover{border-color:var(--brass)}
+
+#room-wrap{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  padding:64px 16px 96px;
+}
+#room-wrap.on{display:flex}
+#room{
+  width:min(96vw,900px);aspect-ratio:16/10;max-height:calc(100vh - 170px);
+  position:relative;
+}
+#room svg{width:100%;height:100%;display:block}
+.hotspot{cursor:pointer;transition:filter .2s}
+.hotspot:hover{filter:brightness(1.35) drop-shadow(0 0 6px rgba(201,162,39,.55))}
+
+#inventory{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+  justify-content:center;gap:12px;padding:16px 20px 26px;
+  background:linear-gradient(transparent, rgba(6,12,19,.92) 40%);
+  flex-wrap:wrap;
+}
+#inventory.on{display:flex}
+.inv-item{
+  width:56px;height:56px;border:1px solid rgba(201,162,39,.45);
+  background:rgba(18,36,54,.8);display:flex;align-items:center;justify-content:center;
+  font-size:24px;position:relative;transition:border-color .2s, transform .15s;
+}
+.inv-item:hover{border-color:var(--brass);transform:translateY(-2px)}
+.inv-item .tag{
+  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;
+  color:var(--brass);white-space:nowrap;text-transform:uppercase;
+}
+#inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
+
+#modal-veil{
+  position:fixed;inset:0;background:rgba(4,9,15,.78);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(2px);
+}
+#modal-veil.on{display:flex}
+#modal{
+  width:min(92vw,480px);max-height:86vh;overflow-y:auto;
+  background:var(--hull);border:1px solid var(--brass-dim);
+  padding:30px 28px 26px;position:relative;text-align:center;
+}
+#modal::before{
+  content:"";position:absolute;inset:6px;border:1px solid rgba(201,162,39,.2);
+  pointer-events:none;
+}
+#modal h2{
+  font-family:'Poiret One',cursive;font-weight:400;font-size:26px;
+  letter-spacing:.12em;color:var(--brass);margin-bottom:14px;
+}
+#modal .body{font-size:18px;line-height:1.55;color:#dfd4bc;margin-bottom:18px}
+#modal .body em{color:var(--parchment)}
+.paper{
+  background:var(--parchment);color:var(--ink);padding:18px 16px;margin:14px 0;
+  font-size:17px;line-height:1.5;font-style:italic;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);
+  transform:rotate(-.6deg);
+}
+.paper .mono{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:13px;letter-spacing:.06em}
+.paper.straight{transform:none}
+.code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.code-input{
+  width:48px;height:58px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:24px;background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
+  color:var(--parchment);caret-color:var(--brass);text-transform:uppercase;
+}
+.code-input:focus{outline:none;border-color:var(--brass)}
+.word-input{
+  width:min(80%,260px);height:52px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:20px;background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
+  color:var(--parchment);text-transform:uppercase;margin:14px 0;letter-spacing:.2em;
+}
+.word-input:focus{outline:none;border-color:var(--brass)}
+.feedback{min-height:22px;font-size:15px;font-style:italic;margin-bottom:6px}
+.feedback.bad{color:#c96a4a}
+.feedback.good{color:#8fbf8f}
+.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.hint-link{
+  background:none;border:none;color:var(--fog);font-size:14px;font-style:italic;
+  text-decoration:underline;text-underline-offset:3px;margin-top:14px;
+}
+.hint-link:hover{color:var(--brass)}
+.hint-text{
+  font-size:15px;color:#a8c2c2;font-style:italic;margin-top:10px;line-height:1.5;
+  border-top:1px dashed rgba(62,107,107,.5);padding-top:10px;
+}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* Morse display */
+.morse-line{
+  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.12em;
+  color:var(--brass);background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
+  padding:14px 12px;margin:12px 0;line-height:2;word-break:break-all;
+}
+.morse-lamp{
+  width:26px;height:26px;border-radius:50%;background:#3a3110;margin:0 auto 10px;
+  border:2px solid var(--brass-dim);transition:background .05s, box-shadow .05s;
+}
+.morse-lamp.lit{background:#ffe27a;box-shadow:0 0 18px 4px rgba(255,226,122,.7)}
+.tx-display{
+  font-family:'IBM Plex Mono',monospace;font-size:22px;min-height:34px;
+  color:var(--brass);letter-spacing:.15em;margin:10px 0;word-break:break-all;
+}
+.tx-pad{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0 4px}
+.tx-btn{
+  min-width:58px;height:48px;background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
+  color:var(--parchment);font-family:'IBM Plex Mono',monospace;font-size:20px;
+  transition:border-color .15s;
+}
+.tx-btn:hover{border-color:var(--brass)}
+.morse-ref{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b9ad92;
+  column-count:4;column-gap:14px;text-align:left;margin:12px auto 0;max-width:360px;
+  line-height:1.9;
+}
+@media (max-width:480px){.morse-ref{column-count:3}}
+
+/* Flag rendering */
+.flag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:14px 0;justify-items:center}
+.flag-cell{display:flex;flex-direction:column;align-items:center;gap:5px}
+.flag-cell svg{width:56px;height:40px;border:1px solid rgba(0,0,0,.35);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.flag-cell .fl{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);font-weight:500}
+.flag-row{display:flex;gap:14px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.flag-row svg{width:56px;height:40px;border:1px solid rgba(0,0,0,.35);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.flag-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink);text-align:center;margin-top:4px}
+
+#victory{background:radial-gradient(ellipse at 50% -20%, #1b3a54 0%, var(--night) 70%)}
+.stats{display:flex;gap:36px;margin:26px 0 34px}
+.stat .v{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--brass)}
+.stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;margin-top:6px}
+
+@media (max-width:600px){
+  #hud .title-sm{display:none}
+  .stats{gap:22px}
+  #room-wrap{padding:58px 8px 100px}
+  .flag-grid{grid-template-columns:repeat(4,1fr);gap:8px}
+  .flag-cell svg,.flag-row svg{width:46px;height:33px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .morse-lamp.lit{box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">S.S. Meridian · That same night · Level II</div>
+  <h1>THE CHART <span class="num">ROOM</span></h1>
+  <p class="intro-story">You reached the gangway with the manifest — and found it already raised, the pier sliding away into fog. Behind you, a steward pressed a folded slip into your hand:<br><br><em>"R is aboard. Chart room. Come alone."</em><br><br>The chart room is empty when you arrive. But R has left the room itself as a message — for someone who solved Stateroom 77.</p>
+  <button class="btn" id="start-btn">Enter</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.5;font-style:italic">Two trails run through this room. They meet at the wireless.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">25:00</div>
+  <div class="title-sm">THE CHART ROOM</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="The ship's chart room at night">
+    <defs>
+      <radialGradient id="wallgrad" cx="50%" cy="35%" r="80%">
+        <stop offset="0%" stop-color="#1d3852"/>
+        <stop offset="100%" stop-color="#0d1c2b"/>
+      </radialGradient>
+      <radialGradient id="portglow" cx="50%" cy="50%" r="55%">
+        <stop offset="0%" stop-color="#0e2438"/>
+        <stop offset="100%" stop-color="#050d16"/>
+      </radialGradient>
+    </defs>
+    <rect x="0" y="0" width="800" height="380" fill="url(#wallgrad)"/>
+    <rect x="0" y="380" width="800" height="120" fill="#241a10"/>
+    <g opacity=".35" stroke="#3a2b18" stroke-width="2">
+      <line x1="0" y1="405" x2="800" y2="405"/><line x1="0" y1="435" x2="800" y2="435"/><line x1="0" y1="470" x2="800" y2="470"/>
+    </g>
+    <rect x="0" y="330" width="800" height="50" fill="#2c3f52" opacity=".6"/>
+    <line x1="0" y1="330" x2="800" y2="330" stroke="#C9A227" stroke-width="1.5" opacity=".5"/>
+
+    <!-- FLAG LOCKER (left wall) -->
+    <g id="hs-locker" class="hotspot" tabindex="0" role="button" aria-label="Signal flag locker">
+      <rect x="40" y="110" width="130" height="200" fill="#3d2a16" stroke="#C9A227" stroke-width="2"/>
+      <line x1="105" y1="110" x2="105" y2="310" stroke="#8a6f1d" stroke-width="1.5"/>
+      <g>
+        <rect x="52" y="128" width="40" height="26" fill="#c23b3b"/>
+        <rect x="52" y="166" width="40" height="26" fill="#e8dcc3"/>
+        <rect x="52" y="166" width="40" height="13" fill="#2b5fa3"/>
+        <rect x="52" y="204" width="40" height="26" fill="#e3b93a"/>
+        <rect x="118" y="128" width="40" height="26" fill="#2b5fa3"/>
+        <rect x="118" y="166" width="40" height="26" fill="#c23b3b"/>
+        <rect x="118" y="166" width="40" height="13" fill="#e3b93a"/>
+        <rect x="118" y="204" width="40" height="26" fill="#e8dcc3"/>
+      </g>
+      <text x="105" y="290" text-anchor="middle" font-family="monospace" font-size="10" fill="#C9A227" opacity=".8">SIGNALS</text>
+    </g>
+
+    <!-- CABINET (letter lock, under locker) -->
+    <g id="hs-cabinet" class="hotspot" tabindex="0" role="button" aria-label="Cabinet with a four-letter lock">
+      <rect x="40" y="322" width="130" height="64" fill="#3d2a16" stroke="#8a6f1d" stroke-width="1.5"/>
+      <rect x="72" y="342" width="66" height="22" fill="#20242a" stroke="#C9A227" stroke-width="1.5"/>
+      <text x="105" y="358" text-anchor="middle" font-family="monospace" font-size="12" fill="#C9A227">✳ ✳ ✳ ✳</text>
+    </g>
+
+    <!-- CHART TABLE (center) -->
+    <g id="hs-table" class="hotspot" tabindex="0" role="button" aria-label="Chart table with the captain's route chart">
+      <rect x="250" y="286" width="300" height="16" fill="#4a341c"/>
+      <rect x="262" y="302" width="276" height="84" fill="#3d2a16"/>
+      <rect x="268" y="270" width="264" height="20" fill="#E8DCC3" transform="rotate(-1 400 280)"/>
+      <path d="M280 278 q40 -8 80 0 t80 0 t80 0" stroke="#6E2B2B" stroke-width="1.5" fill="none" transform="rotate(-1 400 280)"/>
+      <circle cx="320" cy="276" r="2.5" fill="#1a1408"/><circle cx="410" cy="274" r="2.5" fill="#1a1408"/><circle cx="490" cy="276" r="2.5" fill="#1a1408"/>
+    </g>
+
+    <!-- TABLE DRAWER -->
+    <g id="hs-drawer" class="hotspot" tabindex="0" role="button" aria-label="Chart table drawer">
+      <rect x="300" y="312" width="200" height="30" fill="#4a341c" stroke="#8a6f1d" stroke-width="1.5"/>
+      <circle cx="400" cy="327" r="4" fill="#C9A227"/>
+    </g>
+
+    <!-- CAPTAIN'S LOG (on table, right side) -->
+    <g id="hs-log" class="hotspot" tabindex="0" role="button" aria-label="Captain's log, lying open">
+      <rect x="470" y="258" width="70" height="34" fill="#6E2B2B" transform="rotate(4 505 275)"/>
+      <rect x="476" y="262" width="58" height="26" fill="#E8DCC3" transform="rotate(4 505 275)"/>
+      <line x1="482" y1="270" x2="524" y2="273" stroke="#1a1408" stroke-width="1" opacity=".5"/>
+      <line x1="482" y1="276" x2="524" y2="279" stroke="#1a1408" stroke-width="1" opacity=".5"/>
+    </g>
+
+    <!-- WIRELESS SET (right) -->
+    <g id="hs-wireless" class="hotspot" tabindex="0" role="button" aria-label="Wireless telegraph set">
+      <rect x="616" y="216" width="150" height="120" fill="#2a2018" stroke="#C9A227" stroke-width="2"/>
+      <circle cx="656" cy="256" r="18" fill="#20242a" stroke="#C9A227" stroke-width="1.5"/>
+      <line x1="656" y1="244" x2="656" y2="256" stroke="#C9A227" stroke-width="2"/>
+      <circle id="rx-lamp" cx="726" cy="246" r="9" fill="#3a3110" stroke="#8a6f1d" stroke-width="1.5"/>
+      <rect x="636" y="292" width="60" height="10" fill="#8a6f1d"/>
+      <circle cx="716" cy="297" r="10" fill="#C9A227"/>
+      <rect x="666" y="196" width="4" height="20" fill="#8a6f1d"/>
+      <rect x="646" y="186" width="44" height="10" fill="none" stroke="#8a6f1d" stroke-width="2"/>
+      <rect x="616" y="336" width="150" height="50" fill="#3d2a16"/>
+    </g>
+
+    <!-- STRONGBOX (shelf, upper right of table) -->
+    <g id="hs-strongbox" class="hotspot" tabindex="0" role="button" aria-label="Chronometer strongbox with a three-number dial">
+      <rect x="250" y="150" width="110" height="14" fill="#4a341c"/>
+      <rect x="266" y="98" width="78" height="52" fill="#20242a" stroke="#C9A227" stroke-width="2"/>
+      <circle cx="305" cy="124" r="14" fill="#31363e" stroke="#C9A227" stroke-width="1.5"/>
+      <circle cx="305" cy="124" r="3" fill="#C9A227"/>
+    </g>
+
+    <!-- PORTHOLE (fog, no stars — a quiet callback) -->
+    <g id="hs-porthole" class="hotspot" tabindex="0" role="button" aria-label="Porthole">
+      <circle cx="480" cy="140" r="44" fill="#C9A227"/>
+      <circle cx="480" cy="140" r="36" fill="url(#portglow)"/>
+      <ellipse cx="470" cy="132" rx="20" ry="7" fill="#25384a" opacity=".7"/>
+      <ellipse cx="492" cy="150" rx="16" ry="6" fill="#25384a" opacity=".5"/>
+      <g stroke="#C9A227" stroke-width="1"><circle cx="480" cy="100" r="2.5"/><circle cx="480" cy="180" r="2.5"/><circle cx="440" cy="140" r="2.5"/><circle cx="520" cy="140" r="2.5"/></g>
+    </g>
+
+    <!-- SPEAKING TUBE -->
+    <g opacity=".85">
+      <circle cx="205" cy="180" r="12" fill="#C9A227"/>
+      <circle cx="205" cy="180" r="7" fill="#0d1c2b"/>
+      <rect x="201" y="192" width="8" height="30" fill="#8a6f1d"/>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">Somewhere off the coast, a lantern answers</div>
+  <h1>THE LANTERN <span class="num">REPLIES</span></h1>
+  <p class="intro-story">Two flashes from the dark shoreline. Then four. Then one. The stations are lit — the way is clear.<br><br>Behind you, the chart room door opens at last. R steps in: the captain herself, Rhea Moran. <em>"The postcard, the suitcase, the safe — I had to know you could carry it. Forty-one families are sailing under names not their own tonight. Because of you, they'll wake up free."</em><br><br>The manifest was never cargo. It was a promise.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <button class="btn" onclick="location.reload()">Play Again</button>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const S = {
+  t:25*60, timerId:null, overtime:false, hintsUsed:0,
+  inv:{},
+  flags:{
+    drawer:false,        // morse card + magnifier taken
+    decoded:false,       // wireless message decoded
+    sawChart:false,      // read chart (with magnifier)
+    strongbox:false,     // 241 opened → letter opener + R's letter
+    manifestOpen:false,  // seal broken → word revealed
+    sawLocker:false,
+    cabinet:false,       // DAWN opened → transmit key
+    powered:false,       // key inserted into wireless
+  },
+  hintLevel:{}, soundOn:false, audioCtx:null, noiseGain:null,
+};
+
+/* ================= TIMER ================= */
+function fmt(t){const neg=t<0;t=Math.abs(t);const m=Math.floor(t/60),s=t%60;return (neg?'+':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function tick(){
+  S.t--;
+  const el=document.getElementById('timer');
+  el.textContent=fmt(S.t);
+  if(S.t<0){el.classList.add('late'); if(!S.overtime){S.overtime=true;}}
+  else if(S.t<=120){el.classList.add('late');}
+}
+
+/* ================= SOUND ================= */
+function ensureAudio(){
+  if(S.audioCtx)return;
+  const C=new (window.AudioContext||window.webkitAudioContext)();
+  const bufferSize=2*C.sampleRate;
+  const buffer=C.createBuffer(1,bufferSize,C.sampleRate);
+  const data=buffer.getChannelData(0);
+  let last=0;
+  for(let i=0;i<bufferSize;i++){const w=Math.random()*2-1;data[i]=(last+.02*w)/1.02;last=data[i];data[i]*=2.8;}
+  const src=C.createBufferSource();src.buffer=buffer;src.loop=true;
+  const filt=C.createBiquadFilter();filt.type='lowpass';filt.frequency.value=220;
+  const gain=C.createGain();gain.gain.value=0;
+  src.connect(filt).connect(gain).connect(C.destination);src.start();
+  S.audioCtx=C;S.noiseGain=gain;
+}
+function toggleSound(){
+  ensureAudio();
+  S.soundOn=!S.soundOn;
+  S.noiseGain.gain.value=S.soundOn?0.05:0;
+  document.getElementById('sound-btn').style.opacity=S.soundOn?1:.4;
+}
+document.getElementById('sound-btn').addEventListener('click',toggleSound);
+document.getElementById('sound-btn').style.opacity=.4;
+function beep(dur){ // morse beep, only if sound on
+  if(!S.soundOn||!S.audioCtx)return;
+  const o=S.audioCtx.createOscillator(),g=S.audioCtx.createGain();
+  o.frequency.value=620;o.type='sine';
+  g.gain.setValueAtTime(0.08,S.audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,S.audioCtx.currentTime+dur/1000);
+  o.connect(g).connect(S.audioCtx.destination);
+  o.start();o.stop(S.audioCtx.currentTime+dur/1000);
+}
+
+/* ================= INVENTORY ================= */
+function addItem(key,icon,label){
+  if(S.inv[key])return;
+  S.inv[key]={icon,label};
+  renderInv();
+}
+function removeItem(key){delete S.inv[key];renderInv();}
+function renderInv(){
+  const inv=document.getElementById('inventory');
+  inv.innerHTML='';
+  const keys=Object.keys(S.inv);
+  if(!keys.length){inv.innerHTML='<span id="inv-empty">Your pockets are empty.</span>';return;}
+  keys.forEach(k=>{
+    const it=S.inv[k];
+    const d=document.createElement('button');
+    d.className='inv-item';d.innerHTML=it.icon+'<span class="tag">'+it.label+'</span>';
+    d.setAttribute('aria-label',it.label);
+    d.addEventListener('click',()=>inspectItem(k));
+    inv.appendChild(d);
+  });
+}
+function inspectItem(k){
+  if(k==='manifest'){
+    if(!S.flags.manifestOpen){
+      if(S.inv.opener){
+        S.flags.manifestOpen=true;
+        openModal({
+          title:'The Manifest, Opened',
+          body:'The letter opener slides under the wax — the crest on its handle matches the seal exactly. Inside: <em>names</em>. Dozens of them. Families. Children\'s ages noted in a careful hand. And a final line:',
+          extra:'<div class="paper">"When the way is clear, tell the stations with one word — the one every name on this list is sailing toward:<br><br><span class="mono" style="font-size:18px;letter-spacing:.3em">H O M E</span><br><br>Send it as the wireless speaks. — R"</div>',
+          actions:[closeBtn('Fold it carefully')]
+        });
+      } else {
+        openModal({
+          title:'The Manifest',
+          body:'Still sealed with dark red wax, pressed with a crest: <em>a lantern over crossed flags</em>. Breaking it by hand feels wrong — the seal is meant to be opened cleanly, by something made for it.',
+          actions:[closeBtn()]
+        });
+      }
+    } else {
+      openModal({
+        title:'The Manifest',
+        body:'Forty-one families, sailing under names not their own. The word to send: <em>HOME</em>.',
+        actions:[closeBtn()]
+      });
+    }
+    return;
+  }
+  if(k==='magnifier') openModal({title:'Magnifying Glass',body:'Brass-rimmed, well used. The kind a navigator keeps for the fine print on a chart.',actions:[closeBtn()]});
+  if(k==='morsecard') showMorseCard();
+  if(k==='opener') openModal({title:'Letter Opener',body:'Silver, engraved with <em>a lantern over crossed flags</em> — the same crest as the manifest\'s wax seal. That can\'t be a coincidence.',actions:[closeBtn()]});
+  if(k==='txkey') openModal({title:'Transmit Key',body:'A small crank-key stamped <span class="paper straight" style="display:inline-block;padding:2px 8px;margin:0"><span class="mono">TX</span></span> It powers the wireless\'s sending circuit. Receiving is free; <em>speaking</em> costs a key.',actions:[closeBtn()]});
+}
+
+/* ================= MODAL ================= */
+const veil=document.getElementById('modal-veil');
+function openModal({title,body,extra='',actions=[],puzzleId=null,onOpen=null}){
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-body').innerHTML=body;
+  document.getElementById('m-extra').innerHTML=extra;
+  const fb=document.getElementById('m-feedback');fb.textContent='';fb.className='feedback';
+  const act=document.getElementById('m-actions');act.innerHTML='';
+  actions.forEach(a=>act.appendChild(a));
+  renderHints(puzzleId);
+  veil.classList.add('on');
+  if(onOpen)onOpen();
+}
+function closeModal(){veil.classList.remove('on');stopMorsePlayback();}
+veil.addEventListener('click',e=>{if(e.target===veil)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function closeBtn(txt='Step back'){const b=document.createElement('button');b.className='btn small';b.textContent=txt;b.addEventListener('click',closeModal);return b;}
+function feedback(msg,ok){const fb=document.getElementById('m-feedback');fb.textContent=msg;fb.className='feedback '+(ok?'good':'bad');if(!ok){document.getElementById('modal').classList.add('shake');setTimeout(()=>document.getElementById('modal').classList.remove('shake'),380);}}
+
+/* ================= HINTS ================= */
+const HINTS={
+  wireless:[
+    'The steward, through the tube: <em>"The set receives on its own. Sending is another matter — sending needs power, and power needs a key."</em>',
+    '<em>"That repeating message isn\'t noise. There\'s a card for reading it — navigators keep such things in the chart table drawer."</em>',
+    '<em>"Match the dots and dashes to the card, letter by letter. The last word of the message is the one that matters."</em>'
+  ],
+  chart:[
+    '<em>"The captain\'s chart holds more than the route. Look at what the waypoints are named."</em>',
+    '<em>"Those names should stop you cold — you\'ve seen them before, through a porthole. They were never constellations."</em>',
+    '<em>"Each station lists its flash count. First light, second, third: 2, 4, 1."</em>'
+  ],
+  strongbox:[
+    '<em>"A chronometer box guards its treasure with a sequence, not a secret."</em>',
+    '<em>"The chart names three signal stations in order, each with a flash count."</em>',
+    '<em>"First light 2, second light 4, third light 1. Try 2-4-1."</em>'
+  ],
+  flags:[
+    '<em>"Every flag in that locker speaks a letter. The chart pinned inside tells you which."</em>',
+    '<em>"The captain\'s log records the last hoist — four flags, in order. Match each drawing to the locker\'s chart."</em>',
+    '<em>"Yellow-blue-yellow bands, swallowtail, square-in-square, checkerboard: D, A, W, N."</em>'
+  ],
+  cabinet:[
+    '<em>"Four letters. The captain logged her last order in flags — have you compared the log to the locker?"</em>',
+    '<em>"The hoist in the log spells a time of day. The time everything is planned for."</em>',
+    '<em>"The flags spell DAWN."</em>'
+  ],
+  transmit:[
+    '<em>"You\'ve learned to listen. Now the set wants you to speak the same language back."</em>',
+    '<em>"The word is on the last line of the manifest. Spell it with the card: letter by letter, dots and dashes, with a break between letters."</em>',
+    '<em>"HOME: four dots · dash-dash-dash · dash-dash · one dot. (.... / --- / -- / .)"</em>'
+  ]
+};
+function renderHints(pid){
+  const z=document.getElementById('m-hintzone');z.innerHTML='';
+  if(!pid||!HINTS[pid])return;
+  const lvl=S.hintLevel[pid]||0;
+  for(let i=0;i<lvl;i++){const p=document.createElement('div');p.className='hint-text';p.innerHTML=HINTS[pid][i];z.appendChild(p);}
+  if(lvl<3){
+    const b=document.createElement('button');b.className='hint-link';
+    b.textContent=lvl===0?'Ask the steward (speaking tube)':'Ask again — be more direct';
+    b.addEventListener('click',()=>{S.hintLevel[pid]=lvl+1;S.hintsUsed++;renderHints(pid);});
+    z.appendChild(b);
+  }
+}
+
+/* ================= INPUT HELPERS ================= */
+function codeRow(n,type='num'){
+  const wrap=document.createElement('div');wrap.className='code-row';
+  for(let i=0;i<n;i++){
+    const inp=document.createElement('input');
+    inp.className='code-input';inp.maxLength=1;
+    inp.inputMode=type==='num'?'numeric':'text';
+    inp.addEventListener('input',()=>{inp.value=inp.value.replace(type==='num'?/[^0-9]/g:/[^a-zA-Z]/g,'');if(inp.value&&inp.nextElementSibling)inp.nextElementSibling.focus();});
+    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&inp.previousElementSibling)inp.previousElementSibling.focus();});
+    wrap.appendChild(inp);
+  }
+  return wrap;
+}
+function readCode(wrap){return [...wrap.querySelectorAll('input')].map(i=>i.value).join('').toUpperCase();}
+
+/* ================= FLAGS (SVG builders) ================= */
+function flagSVG(letter){
+  const f={
+    A:'<rect width="60" height="40" fill="#fff"/><rect width="30" height="40" fill="#fff"/><rect x="0" width="30" height="40" fill="#ffffff"/><path d="M0 0 h60 l-14 20 14 20 h-60 z" fill="#2b5fa3"/><path d="M0 0 h30 v40 h-30 z" fill="#fff"/>',
+    D:'<rect width="60" height="40" fill="#e3b93a"/><rect y="13" width="60" height="14" fill="#2b5fa3"/>',
+    W:'<rect width="60" height="40" fill="#2b5fa3"/><rect x="10" y="7" width="40" height="26" fill="#fff"/><rect x="20" y="14" width="20" height="12" fill="#c23b3b"/>',
+    N:(()=>{let s='';for(let r=0;r<4;r++)for(let c=0;c<4;c++){s+=`<rect x="${c*15}" y="${r*10}" width="15" height="10" fill="${(r+c)%2?'#fff':'#2b5fa3'}"/>`;}return s;})(),
+    K:'<rect width="30" height="40" fill="#e3b93a"/><rect x="30" width="30" height="40" fill="#2b5fa3"/>',
+    E:'<rect width="60" height="20" fill="#2b5fa3"/><rect y="20" width="60" height="20" fill="#c23b3b"/>',
+    R:'<rect width="60" height="40" fill="#c23b3b"/><rect x="26" width="8" height="40" fill="#e3b93a"/><rect y="16" width="60" height="8" fill="#e3b93a"/>',
+    S:'<rect width="60" height="40" fill="#fff"/><rect x="15" y="10" width="30" height="20" fill="#2b5fa3"/>',
+  }[letter];
+  return `<svg viewBox="0 0 60 40" role="img" aria-label="Signal flag">${f}</svg>`;
+}
+const LOCKER_ORDER=['A','E','D','K','N','R','S','W'];
+
+/* ================= MORSE ================= */
+const MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..'};
+const RX_MESSAGE='STARS WERE LANTERNS';
+function toMorse(word){return word.split(' ').map(w=>w.split('').map(c=>MORSE[c]).join(' ')).join(' / ');}
+function morseRefHTML(){
+  let h='<div class="morse-ref">';
+  for(const [k,v] of Object.entries(MORSE))h+=`<div>${k}&nbsp;&nbsp;${v}</div>`;
+  h+='</div>';
+  return h;
+}
+function showMorseCard(){
+  openModal({
+    title:'Wireless Operator\'s Card',
+    body:'A pocket reference, printed by the Marconi company. Every letter, in dots and dashes:',
+    extra:morseRefHTML(),
+    actions:[closeBtn()]
+  });
+}
+
+/* Morse playback (lamp blink) */
+let morseTimer=null;
+function stopMorsePlayback(){
+  if(morseTimer){clearTimeout(morseTimer);morseTimer=null;}
+  const lampM=document.getElementById('modal-lamp');
+  if(lampM)lampM.classList.remove('lit');
+  document.getElementById('rx-lamp').setAttribute('fill','#3a3110');
+}
+function playMorse(pattern){
+  stopMorsePlayback();
+  const UNIT=110;
+  const seq=[];
+  for(const ch of pattern){
+    if(ch==='.'){seq.push([true,UNIT]);seq.push([false,UNIT]);}
+    else if(ch==='-'){seq.push([true,UNIT*3]);seq.push([false,UNIT]);}
+    else if(ch===' '){seq.push([false,UNIT*2]);}
+    else if(ch==='/'){seq.push([false,UNIT*4]);}
+  }
+  let i=0;
+  function step(){
+    if(i>=seq.length){stopMorsePlayback();return;}
+    const [on,dur]=seq[i++];
+    const lampM=document.getElementById('modal-lamp');
+    if(lampM)lampM.classList.toggle('lit',on);
+    if(on)beep(dur);
+    morseTimer=setTimeout(step,dur);
+  }
+  step();
+}
+
+/* ================= HOTSPOTS ================= */
+function bindHotspot(id,fn){
+  const el=document.getElementById(id);
+  el.addEventListener('click',fn);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});
+}
+
+/* --- Drawer: morse card + magnifier --- */
+bindHotspot('hs-drawer',()=>{
+  if(!S.flags.drawer){
+    S.flags.drawer=true;
+    addItem('morsecard','⣿','Morse card');
+    addItem('magnifier','🔍','Magnifier');
+    openModal({
+      title:'The Chart Table Drawer',
+      body:'Unlocked — R wanted this found. Inside: a <em>wireless operator\'s card</em> (the Morse alphabet, printed small) and a <em>brass magnifying glass</em>.',
+      actions:[closeBtn('Take both')]
+    });
+  } else {
+    openModal({title:'The Drawer',body:'Pencil shavings and a broken protractor. Nothing else.',actions:[closeBtn()]});
+  }
+});
+
+/* --- Wireless: receive (decode) + transmit (finale) --- */
+bindHotspot('hs-wireless',()=>{
+  if(S.flags.powered && S.flags.manifestOpen){
+    showTransmit();
+  } else if(!S.flags.decoded){
+    showReceive();
+  } else {
+    // decoded but not ready to transmit
+    let msg='The set repeats its message patiently: <em>"…stars were lanterns."</em> ';
+    if(!S.inv.txkey) msg+='The transmit circuit is dead — a small keyhole marked <span style="font-family:monospace">TX</span> sits empty beside the sending key.';
+    else if(!S.flags.powered) msg+='You have the crank-key. One turn and the sending circuit hums to life.';
+    else msg+='The set is powered and waiting. But you don\'t yet know <em>what</em> to send — or to whom.';
+    const actions=[closeBtn()];
+    if(S.inv.txkey&&!S.flags.powered){
+      const b=document.createElement('button');b.className='btn small';b.textContent='Insert TX key';
+      b.addEventListener('click',()=>{
+        S.flags.powered=true;removeItem('txkey');
+        feedback('The circuit warms with a low hum. The set can speak now.',true);
+        setTimeout(()=>{closeModal();if(S.flags.manifestOpen)bindOpenWireless();},900);
+      });
+      actions.unshift(b);
+    }
+    openModal({title:'The Wireless',body:msg,actions,puzzleId:'wireless'});
+  }
+});
+function bindOpenWireless(){
+  openModal({
+    title:'The Wireless',
+    body:'Powered, warmed, and waiting. You know the word.',
+    actions:[(()=>{const b=document.createElement('button');b.className='btn small';b.textContent='Open the sending key';b.addEventListener('click',showTransmit);return b;})(),closeBtn()]
+  });
+}
+function showReceive(){
+  const morse=toMorse(RX_MESSAGE);
+  const hasCard=!!S.inv.morsecard;
+  let extra=`<div class="morse-lamp" id="modal-lamp" aria-hidden="true"></div>
+  <div class="morse-line">${morse}</div>`;
+  if(hasCard)extra+=morseRefHTML();
+  const body=hasCard
+    ?'The receive lamp blinks the same message, over and over. With the operator\'s card, you can read it. The signature is three letters — <em>ignore it. What is the last word?</em>'
+    :'The receive lamp blinks a pattern — deliberate, repeating. Dots and dashes. Without something to translate, it\'s just weather on the wire.';
+  const actions=[];
+  const replay=document.createElement('button');replay.className='btn small';replay.textContent='Watch it again';
+  replay.addEventListener('click',()=>playMorse(morse));
+  actions.push(replay);
+  if(hasCard){
+    const input=document.createElement('input');
+    input.className='word-input';input.maxLength=12;input.placeholder='LAST WORD';
+    input.addEventListener('input',()=>{input.value=input.value.replace(/[^a-zA-Z]/g,'').toUpperCase();});
+    const submit=document.createElement('button');submit.className='btn small';submit.textContent='I have it';
+    submit.addEventListener('click',()=>{
+      if(input.value==='LANTERNS'){
+        S.flags.decoded=true;
+        feedback('The full message resolves: "STARS WERE LANTERNS."',true);
+        setTimeout(()=>openModal({
+          title:'Stars… Were Lanterns',
+          body:'The words land slowly, then all at once.<br><br>The Lantern. The Twins. The Spindrift. The "constellations" from the stateroom\'s star chart — <em>they were never stars.</em> They\'re signal stations on the coast, waiting for a light. R has been teaching you the route since the moment you woke up.<br><br>If they\'re on the coast, they\'re on the <em>chart</em>.',
+          actions:[closeBtn('To the chart table')]
+        }),1000);
+      } else feedback('That doesn\'t match the pattern. Check it letter by letter.',false);
+    });
+    actions.push(submit);
+    openModal({title:'The Wireless — Receiving',body,extra,actions:[...actions,closeBtn()],puzzleId:'wireless',
+      onOpen:()=>{document.getElementById('m-extra').insertBefore(input,document.getElementById('m-extra').children[2]);playMorse(morse);}});
+  } else {
+    openModal({title:'The Wireless — Receiving',body,extra,actions:[...actions,closeBtn()],puzzleId:'wireless',
+      onOpen:()=>playMorse(morse)});
+  }
+}
+/* Transmit finale: encode HOME */
+function showTransmit(){
+  const target=['....','---','--','.']; // H O M E
+  let entered=[''];
+  const disp=document.createElement('div');disp.className='tx-display';
+  function render(){disp.textContent=entered.join(' / ')||'…';}
+  render();
+  const pad=document.createElement('div');pad.className='tx-pad';
+  const mk=(label,fn)=>{const b=document.createElement('button');b.className='tx-btn';b.textContent=label;b.addEventListener('click',fn);return b;};
+  pad.appendChild(mk('·',()=>{entered[entered.length-1]+='.';beep(110);render();}));
+  pad.appendChild(mk('—',()=>{entered[entered.length-1]+='-';beep(330);render();}));
+  pad.appendChild(mk('␣',()=>{if(entered[entered.length-1])entered.push('');render();}));
+  pad.appendChild(mk('⌫',()=>{
+    if(entered[entered.length-1])entered[entered.length-1]=entered[entered.length-1].slice(0,-1);
+    else if(entered.length>1)entered.pop();
+    render();
+  }));
+  const send=document.createElement('button');send.className='btn small';send.textContent='Send';
+  send.addEventListener('click',()=>{
+    const clean=entered.filter(x=>x);
+    if(clean.length===target.length&&clean.every((v,i)=>v===target[i])){
+      win();
+    } else feedback('The shore stays dark. Check each letter against the card — and mind the breaks.',false);
+  });
+  openModal({
+    title:'The Wireless — Sending',
+    body:'You\'ve spent this whole night <em>reading</em>. Now the set is asking you to write. Tap the word from the manifest — dot, dash, and a break (␣) between letters.',
+    extra:morseRefHTML(),
+    actions:[send,closeBtn()],
+    puzzleId:'transmit',
+    onOpen:()=>{
+      const ex=document.getElementById('m-extra');
+      ex.insertBefore(pad,ex.firstChild);
+      ex.insertBefore(disp,ex.firstChild);
+    }
+  });
+}
+
+/* --- Chart table: the recontextualization --- */
+bindHotspot('hs-table',()=>{
+  if(!S.inv.magnifier){
+    openModal({
+      title:'The Chart Table',
+      body:'The captain\'s route chart, pinned at the corners. The coastline is inked with tiny annotations — <em>maddeningly</em> tiny. You\'d need a glass to read them.',
+      actions:[closeBtn()],
+      puzzleId:'chart'
+    });
+    return;
+  }
+  S.flags.sawChart=true;
+  const revealed=S.flags.decoded;
+  openModal({
+    title:'The Chart Table',
+    body:revealed
+      ?'Under the glass, the coastline comes alive. Three stations are marked along the route — and their names raise the hair on your arms:'
+      :'Under the glass: three points marked along the coast, each with a name and a note. Odd names for landmarks.',
+    extra:`<div class="paper straight"><span class="mono">FIRST LIGHT — "THE LANTERN" — answers with 2 flashes</span><br>
+<span class="mono">SECOND LIGHT — "THE TWINS" — answers with 4 flashes</span><br>
+<span class="mono">THIRD LIGHT — "THE SPINDRIFT" — answers with 1 flash</span><br><br>
+<em>margin note, in pencil:</em> "The chronometer keeps the sequence safe."</div>`
+      +(revealed?'':'<div style="font-style:italic;opacity:.75;margin-top:10px">The Lantern… the Twins… the Spindrift. Why do those names feel like something you saw through a porthole?</div>'),
+    actions:[closeBtn()],
+    puzzleId:'chart'
+  });
+});
+
+/* --- Strongbox: 2-4-1 --- */
+bindHotspot('hs-strongbox',()=>{
+  if(S.flags.strongbox){
+    openModal({title:'The Chronometer Box',body:'Open and empty, its velvet lining holding the shape of what you took.',actions:[closeBtn()]});
+    return;
+  }
+  const row=codeRow(3);
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Turn the dial';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='241'){
+      S.flags.strongbox=true;
+      addItem('opener','🗡','Letter opener');
+      feedback('The lid lifts on oiled hinges.',true);
+      setTimeout(()=>openModal({
+        title:'Inside the Chronometer Box',
+        body:'No chronometer. Instead, resting on velvet: a silver <em>letter opener</em> engraved with a lantern over crossed flags — and a note:',
+        extra:'<div class="paper">"By now you know the stars were mine. Everything I sealed, this opens. What the manifest asks of you, the wireless can do. — R"</div>',
+        actions:[closeBtn('Take the opener')]
+      }),700);
+    } else feedback('The dial catches, then refuses.',false);
+  });
+  openModal({
+    title:'The Chronometer Box',
+    body:'A brass-cornered strongbox with a three-number dial. A pencil note on the chart mentioned it keeps <em>the sequence</em> safe.',
+    actions:[submit,closeBtn()],
+    puzzleId:'strongbox',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* --- Flag locker --- */
+bindHotspot('hs-locker',()=>{
+  S.flags.sawLocker=true;
+  let grid='<div class="paper straight"><div style="font-style:normal;margin-bottom:6px"><span class="mono">SIGNAL FLAGS — LETTER CHART</span></div><div class="flag-grid">';
+  LOCKER_ORDER.forEach(L=>{grid+=`<div class="flag-cell">${flagSVG(L)}<span class="fl">${L}</span></div>`;});
+  grid+='</div></div>';
+  openModal({
+    title:'The Signal Flag Locker',
+    body:'Eight flags, neatly rolled — and pinned inside the door, the fleet\'s letter chart. Every flag speaks a letter.',
+    extra:grid,
+    actions:[closeBtn()],
+    puzzleId:'flags'
+  });
+});
+
+/* --- Captain's log --- */
+bindHotspot('hs-log',()=>{
+  let row='<div class="paper straight"><div style="font-style:normal;margin-bottom:2px"><span class="mono">LOG — S.S. MERIDIAN — FINAL ENTRY</span></div><em>"Orders to the stations confirmed by hoist, four flags flown in this order:"</em><div class="flag-row">';
+  ['D','A','W','N'].forEach((L,i)=>{row+=`<div>${flagSVG(L)}<div class="flag-num">${i+1}</div></div>`;});
+  row+='</div><em>"May the weather hold. May the cabinet hold tighter."</em></div>';
+  openModal({
+    title:'The Captain\'s Log',
+    body:'Open to its last entry, written in a steady hand you\'re starting to recognize:',
+    extra:row,
+    actions:[closeBtn()],
+    puzzleId:'flags'
+  });
+});
+
+/* --- Cabinet: DAWN --- */
+bindHotspot('hs-cabinet',()=>{
+  if(S.flags.cabinet){
+    openModal({title:'The Cabinet',body:'Empty now. The TX key is yours.',actions:[closeBtn()]});
+    return;
+  }
+  const row=codeRow(4,'alpha');
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Try the letters';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='DAWN'){
+      S.flags.cabinet=true;
+      addItem('txkey','⚡','TX key');
+      feedback('The tumblers agree. The cabinet opens.',true);
+      setTimeout(()=>openModal({
+        title:'Inside the Cabinet',
+        body:'A single item on a single hook: a small crank-key stamped <em>TX</em>. The wireless can hear on its own — but with this, it can <em>speak</em>.',
+        actions:[closeBtn('Take the key')]
+      }),700);
+    } else feedback('The letters spin freely. Not the word.',false);
+  });
+  openModal({
+    title:'The Locked Cabinet',
+    body:'A four-letter combination lock. The captain\'s log joked that it "holds tighter than the weather."',
+    actions:[submit,closeBtn()],
+    puzzleId:'cabinet',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* --- Porthole (atmosphere + gentle callback) --- */
+bindHotspot('hs-porthole',()=>{
+  openModal({
+    title:'The Porthole',
+    body:'Fog tonight — thick as wool. Not a single star.<br><br><em>Strange,</em> you think. <em>Last night, from Stateroom 77, they were so clear you could count them.</em>'+(S.flags.decoded?'<br><br>Of course they were. Someone lit them for you.':''),
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= WIN ================= */
+function win(){
+  closeModal();
+  clearInterval(S.timerId);
+  document.getElementById('hud').classList.remove('on');
+  document.getElementById('room-wrap').classList.remove('on');
+  document.getElementById('inventory').classList.remove('on');
+  const used=25*60-S.t;
+  document.getElementById('stat-time').textContent=fmt(used);
+  document.getElementById('stat-hints').textContent=S.hintsUsed;
+  let rank='Deckhand';
+  if(used<=12*60&&S.hintsUsed===0)rank='Keeper of the Lanterns';
+  else if(used<=17*60&&S.hintsUsed<=2)rank='Signal Officer';
+  else if(used<=25*60)rank='Wireless Operator';
+  document.getElementById('stat-rank').textContent=rank;
+  document.getElementById('victory').classList.add('active');
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click',()=>{
+  document.getElementById('intro').classList.remove('active');
+  document.getElementById('hud').classList.add('on');
+  document.getElementById('room-wrap').classList.add('on');
+  document.getElementById('inventory').classList.add('on');
+  addItem('manifest','📜','Manifest');
+  S.timerId=setInterval(tick,1000);
+});
+renderInv();
+</script>
+</body>
+</html>

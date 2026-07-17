@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lantern — Stateroom 77, Level III</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0A1622;
+  --hull:#122436;
+  --brass:#C9A227;
+  --brass-dim:#8a6f1d;
+  --parchment:#E8DCC3;
+  --oxblood:#6E2B2B;
+  --fog:#3E6B6B;
+  --ink:#1a1408;
+  --lamp:#ffd47a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--night);
+  color:var(--parchment);
+  font-family:'Cormorant Garamond',serif;
+  overflow:hidden;
+  user-select:none;
+}
+button{font-family:inherit;cursor:pointer}
+
+.deco-frame{
+  position:fixed;inset:8px;
+  border:1px solid var(--brass-dim);
+  outline:1px solid rgba(201,162,39,.25);
+  outline-offset:4px;
+  pointer-events:none;z-index:50;
+}
+.deco-frame::before,.deco-frame::after{
+  content:"";position:absolute;width:26px;height:26px;
+  border:1px solid var(--brass);
+}
+.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;z-index:40;overflow-y:auto}
+.screen.active{display:flex}
+#intro{background:radial-gradient(ellipse at 50% 120%, #14303f 0%, var(--night) 65%)}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
+  text-transform:uppercase;color:var(--brass);margin-bottom:18px;
+}
+h1{
+  font-family:'Poiret One',cursive;font-weight:400;
+  font-size:clamp(38px,8vw,74px);letter-spacing:.08em;line-height:1.05;
+}
+h1 .num{color:var(--brass)}
+.intro-story{
+  max-width:560px;font-size:clamp(16px,2.3vw,20px);line-height:1.55;
+  margin:24px 0 30px;color:#d8ccb2;font-style:italic;
+}
+.btn{
+  background:none;border:1px solid var(--brass);color:var(--brass);
+  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.3em;
+  text-transform:uppercase;padding:14px 34px;transition:all .25s;
+}
+.btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
+.btn.small{padding:8px 18px;font-size:11px;letter-spacing:.2em}
+
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:none;justify-content:space-between;align-items:center;
+  padding:22px 30px 10px;
+}
+#hud.on{display:flex}
+#timer{
+  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.15em;
+  color:var(--brass);
+}
+#timer.late{color:#c96a4a;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.45}}
+#hud .title-sm{
+  font-family:'Poiret One',cursive;font-size:16px;letter-spacing:.25em;opacity:.7
+}
+#hud .hud-right{display:flex;gap:10px;align-items:center}
+.icon-btn{
+  background:none;border:1px solid rgba(201,162,39,.4);color:var(--brass);
+  width:34px;height:34px;font-size:15px;line-height:1;
+  transition:border-color .2s;
+}
+.icon-btn:hover{border-color:var(--brass)}
+
+#room-wrap{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  padding:64px 16px 96px;
+}
+#room-wrap.on{display:flex}
+#room{
+  width:min(96vw,900px);aspect-ratio:16/10;max-height:calc(100vh - 190px);
+  position:relative;
+}
+#room svg{width:100%;height:100%;display:block}
+.floor{display:none}
+.floor.on{display:block}
+.hotspot{cursor:pointer;transition:filter .2s}
+.hotspot:hover{filter:brightness(1.35) drop-shadow(0 0 6px rgba(201,162,39,.55))}
+
+/* Floor nav */
+#floornav{
+  position:fixed;left:0;right:0;bottom:84px;z-index:31;display:none;
+  justify-content:center;gap:8px;
+}
+#floornav.on{display:flex}
+.fl-btn{
+  background:rgba(18,36,54,.85);border:1px solid rgba(201,162,39,.4);color:var(--parchment);
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;
+  text-transform:uppercase;padding:8px 14px;transition:all .2s;
+}
+.fl-btn.cur{background:var(--brass);color:var(--night);border-color:var(--brass)}
+.fl-btn:disabled{opacity:.35;cursor:not-allowed}
+.fl-btn:not(:disabled):not(.cur):hover{border-color:var(--brass)}
+
+#inventory{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+  justify-content:center;gap:12px;padding:16px 20px 26px;
+  background:linear-gradient(transparent, rgba(6,12,19,.92) 40%);
+  flex-wrap:wrap;
+}
+#inventory.on{display:flex}
+.inv-item{
+  width:56px;height:56px;border:1px solid rgba(201,162,39,.45);
+  background:rgba(18,36,54,.8);display:flex;align-items:center;justify-content:center;
+  font-size:24px;position:relative;transition:border-color .2s, transform .15s;
+}
+.inv-item:hover{border-color:var(--brass);transform:translateY(-2px)}
+.inv-item .tag{
+  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;
+  color:var(--brass);white-space:nowrap;text-transform:uppercase;
+}
+#inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
+
+#modal-veil{
+  position:fixed;inset:0;background:rgba(4,9,15,.78);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(2px);
+}
+#modal-veil.on{display:flex}
+#modal{
+  width:min(92vw,480px);max-height:86vh;overflow-y:auto;
+  background:var(--hull);border:1px solid var(--brass-dim);
+  padding:30px 28px 26px;position:relative;text-align:center;
+}
+#modal::before{
+  content:"";position:absolute;inset:6px;border:1px solid rgba(201,162,39,.2);
+  pointer-events:none;
+}
+#modal h2{
+  font-family:'Poiret One',cursive;font-weight:400;font-size:26px;
+  letter-spacing:.12em;color:var(--brass);margin-bottom:14px;
+}
+#modal .body{font-size:18px;line-height:1.55;color:#dfd4bc;margin-bottom:18px}
+#modal .body em{color:var(--parchment)}
+.paper{
+  background:var(--parchment);color:var(--ink);padding:18px 16px;margin:14px 0;
+  font-size:17px;line-height:1.5;font-style:italic;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);
+  transform:rotate(-.6deg);
+}
+.paper.straight{transform:none}
+.paper .mono{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:13px;letter-spacing:.06em}
+.code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.code-input{
+  width:48px;height:58px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:24px;background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
+  color:var(--parchment);caret-color:var(--brass);text-transform:uppercase;
+}
+.code-input:focus{outline:none;border-color:var(--brass)}
+.feedback{min-height:22px;font-size:15px;font-style:italic;margin-bottom:6px}
+.feedback.bad{color:#c96a4a}
+.feedback.good{color:#8fbf8f}
+.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.hint-link{
+  background:none;border:none;color:var(--fog);font-size:14px;font-style:italic;
+  text-decoration:underline;text-underline-offset:3px;margin-top:14px;
+}
+.hint-link:hover{color:var(--brass)}
+.hint-text{
+  font-size:15px;color:#a8c2c2;font-style:italic;margin-top:10px;line-height:1.5;
+  border-top:1px dashed rgba(62,107,107,.5);padding-top:10px;
+}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* Lamp checklist */
+.checklist{
+  text-align:left;max-width:300px;margin:12px auto;font-size:17px;line-height:2;
+}
+.checklist .ck{color:#8a7f66}
+.checklist .ck.done{color:#8fbf8f}
+.checklist .ck::before{content:"○ ";font-family:'IBM Plex Mono',monospace}
+.checklist .ck.done::before{content:"● "}
+
+/* Signal lamp big */
+.big-lamp{
+  width:80px;height:80px;border-radius:50%;background:#3a3110;margin:6px auto 14px;
+  border:3px solid var(--brass-dim);transition:background .08s, box-shadow .08s;
+}
+.big-lamp.lit{background:var(--lamp);box-shadow:0 0 40px 12px rgba(255,212,122,.65)}
+.flash-count{
+  font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--brass);
+  letter-spacing:.2em;min-height:22px;margin-bottom:8px;
+}
+.ship-line{
+  font-family:'IBM Plex Mono',monospace;font-size:14px;color:#a8c2c2;
+  letter-spacing:.15em;margin:8px 0;min-height:20px;
+}
+
+#victory{background:radial-gradient(ellipse at 50% -30%, #2a4358 0%, var(--night) 70%)}
+.stats{display:flex;gap:36px;margin:26px 0 34px}
+.stat .v{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--brass)}
+.stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;margin-top:6px}
+.series-note{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;opacity:.45;margin-top:26px;
+}
+
+@media (max-width:600px){
+  #hud .title-sm{display:none}
+  .stats{gap:22px}
+  #room-wrap{padding:58px 8px 128px}
+  #floornav{bottom:92px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .big-lamp.lit{box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">The Irish coast · Three nights later · Level III — Finale</div>
+  <h1>THE <span class="num">LANTERN</span></h1>
+  <p class="intro-story">The Meridian made port at dawn, forty-one families safely ashore. But R found you on the quay before you could disappear.<br><br><em>"One more, and I'll never ask again. The Lantern station has gone dark — and another ship runs the route tonight. If the light doesn't answer, she turns back. Into the dark she came from."</em><br><br>She pressed a sealed letter into your hand — <em>"For the Keeper"</em> — and the manifest, for safekeeping.<br><br>The lighthouse door stands open. The keeper is gone. The lamp is cold. The ship is coming.</p>
+  <button class="btn" id="start-btn">Climb the path</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.5;font-style:italic">This time, you're not escaping anything. You're lighting the way out for someone else.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">30:00</div>
+  <div class="title-sm">THE LANTERN</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="Inside the lighthouse">
+    <defs>
+      <radialGradient id="wallgrad" cx="50%" cy="35%" r="80%">
+        <stop offset="0%" stop-color="#233242"/>
+        <stop offset="100%" stop-color="#0e1a26"/>
+      </radialGradient>
+      <radialGradient id="windowfog" cx="50%" cy="50%" r="55%">
+        <stop offset="0%" stop-color="#16303f"/>
+        <stop offset="100%" stop-color="#060f17"/>
+      </radialGradient>
+      <radialGradient id="lampglow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffd47a"/>
+        <stop offset="100%" stop-color="#8a6f1d"/>
+      </radialGradient>
+    </defs>
+
+    <!-- ================= FLOOR 1: KEEPER'S QUARTERS ================= -->
+    <g id="floor-1" class="floor on">
+      <rect x="0" y="0" width="800" height="380" fill="url(#wallgrad)"/>
+      <rect x="0" y="380" width="800" height="120" fill="#2a2014"/>
+      <g opacity=".3" stroke="#403017" stroke-width="2">
+        <line x1="0" y1="410" x2="800" y2="410"/><line x1="0" y1="445" x2="800" y2="445"/>
+      </g>
+      <!-- curved wall hint -->
+      <path d="M0 0 Q60 190 0 380" stroke="#31465c" stroke-width="3" fill="none" opacity=".5"/>
+      <path d="M800 0 Q740 190 800 380" stroke="#31465c" stroke-width="3" fill="none" opacity=".5"/>
+
+      <!-- HEARTH -->
+      <g id="hs-hearth" class="hotspot" tabindex="0" role="button" aria-label="Hearth with warm ashes">
+        <rect x="70" y="200" width="150" height="180" fill="#3b3b42"/>
+        <rect x="90" y="240" width="110" height="140" fill="#14100c"/>
+        <path d="M110 372 q10 -26 26 -10 q6 -20 20 -6 q12 -16 22 4 q10 -10 14 12" fill="#5a3214" opacity=".9"/>
+        <rect x="60" y="190" width="170" height="14" fill="#4a341c"/>
+        <rect x="228" y="300" width="8" height="80" fill="#6b6b73"/>
+        <circle cx="232" cy="298" r="6" fill="#8a8a92"/>
+      </g>
+
+      <!-- MANTLE JAR -->
+      <g id="hs-jar" class="hotspot" tabindex="0" role="button" aria-label="Jar on the mantle">
+        <rect x="150" y="160" width="26" height="32" rx="4" fill="#5b7a86" opacity=".9"/>
+        <rect x="154" y="152" width="18" height="10" fill="#4a341c"/>
+      </g>
+
+      <!-- CALENDAR -->
+      <g id="hs-calendar" class="hotspot" tabindex="0" role="button" aria-label="Wall calendar">
+        <rect x="300" y="110" width="86" height="104" fill="#E8DCC3"/>
+        <rect x="300" y="110" width="86" height="24" fill="#6E2B2B"/>
+        <text x="343" y="127" text-anchor="middle" font-family="monospace" font-size="12" fill="#E8DCC3">JULY</text>
+        <g fill="#1a1408" font-family="monospace" font-size="9">
+          <text x="312" y="152">14 15 16 17</text>
+          <text x="312" y="172">18 19 20 21</text>
+          <text x="312" y="192">22 23 24 25</text>
+        </g>
+        <circle cx="371" cy="169" r="9" fill="none" stroke="#6E2B2B" stroke-width="2"/>
+      </g>
+
+      <!-- TIDE TABLE -->
+      <g id="hs-tide" class="hotspot" tabindex="0" role="button" aria-label="Tide table pinned to the wall">
+        <rect x="420" y="118" width="120" height="90" fill="#E8DCC3" transform="rotate(1.5 480 163)"/>
+        <g stroke="#1a1408" stroke-width="1" opacity=".55">
+          <line x1="432" y1="140" x2="528" y2="142"/><line x1="432" y1="158" x2="528" y2="160"/>
+          <line x1="432" y1="176" x2="528" y2="178"/><line x1="432" y1="194" x2="528" y2="196"/>
+        </g>
+      </g>
+
+      <!-- DRESSER -->
+      <g id="hs-dresser" class="hotspot" tabindex="0" role="button" aria-label="Keeper's dresser">
+        <rect x="580" y="250" width="160" height="130" fill="#3d2a16"/>
+        <rect x="592" y="262" width="136" height="30" fill="#4a341c" stroke="#8a6f1d" stroke-width="1.5"/>
+        <rect x="592" y="300" width="136" height="30" fill="#4a341c" stroke="#8a6f1d" stroke-width="1.5"/>
+        <rect x="592" y="338" width="136" height="30" fill="#4a341c" stroke="#8a6f1d" stroke-width="1.5"/>
+        <circle cx="660" cy="277" r="4" fill="#C9A227"/><circle cx="660" cy="315" r="4" fill="#C9A227"/><circle cx="660" cy="353" r="4" fill="#C9A227"/>
+        <rect x="600" y="216" width="52" height="34" fill="#C9A227"/>
+        <rect x="605" y="221" width="42" height="24" fill="#2a3a48"/>
+      </g>
+
+      <!-- STAIR DOOR -->
+      <g id="hs-stairdoor" class="hotspot" tabindex="0" role="button" aria-label="Iron door to the stairs">
+        <rect x="360" y="240" width="110" height="140" fill="#31363e" stroke="#C9A227" stroke-width="2"/>
+        <g stroke="#4a5058" stroke-width="3"><line x1="370" y1="250" x2="460" y2="250"/><line x1="370" y1="290" x2="460" y2="290"/><line x1="370" y1="330" x2="460" y2="330"/></g>
+        <rect x="392" y="300" width="46" height="18" fill="#20242a" stroke="#C9A227" stroke-width="1.5"/>
+        <text x="415" y="313" text-anchor="middle" font-family="monospace" font-size="10" fill="#C9A227">✳✳✳✳</text>
+      </g>
+    </g>
+
+    <!-- ================= FLOOR 2: WATCH ROOM ================= -->
+    <g id="floor-2" class="floor">
+      <rect x="0" y="0" width="800" height="380" fill="url(#wallgrad)"/>
+      <rect x="0" y="380" width="800" height="120" fill="#2a2014"/>
+      <path d="M0 0 Q90 190 0 380" stroke="#31465c" stroke-width="3" fill="none" opacity=".5"/>
+      <path d="M800 0 Q710 190 800 380" stroke="#31465c" stroke-width="3" fill="none" opacity=".5"/>
+
+      <!-- WINDOW (sea, ship far off) -->
+      <g id="hs-window" class="hotspot" tabindex="0" role="button" aria-label="Watch room window">
+        <rect x="330" y="90" width="140" height="110" rx="60" fill="#C9A227"/>
+        <rect x="338" y="98" width="124" height="94" rx="52" fill="url(#windowfog)"/>
+        <line x1="338" y1="150" x2="462" y2="150" stroke="#0a1420" stroke-width="2" opacity=".7"/>
+        <circle id="ship-dot" cx="430" cy="146" r="2.5" fill="#dfe6ea" opacity=".8"/>
+      </g>
+
+      <!-- LOGBOOK on standing desk -->
+      <g id="hs-log" class="hotspot" tabindex="0" role="button" aria-label="Keeper's logbook">
+        <rect x="96" y="270" width="150" height="12" fill="#4a341c"/>
+        <rect x="106" y="282" width="130" height="98" fill="#3d2a16"/>
+        <rect x="110" y="246" width="120" height="26" fill="#6E2B2B" transform="rotate(-2 170 259)"/>
+        <rect x="116" y="250" width="108" height="18" fill="#E8DCC3" transform="rotate(-2 170 259)"/>
+      </g>
+
+      <!-- OIL CABINET -->
+      <g id="hs-oilcab" class="hotspot" tabindex="0" role="button" aria-label="Oil store cabinet with a letter lock">
+        <rect x="600" y="210" width="130" height="170" fill="#3d2a16" stroke="#C9A227" stroke-width="2"/>
+        <text x="665" y="240" text-anchor="middle" font-family="monospace" font-size="11" fill="#C9A227" opacity=".85">OIL STORE</text>
+        <rect x="632" y="280" width="66" height="20" fill="#20242a" stroke="#C9A227" stroke-width="1.5"/>
+        <text x="665" y="295" text-anchor="middle" font-family="monospace" font-size="11" fill="#C9A227">✳ ✳ ✳ ✳</text>
+      </g>
+
+      <!-- CLOCKWORK / GOVERNOR -->
+      <g id="hs-clockwork" class="hotspot" tabindex="0" role="button" aria-label="Clockwork mechanism and governor">
+        <rect x="380" y="250" width="150" height="130" fill="#2a2018" stroke="#C9A227" stroke-width="2"/>
+        <circle cx="425" cy="300" r="26" fill="none" stroke="#8a6f1d" stroke-width="4"/>
+        <circle cx="470" cy="330" r="16" fill="none" stroke="#8a6f1d" stroke-width="4"/>
+        <g stroke="#8a6f1d" stroke-width="2">
+          <line x1="425" y1="274" x2="425" y2="266"/><line x1="425" y1="334" x2="425" y2="326"/>
+          <line x1="399" y1="300" x2="391" y2="300"/><line x1="459" y1="300" x2="451" y2="300"/>
+        </g>
+        <rect x="486" y="262" width="34" height="22" fill="#20242a" stroke="#C9A227" stroke-width="1.5"/>
+        <text x="503" y="278" text-anchor="middle" font-family="monospace" font-size="11" fill="#C9A227">--</text>
+        <rect x="404" y="358" width="100" height="8" fill="#4a341c"/>
+      </g>
+
+      <!-- CHART SCRAP pinned -->
+      <g id="hs-scrap" class="hotspot" tabindex="0" role="button" aria-label="Chart scrap pinned by the window">
+        <rect x="520" y="110" width="90" height="66" fill="#E8DCC3" transform="rotate(-3 565 143)"/>
+        <path d="M530 150 q20 -10 34 0 t34 0" stroke="#6E2B2B" stroke-width="1.5" fill="none" transform="rotate(-3 565 143)"/>
+        <circle cx="546" cy="136" r="2" fill="#1a1408"/><circle cx="572" cy="132" r="2" fill="#1a1408"/><circle cx="596" cy="136" r="2" fill="#1a1408"/>
+      </g>
+    </g>
+
+    <!-- ================= FLOOR 3: LAMP ROOM ================= -->
+    <g id="floor-3" class="floor">
+      <rect x="0" y="0" width="800" height="380" fill="#091420"/>
+      <!-- glass panels all around -->
+      <g stroke="#31465c" stroke-width="3" opacity=".8">
+        <line x1="100" y1="0" x2="100" y2="380"/><line x1="240" y1="0" x2="240" y2="380"/>
+        <line x1="560" y1="0" x2="560" y2="380"/><line x1="700" y1="0" x2="700" y2="380"/>
+        <line x1="0" y1="70" x2="800" y2="70"/>
+      </g>
+      <rect x="0" y="0" width="800" height="380" fill="url(#windowfog)" opacity=".5"/>
+      <!-- horizon + ship -->
+      <line x1="0" y1="210" x2="800" y2="210" stroke="#0a1420" stroke-width="2" opacity=".8"/>
+      <circle id="ship-dot-3" cx="640" cy="204" r="3" fill="#dfe6ea" opacity=".9"/>
+      <rect x="0" y="380" width="800" height="120" fill="#2a2014"/>
+
+      <!-- THE LAMP -->
+      <g id="hs-lamp" class="hotspot" tabindex="0" role="button" aria-label="The great lamp">
+        <rect x="356" y="330" width="88" height="60" fill="#4a341c"/>
+        <rect x="346" y="322" width="108" height="12" fill="#C9A227"/>
+        <path d="M366 322 L376 220 h48 L434 322 z" fill="#20303c" stroke="#C9A227" stroke-width="2" opacity=".95"/>
+        <circle id="lamp-core" cx="400" cy="268" r="24" fill="#31363e" stroke="#8a6f1d" stroke-width="2"/>
+        <g stroke="#C9A227" stroke-width="1.5" opacity=".7">
+          <path d="M376 240 h48"/><path d="M372 262 h56"/><path d="M372 284 h56"/><path d="M376 306 h48"/>
+        </g>
+      </g>
+
+      <!-- CURTAIN LEVER -->
+      <g id="hs-lever" class="hotspot" tabindex="0" role="button" aria-label="Signal curtain lever">
+        <rect x="560" y="290" width="14" height="90" fill="#4a5058"/>
+        <rect x="540" y="282" width="54" height="14" fill="#31363e" stroke="#C9A227" stroke-width="1.5"/>
+        <line x1="567" y1="290" x2="596" y2="240" stroke="#C9A227" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="598" cy="236" r="8" fill="#C9A227"/>
+      </g>
+
+      <!-- KEEPER'S NOTE nailed to rail -->
+      <g id="hs-lastnote" class="hotspot" tabindex="0" role="button" aria-label="Note nailed to the rail">
+        <rect x="200" y="300" width="70" height="52" fill="#E8DCC3" transform="rotate(-4 235 326)"/>
+        <line x1="210" y1="316" x2="258" y2="320" stroke="#1a1408" stroke-width="1" opacity=".5"/>
+        <line x1="210" y1="328" x2="258" y2="332" stroke="#1a1408" stroke-width="1" opacity=".5"/>
+        <circle cx="235" cy="303" r="2.5" fill="#6b6b73"/>
+      </g>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- FLOOR NAV -->
+<div id="floornav">
+  <button class="fl-btn cur" id="fl1">Quarters</button>
+  <button class="fl-btn" id="fl2" disabled>Watch room</button>
+  <button class="fl-btn" id="fl3" disabled>Lamp room</button>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">First light, on the headland</div>
+  <h1>KEEPER OF THE <span class="num">LIGHT</span></h1>
+  <p class="intro-story" id="victory-story"></p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <button class="btn" onclick="location.reload()">Play Again</button>
+  <div class="series-note">— End of the Meridian Trilogy —</div>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const S = {
+  t:30*60, timerId:null, overtime:false, hintsUsed:0,
+  floor:1,
+  inv:{},
+  flags:{
+    hearth:false, jar:false, dresser1:false, dresser2:false, letterOpen:false,
+    stair:false,            // 2117
+    oil:false,              // HOME
+    governor:false,         // 41
+    wound:false,
+    lampOiled:false, lampWicked:false, lit:false,
+    sawLog:false, shipAsked:false,
+  },
+  hintLevel:{}, soundOn:false, audioCtx:null, noiseGain:null,
+};
+
+/* ================= TIMER + atmosphere beats ================= */
+function fmt(t){const neg=t<0;t=Math.abs(t);const m=Math.floor(t/60),s=t%60;return (neg?'+':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+const BEATS={ [20*60]:'Far out on the water, a smudge of smoke. She\'s coming.', [10*60]:'The ship\'s running lights are visible now. She\'ll pass the headland soon.', [4*60]:'She\'s close. If the Lantern stays dark much longer, she\'ll turn.' };
+function tick(){
+  S.t--;
+  const el=document.getElementById('timer');
+  el.textContent=fmt(S.t);
+  if(BEATS[S.t]&&!veil.classList.contains('on')){
+    openModal({title:'From the Window',body:'<em>'+BEATS[S.t]+'</em>',actions:[closeBtn('Back to work')]});
+  }
+  if(S.t<0){el.classList.add('late');S.overtime=true;}
+  else if(S.t<=180){el.classList.add('late');}
+}
+
+/* ================= SOUND ================= */
+function ensureAudio(){
+  if(S.audioCtx)return;
+  const C=new (window.AudioContext||window.webkitAudioContext)();
+  const bufferSize=2*C.sampleRate;
+  const buffer=C.createBuffer(1,bufferSize,C.sampleRate);
+  const data=buffer.getChannelData(0);
+  let last=0;
+  for(let i=0;i<bufferSize;i++){const w=Math.random()*2-1;data[i]=(last+.02*w)/1.02;last=data[i];data[i]*=3.2;}
+  const src=C.createBufferSource();src.buffer=buffer;src.loop=true;
+  const filt=C.createBiquadFilter();filt.type='lowpass';filt.frequency.value=300;
+  const gain=C.createGain();gain.gain.value=0;
+  src.connect(filt).connect(gain).connect(C.destination);src.start();
+  S.audioCtx=C;S.noiseGain=gain;
+}
+function toggleSound(){
+  ensureAudio();
+  S.soundOn=!S.soundOn;
+  S.noiseGain.gain.value=S.soundOn?0.06:0;
+  document.getElementById('sound-btn').style.opacity=S.soundOn?1:.4;
+}
+document.getElementById('sound-btn').addEventListener('click',toggleSound);
+document.getElementById('sound-btn').style.opacity=.4;
+
+/* ================= INVENTORY ================= */
+function addItem(key,icon,label){
+  if(S.inv[key])return;
+  S.inv[key]={icon,label};
+  renderInv();
+}
+function removeItem(key){delete S.inv[key];renderInv();}
+function renderInv(){
+  const inv=document.getElementById('inventory');
+  inv.innerHTML='';
+  const keys=Object.keys(S.inv);
+  if(!keys.length){inv.innerHTML='<span id="inv-empty">Your pockets are empty.</span>';return;}
+  keys.forEach(k=>{
+    const it=S.inv[k];
+    const d=document.createElement('button');
+    d.className='inv-item';d.innerHTML=it.icon+'<span class="tag">'+it.label+'</span>';
+    d.setAttribute('aria-label',it.label);
+    d.addEventListener('click',()=>inspectItem(k));
+    inv.appendChild(d);
+  });
+}
+function inspectItem(k){
+  if(k==='letter'){
+    if(!S.flags.letterOpen){
+      openModal({
+        title:'R\'s Letter',
+        body:'Sealed with the lantern-and-flags crest. Addressed simply: <em>"For the Keeper."</em> The keeper isn\'t here. R said the light falls to whoever holds this.',
+        actions:[(()=>{const b=document.createElement('button');b.className='btn small';b.textContent='Break the seal';
+          b.addEventListener('click',()=>{
+            S.flags.letterOpen=true;
+            openModal({
+              title:'R\'s Letter, Opened',
+              body:'',
+              extra:`<div class="paper">"Emmet —<br><br>If a stranger hands you this, trust them; they carried the manifest and lit nothing on fire doing it. If instead a stranger <em>reads</em> this because you've gone — brother, I told you not to play the hero.<br><br>To whoever keeps the light tonight: the log will teach you the lamp. Mind Emmet's rules; he has one for everything. And when she passes, send them where we always send them.<br><br><span class="mono">Send them HOME. — R"</span></div>`,
+              actions:[closeBtn('Fold it away')]
+            });
+          });return b;})(),closeBtn()]
+      });
+    } else {
+      openModal({title:'R\'s Letter',body:'<em>"The log will teach you the lamp. Send them HOME."</em><br><br>Emmet — the keeper — is R\'s brother.',actions:[closeBtn()]});
+    }
+    return;
+  }
+  if(k==='manifest') openModal({title:'The Manifest',body:'The ledger you carried across the sea. On its cover, in R\'s hand: <span style="font-family:monospace">"VOYAGE ONE — 41 FAMILIES — DELIVERED."</span><br><br>Forty-one. Emmet would call that <em>the year\'s count</em>.',actions:[closeBtn()]});
+  if(k==='wick') openModal({title:'Spare Wick',body:'A fresh lamp wick, tightly braided. It wants trimming and a burner to sit in.',actions:[closeBtn()]});
+  if(k==='oilcan') openModal({title:'Oil Can',body:'Heavy with paraffin. Enough to burn until well past dawn.',actions:[closeBtn()]});
+  if(k==='match') openModal({title:'The Last Match',body:'One match. The jar held exactly one.<br><br><em>Don\'t strike it until everything else is ready.</em>',actions:[closeBtn()]});
+  if(k==='poker') openModal({title:'Fire Poker',body:'Iron, ash-dusted. Good for stirring what someone wanted burned.',actions:[closeBtn()]});
+}
+
+/* ================= MODAL ================= */
+const veil=document.getElementById('modal-veil');
+function openModal({title,body,extra='',actions=[],puzzleId=null,onOpen=null}){
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-body').innerHTML=body;
+  document.getElementById('m-extra').innerHTML=extra;
+  const fb=document.getElementById('m-feedback');fb.textContent='';fb.className='feedback';
+  const act=document.getElementById('m-actions');act.innerHTML='';
+  actions.forEach(a=>act.appendChild(a));
+  renderHints(puzzleId);
+  veil.classList.add('on');
+  if(onOpen)onOpen();
+}
+function closeModal(){veil.classList.remove('on');}
+veil.addEventListener('click',e=>{if(e.target===veil)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function closeBtn(txt='Step back'){const b=document.createElement('button');b.className='btn small';b.textContent=txt;b.addEventListener('click',closeModal);return b;}
+function feedback(msg,ok){const fb=document.getElementById('m-feedback');fb.textContent=msg;fb.className='feedback '+(ok?'good':'bad');if(!ok){document.getElementById('modal').classList.add('shake');setTimeout(()=>document.getElementById('modal').classList.remove('shake'),380);}}
+
+/* ================= HINTS (Emmet's almanac) ================= */
+const HINTS={
+  stair:[
+    'Emmet\'s almanac, dog-eared on the shelf: <em>"A keeper locks nothing to memory. He locks it to the sea — the sea never forgets its schedule."</em>',
+    '<em>"The scorched note said high water, tonight. The calendar knows what tonight is; the tide table knows the rest."</em>',
+    '<em>"July 21 is circled. The table says high water at 21:17. Try 2117."</em>'
+  ],
+  oil:[
+    '<em>"Emmet labels his locks with riddles only family would smile at. R\'s letter used the word he\'d pick."</em>',
+    '<em>"Where do they send every soul who passes this light? The letter says it plainly, in capitals."</em>',
+    '<em>"The word is HOME."</em>'
+  ],
+  governor:[
+    '<em>"Emmet\'s rule: the governor takes the year\'s count — no more, or she spins wild."</em>',
+    '<em>"The year\'s count isn\'t in this room. It\'s written on something you\'ve been carrying since Barcelona."</em>',
+    '<em>"The manifest cover reads 41 families. Set the governor to 41."</em>'
+  ],
+  lamp:[
+    '<em>"The log gives the order like a prayer: oil first, then wick, then wind her, then flame."</em>',
+    '<em>"Missing something? Oil is in the store cabinet, the wick in the dresser, the match in the mantle jar — and the clockwork is a floor below the lamp."</em>',
+    '<em>"You have one match. The lamp will tell you when everything else is ready — every circle filled."</em>'
+  ],
+  signal:[
+    '<em>"Three flashes from a ship is a question: \'which station are you?\' The log\'s last page spells it out."</em>',
+    '<em>"You answer with your own count. Every station has one — the chart scrap by the window lists them."</em>',
+    '<em>"This is the Lantern. The Lantern answers with 2. Pull the lever exactly twice, then hold steady."</em>'
+  ]
+};
+function renderHints(pid){
+  const z=document.getElementById('m-hintzone');z.innerHTML='';
+  if(!pid||!HINTS[pid])return;
+  const lvl=S.hintLevel[pid]||0;
+  for(let i=0;i<lvl;i++){const p=document.createElement('div');p.className='hint-text';p.innerHTML=HINTS[pid][i];z.appendChild(p);}
+  if(lvl<3){
+    const b=document.createElement('button');b.className='hint-link';
+    b.textContent=lvl===0?'Consult Emmet\'s almanac':'Read further';
+    b.addEventListener('click',()=>{S.hintLevel[pid]=lvl+1;S.hintsUsed++;renderHints(pid);});
+    z.appendChild(b);
+  }
+}
+
+/* ================= INPUT HELPERS ================= */
+function codeRow(n,type='num'){
+  const wrap=document.createElement('div');wrap.className='code-row';
+  for(let i=0;i<n;i++){
+    const inp=document.createElement('input');
+    inp.className='code-input';inp.maxLength=1;
+    inp.inputMode=type==='num'?'numeric':'text';
+    inp.addEventListener('input',()=>{inp.value=inp.value.replace(type==='num'?/[^0-9]/g:/[^a-zA-Z]/g,'');if(inp.value&&inp.nextElementSibling)inp.nextElementSibling.focus();});
+    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&inp.previousElementSibling)inp.previousElementSibling.focus();});
+    wrap.appendChild(inp);
+  }
+  return wrap;
+}
+function readCode(wrap){return [...wrap.querySelectorAll('input')].map(i=>i.value).join('').toUpperCase();}
+
+/* ================= FLOORS ================= */
+function goFloor(n){
+  S.floor=n;
+  [1,2,3].forEach(i=>{
+    document.getElementById('floor-'+i).classList.toggle('on',i===n);
+    document.getElementById('fl'+i).classList.toggle('cur',i===n);
+  });
+}
+document.getElementById('fl1').addEventListener('click',()=>goFloor(1));
+document.getElementById('fl2').addEventListener('click',()=>goFloor(2));
+document.getElementById('fl3').addEventListener('click',()=>goFloor(3));
+function unlockUpper(){
+  document.getElementById('fl2').disabled=false;
+  document.getElementById('fl3').disabled=false;
+}
+
+/* ================= HOTSPOTS ================= */
+function bindHotspot(id,fn){
+  const el=document.getElementById(id);
+  el.addEventListener('click',fn);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});
+}
+
+/* ---------- FLOOR 1 ---------- */
+bindHotspot('hs-hearth',()=>{
+  if(!S.flags.hearth){
+    if(!S.inv.poker){
+      addItem('poker','⚒','Poker');
+      openModal({
+        title:'The Hearth',
+        body:'The ashes are still warm — the keeper left within the hour, and in a hurry. Something papery curls at the edge of the grate, half-burned. A fire poker leans against the stone; you take it.',
+        actions:[(()=>{const b=document.createElement('button');b.className='btn small';b.textContent='Rake the ashes';b.addEventListener('click',rakeAshes);return b;})(),closeBtn()]
+      });
+    }
+  } else {
+    openModal({title:'The Hearth',body:'Cold ash and the ghost of a message. You have what survived.',actions:[closeBtn()]});
+  }
+});
+function rakeAshes(){
+  S.flags.hearth=true;
+  openModal({
+    title:'From the Ashes',
+    body:'The poker turns up a scorched corner of notepaper — the rest is gone. Emmet burned it before he ran:',
+    extra:'<div class="paper">"…if I am followed, the light must not lead them. I\'ve locked the stair. <span class="mono">The stair answers to the sea — high water, tonight.</span> R\'s courier will underst—"</div><div style="font-style:italic;opacity:.75">He knew you were coming.</div>',
+    actions:[closeBtn()]
+  });
+}
+bindHotspot('hs-jar',()=>{
+  if(!S.flags.jar){
+    S.flags.jar=true;
+    addItem('match','🕯','Last match');
+    openModal({
+      title:'The Mantle Jar',
+      body:'A blue glass jar labeled <em>DRY</em> in the keeper\'s hand. Inside: a single match.<br><br>One. Exactly one.',
+      actions:[closeBtn('Take it, carefully')]
+    });
+  } else {
+    openModal({title:'The Mantle Jar',body:'Empty glass. The match is in your pocket, and heavier than it should be.',actions:[closeBtn()]});
+  }
+});
+bindHotspot('hs-calendar',()=>{
+  openModal({
+    title:'The Calendar',
+    body:'July, 1934. One date is circled in red — <em>tonight</em>:',
+    extra:'<div class="paper straight"><span class="mono" style="font-size:22px">JULY 21</span><br><em>penciled beneath:</em> "she runs the route"</div>',
+    actions:[closeBtn()]
+  });
+});
+bindHotspot('hs-tide',()=>{
+  openModal({
+    title:'The Tide Table',
+    body:'Pinned by the door, salt-curled. High water at the headland:',
+    extra:`<div class="paper straight"><span class="mono">JULY 20 ..... HIGH WATER 20:31<br>JULY 21 ..... HIGH WATER 21:17<br>JULY 22 ..... HIGH WATER 22:03</span></div>`,
+    actions:[closeBtn()]
+  });
+});
+bindHotspot('hs-dresser',()=>{
+  if(!S.flags.dresser1){
+    S.flags.dresser1=true;
+    addItem('wick','〰','Spare wick');
+    openModal({
+      title:'The Dresser',
+      body:'Top drawer: folded shirts, a tin of tobacco, and a fresh <em>spare wick</em> for the great lamp. On the dresser, a framed photograph — a man and a woman laughing on a pier you\'d swear you\'ve seen before.<br><br><em>Barcelona. The postcard. "My darling — we boarded July 14th… — R."</em><br><br>She wrote it to him. Stateroom 77 was theirs.',
+      actions:[closeBtn('Take the wick')]
+    });
+  } else {
+    openModal({title:'The Dresser',body:'The photograph again. R and Emmet — sister and brother — on the Barcelona pier, before any of this began.',actions:[closeBtn()]});
+  }
+});
+bindHotspot('hs-stairdoor',()=>{
+  if(S.flags.stair){goFloor(2);return;}
+  const row=codeRow(4);
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Try the lock';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='2117'){
+      S.flags.stair=true;
+      unlockUpper();
+      feedback('The iron bolt slides back with a boom that echoes up the tower.',true);
+      setTimeout(()=>{closeModal();goFloor(2);
+        openModal({title:'The Watch Room',body:'A hundred and forty spiral steps later. This is where the keeper stood his nights: the logbook, the clockwork that turns the great lens, the oil store — and through the window, far out on the black water, <em>a smudge of light that wasn\'t there before.</em>',actions:[closeBtn()]});
+      },900);
+    } else feedback('The bolt holds. The sea keeps a different schedule.',false);
+  });
+  openModal({
+    title:'The Stair Door',
+    body:'Iron, and locked with a four-digit mechanism. Emmet locked the tower behind him — but he left the answer for someone who\'d bother to look.',
+    actions:[submit,closeBtn()],
+    puzzleId:'stair',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* ---------- FLOOR 2 ---------- */
+bindHotspot('hs-window',()=>{
+  openModal({
+    title:'The Watch Window',
+    body:S.flags.lit
+      ?'The great lamp\'s glow floods the glass from above. On the water, the ship holds her course — waiting for your answer.'
+      :'The sea is black silk. That point of light on the horizon is a ship\'s masthead lamp — running the route, watching this headland, seeing <em>nothing</em>.',
+    actions:[closeBtn()]
+  });
+});
+bindHotspot('hs-log',()=>{
+  S.flags.sawLog=true;
+  openModal({
+    title:'The Keeper\'s Log',
+    body:'Emmet\'s hand — steadier than his sister\'s, but unmistakably family:',
+    extra:`<div class="paper straight"><span class="mono">THE LAMP, FOR WHOEVER MUST:</span><br>
+"Oil first — she drinks before she works.<br>
+Wick second — trimmed and seated.<br>
+Wind her third — <span class="mono">the governor takes the year's count</span>, no more, or she spins wild.<br>
+Flame last. Never flame first."</div>
+<div class="paper straight"><span class="mono">LAST PAGE, UNDERLINED TWICE:</span><br>
+"A ship that shows <span class="mono">THREE</span> flashes is asking a question: <em>which station are you?</em> You answer with your own count, and nothing else. A wrong count is worse than darkness."</div>`,
+    actions:[closeBtn()],
+    puzzleId:'lamp'
+  });
+});
+bindHotspot('hs-scrap',()=>{
+  openModal({
+    title:'A Familiar Scrap',
+    body:'Torn from a route chart — the same chart you read in the Meridian\'s chart room. Three stations, three counts:',
+    extra:`<div class="paper straight"><span class="mono">THE LANTERN ..... answers 2<br>THE TWINS ....... answers 4<br>THE SPINDRIFT ... answers 1</span><br><em>circled in pencil: "THE LANTERN — you are here"</em></div>`,
+    actions:[closeBtn()]
+  });
+});
+bindHotspot('hs-oilcab',()=>{
+  if(S.flags.oil){
+    openModal({title:'The Oil Store',body:'Racks of empty cans. You took the full one.',actions:[closeBtn()]});
+    return;
+  }
+  const row=codeRow(4,'alpha');
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Try the letters';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='HOME'){
+      S.flags.oil=true;
+      addItem('oilcan','🛢','Oil can');
+      feedback('The lock springs. The smell of paraffin rolls out.',true);
+      setTimeout(()=>openModal({
+        title:'The Oil Store',
+        body:'Full cans in ranks like soldiers. You heft one — enough to burn until well past dawn.<br><br>Painted inside the cabinet door, half-joking, wholly true: <em>"Every drop of this is somebody\'s way home."</em>',
+        actions:[closeBtn('Take a can')]
+      }),700);
+    } else feedback('The letters spin and settle wrong.',false);
+  });
+  openModal({
+    title:'The Oil Store',
+    body:'Locked with four brass letter-wheels. Scratched above the lock, in Emmet\'s hand: <em>"the word my sister always ends with."</em>',
+    actions:[submit,closeBtn()],
+    puzzleId:'oil',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+bindHotspot('hs-clockwork',()=>{
+  if(S.flags.wound){
+    openModal({title:'The Clockwork',body:'Wound tight and ticking like a patient heart. The great lens above will turn the moment there\'s a flame to carry.',actions:[closeBtn()]});
+    return;
+  }
+  if(!S.flags.governor){
+    const row=codeRow(2);
+    const submit=document.createElement('button');submit.className='btn small';submit.textContent='Set the governor';
+    submit.addEventListener('click',()=>{
+      if(readCode(row)==='41'){
+        S.flags.governor=true;
+        feedback('The governor seats with a click. She\'s ready to be wound.',true);
+        setTimeout(()=>showWind(),800);
+      } else feedback('The mechanism chatters in protest. Not that count.',false);
+    });
+    openModal({
+      title:'The Clockwork',
+      body:'The machine that turns the great lens. Before winding, the <em>governor</em> must be set — a two-digit counter, currently blank. The log warned: <em>the year\'s count, no more.</em>',
+      actions:[submit,closeBtn()],
+      puzzleId:'governor',
+      onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+    });
+  } else showWind();
+});
+function showWind(){
+  const b=document.createElement('button');b.className='btn small';b.textContent='Wind the mechanism';
+  b.addEventListener('click',()=>{
+    S.flags.wound=true;
+    feedback('You crank until your shoulders burn. The weights rise; the tower hums.',true);
+    setTimeout(closeModal,1100);
+  });
+  openModal({
+    title:'The Clockwork',
+    body:'Governor set to <em>41</em> — one for every family the Meridian carried. Now the winding crank waits.',
+    actions:[b,closeBtn()]
+  });
+}
+
+/* ---------- FLOOR 3 ---------- */
+bindHotspot('hs-lastnote',()=>{
+  openModal({
+    title:'Nailed to the Rail',
+    body:'Emmet\'s final note, written fast:',
+    extra:'<div class="paper">"They came asking questions in the village. I\'ll lead them down the south road — a keeper walking away from his light is a fine lure. I\'ll be back by first light.<br><br>Whoever you are: <span class="mono">the light is yours tonight.</span> Don\'t let her pass dark. — E.M."</div>',
+    actions:[closeBtn()]
+  });
+});
+bindHotspot('hs-lamp',()=>{
+  if(S.flags.lit){
+    openModal({title:'The Great Lamp',body:'Burning steady and slow, the lens wheeling its beam across the water. Now — the ship. The lever works the signal curtain.',actions:[closeBtn()]});
+    return;
+  }
+  const ck=(label,done)=>`<div class="ck${done?' done':''}">${label}</div>`;
+  const ready=S.flags.lampOiled&&S.flags.lampWicked&&S.flags.wound;
+  let extra='<div class="checklist">'
+    +ck('Oil the reservoir',S.flags.lampOiled)
+    +ck('Seat and trim the wick',S.flags.lampWicked)
+    +ck('Wind the clockwork (below)',S.flags.wound)
+    +ck('Flame — last, and only last',false)
+    +'</div>';
+  const actions=[];
+  if(!S.flags.lampOiled&&S.inv.oilcan){
+    const b=document.createElement('button');b.className='btn small';b.textContent='Pour the oil';
+    b.addEventListener('click',()=>{S.flags.lampOiled=true;removeItem('oilcan');feedback('The reservoir gurgles full.',true);setTimeout(()=>document.getElementById('hs-lamp').dispatchEvent(new Event('click')),700);});
+    actions.push(b);
+  }
+  if(!S.flags.lampWicked&&S.inv.wick){
+    const b=document.createElement('button');b.className='btn small';b.textContent='Seat the wick';
+    b.addEventListener('click',()=>{S.flags.lampWicked=true;removeItem('wick');feedback('Trimmed square and seated true.',true);setTimeout(()=>document.getElementById('hs-lamp').dispatchEvent(new Event('click')),700);});
+    actions.push(b);
+  }
+  if(S.inv.match){
+    const b=document.createElement('button');b.className='btn small';b.textContent='Strike the match';
+    b.addEventListener('click',()=>{
+      if(!ready){
+        feedback('Your thumb stops on the striker. One match. The log said: flame last, and only last.',false);
+        return;
+      }
+      S.flags.lit=true;removeItem('match');
+      document.getElementById('lamp-core').setAttribute('fill','url(#lampglow)');
+      feedback('The wick catches. The lens gathers the little flame and hurls it twenty miles.',true);
+      setTimeout(()=>openModal({
+        title:'Light',
+        body:'The lamp room fills with gold. Below, the clockwork engages; the great lens begins its slow, ancient turn. Across the water, the beam finds the ship —<br><br>— and the ship answers. Her masthead lamp flashes: <em>once. twice. three times.</em><br><br>Three flashes. <em>A question.</em>',
+        actions:[closeBtn('To the signal lever')]
+      }),1100);
+    });
+    actions.push(b);
+  }
+  openModal({
+    title:'The Great Lamp',
+    body:'Cold, dark, and enormous — a first-order lens around a burner the size of your fist. Emmet\'s order of operations, brass-plated beside the burner:',
+    extra,
+    actions:[...actions,closeBtn()],
+    puzzleId:'lamp'
+  });
+});
+
+/* --- The final signal: answer 3-flash question with 2 flashes --- */
+bindHotspot('hs-lever',()=>{
+  if(!S.flags.lit){
+    openModal({title:'The Signal Curtain',body:'A lever that drops and lifts a blackout curtain around the lens — the lamp\'s voice. But a curtain has nothing to say around a cold lamp.',actions:[closeBtn()],puzzleId:'signal'});
+    return;
+  }
+  let flashes=0;
+  const lamp=document.createElement('div');lamp.className='big-lamp lit';
+  const count=document.createElement('div');count.className='flash-count';count.textContent='FLASHES SENT: 0';
+  const shipline=document.createElement('div');shipline.className='ship-line';shipline.textContent='SHIP ASKS: ✦ ✦ ✦  (which station are you?)';
+  const pull=document.createElement('button');pull.className='btn small';pull.textContent='Pull — one flash';
+  pull.addEventListener('click',()=>{
+    flashes++;
+    lamp.classList.remove('lit');
+    setTimeout(()=>lamp.classList.add('lit'),260);
+    count.textContent='FLASHES SENT: '+flashes;
+  });
+  const hold=document.createElement('button');hold.className='btn small';hold.textContent='Hold steady (send)';
+  hold.addEventListener('click',()=>{
+    if(flashes===2){win();}
+    else{
+      feedback(flashes<2?'The ship waits… then repeats her question. Three flashes. She wants your count.':'The ship goes dark a long moment — then, mercifully, asks again. A wrong count is worse than darkness. Start over.',false);
+      flashes=0;count.textContent='FLASHES SENT: 0';
+    }
+  });
+  openModal({
+    title:'The Signal Curtain',
+    body:'The lever drops the curtain — one pull, one flash. Out on the water she asked her question: <em>three flashes. Which station are you?</em>',
+    actions:[pull,hold,closeBtn()],
+    puzzleId:'signal',
+    onOpen:()=>{
+      const ex=document.getElementById('m-extra');
+      ex.appendChild(lamp);ex.appendChild(count);ex.appendChild(shipline);
+    }
+  });
+});
+
+/* ================= WIN ================= */
+function win(){
+  closeModal();
+  clearInterval(S.timerId);
+  document.getElementById('hud').classList.remove('on');
+  document.getElementById('room-wrap').classList.remove('on');
+  document.getElementById('inventory').classList.remove('on');
+  document.getElementById('floornav').classList.remove('on');
+  const used=30*60-S.t;
+  document.getElementById('stat-time').textContent=fmt(used);
+  document.getElementById('stat-hints').textContent=S.hintsUsed;
+  let rank='Lamp Trimmer';
+  if(used<=15*60&&S.hintsUsed===0)rank='Keeper of Keepers';
+  else if(used<=21*60&&S.hintsUsed<=2)rank='Principal Keeper';
+  else if(used<=30*60)rank='Assistant Keeper';
+  document.getElementById('stat-rank').textContent=rank;
+  document.getElementById('victory-story').innerHTML=
+    'Two flashes. A held breath.<br><br>Then the ship turns her bow toward the strait and holds her course — past the headland, past the dark, carrying her sleeping families on toward morning. Twice more in the night she signals; twice the Lantern answers true.<br><br>Emmet comes up the south road at first light, mud to the knees and grinning. He looks at the burning lamp, then at you, then at his sister\'s letter in your hand.<br><br><em>"Stateroom 77, was it? She always did pick the stubborn ones."</em><br><br>On the water, far out, a masthead lamp blinks a last message in the language you learned aboard the Meridian. You don\'t need the card anymore:<br><br><span style="font-family:monospace;letter-spacing:.25em;color:var(--brass)">.... --- -- .</span>';
+  document.getElementById('victory').classList.add('active');
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click',()=>{
+  document.getElementById('intro').classList.remove('active');
+  document.getElementById('hud').classList.add('on');
+  document.getElementById('room-wrap').classList.add('on');
+  document.getElementById('inventory').classList.add('on');
+  document.getElementById('floornav').classList.add('on');
+  addItem('letter','✉','R\'s letter');
+  addItem('manifest','📜','Manifest');
+  S.timerId=setInterval(tick,1000);
+});
+renderInv();
+</script>
+</body>
+</html>

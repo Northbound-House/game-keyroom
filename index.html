@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Key Room — Escape Adventures</title>
+<meta name="description" content="Browser escape rooms by seeking77degrees. Solve one to earn the key to the next.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0A1622;
+  --hull:#122436;
+  --brass:#C9A227;
+  --brass-dim:#8a6f1d;
+  --parchment:#E8DCC3;
+  --fog:#3E6B6B;
+  --rust:#c96a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--night);
+  background-image:radial-gradient(ellipse at 50% -10%, #16334a 0%, var(--night) 60%);
+  color:var(--parchment);
+  font-family:'Cormorant Garamond',serif;
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit}
+
+.deco-frame{
+  position:fixed;inset:8px;
+  border:1px solid var(--brass-dim);
+  outline:1px solid rgba(201,162,39,.25);
+  outline-offset:4px;
+  pointer-events:none;z-index:50;
+}
+.deco-frame::before,.deco-frame::after{
+  content:"";position:absolute;width:26px;height:26px;
+  border:1px solid var(--brass);
+}
+.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+.wrap{max-width:760px;margin:0 auto;padding:64px 26px 90px}
+
+header{text-align:center;margin-bottom:56px}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
+  text-transform:uppercase;color:var(--brass);margin-bottom:16px;
+}
+h1{
+  font-family:'Poiret One',cursive;font-weight:400;
+  font-size:clamp(44px,10vw,84px);letter-spacing:.1em;line-height:1;
+}
+h1 .accent{color:var(--brass)}
+.tagline{
+  font-style:italic;font-size:clamp(16px,2.4vw,19px);color:#c9bda2;
+  margin-top:16px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.5;
+}
+
+/* Series card */
+.series{
+  border:1px solid var(--brass-dim);position:relative;
+  background:rgba(18,36,54,.55);
+  margin-bottom:34px;
+}
+.series::before{
+  content:"";position:absolute;inset:6px;border:1px solid rgba(201,162,39,.18);
+  pointer-events:none;
+}
+.series-head{
+  padding:28px 28px 18px;text-align:center;
+  border-bottom:1px solid rgba(201,162,39,.25);
+}
+.series-head .eyebrow{margin-bottom:10px}
+.series-head h2{
+  font-family:'Poiret One',cursive;font-weight:400;font-size:clamp(26px,5vw,36px);
+  letter-spacing:.12em;
+}
+.series-head p{
+  font-style:italic;color:#c0b499;font-size:16px;margin-top:10px;line-height:1.5;
+  max-width:520px;margin-left:auto;margin-right:auto;
+}
+
+.episode{
+  display:flex;align-items:center;gap:18px;
+  padding:22px 28px;
+  border-bottom:1px solid rgba(201,162,39,.15);
+}
+.episode:last-child{border-bottom:none}
+.ep-num{
+  font-family:'Poiret One',cursive;font-size:34px;color:var(--brass);
+  width:44px;flex-shrink:0;text-align:center;
+}
+.ep-info{flex:1;min-width:0}
+.ep-title{
+  font-family:'Poiret One',cursive;font-size:21px;letter-spacing:.08em;
+}
+.ep-sub{
+  font-style:italic;font-size:15px;color:#b3a88e;margin-top:3px;line-height:1.45;
+}
+.ep-meta{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--fog);margin-top:7px;
+}
+.ep-action{flex-shrink:0}
+.btn{
+  background:none;border:1px solid var(--brass);color:var(--brass);
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;padding:11px 20px;transition:all .25s;
+  text-decoration:none;display:inline-block;
+}
+.btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
+.btn.locked{
+  border-color:rgba(201,162,39,.35);color:rgba(232,220,195,.4);
+}
+.btn.locked:hover{background:rgba(201,162,39,.12);color:var(--parchment)}
+
+/* Gate (password) row */
+.gate{
+  display:none;padding:0 28px 24px;
+}
+.gate.open{display:block}
+.gate-inner{
+  border:1px dashed rgba(201,162,39,.35);padding:18px;text-align:center;
+}
+.gate-inner p{font-style:italic;font-size:15px;color:#c0b499;margin-bottom:12px;line-height:1.5}
+.gate-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.gate-input{
+  height:44px;width:min(60%,220px);text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:16px;letter-spacing:.25em;
+  background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
+  color:var(--parchment);text-transform:uppercase;
+}
+.gate-input:focus{outline:none;border-color:var(--brass)}
+.gate-feedback{
+  min-height:20px;font-size:14px;font-style:italic;margin-top:10px;
+}
+.gate-feedback.bad{color:var(--rust)}
+.gate-feedback.good{color:#8fbf8f}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* Coming soon */
+.soon{
+  border:1px dashed rgba(201,162,39,.3);
+  padding:34px 26px;text-align:center;color:#8f866f;
+}
+.soon .eyebrow{color:var(--brass-dim)}
+.soon p{font-style:italic;font-size:16px;line-height:1.5;max-width:420px;margin:6px auto 0}
+
+footer{
+  text-align:center;margin-top:56px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:rgba(232,220,195,.35);
+}
+footer a{text-decoration:none;color:rgba(201,162,39,.6)}
+footer a:hover{color:var(--brass)}
+
+@media (max-width:560px){
+  .episode{flex-wrap:wrap;padding:20px 18px}
+  .ep-num{width:34px;font-size:28px}
+  .ep-action{width:100%;text-align:right;margin-top:2px}
+  .series-head{padding:24px 18px 16px}
+  .gate{padding:0 18px 22px}
+  .wrap{padding:48px 18px 70px}
+}
+</style>
+</head>
+<body>
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">seeking77degrees presents</div>
+    <h1>THE KEY <span class="accent">ROOM</span></h1>
+    <p class="tagline">Browser escape adventures, played in order and earned in order. Finish a chapter, keep what it taught you — the next door asks for it.</p>
+  </header>
+
+  <!-- ============ THE MERIDIAN TRILOGY ============ -->
+  <section class="series" aria-label="The Meridian Trilogy">
+    <div class="series-head">
+      <div class="eyebrow">Series One · 1934</div>
+      <h2>THE MERIDIAN TRILOGY</h2>
+      <p>You wake in a locked stateroom on a ship you never boarded. Three chapters — a stateroom, a chart room, a lighthouse — and one promise carried across the sea.</p>
+    </div>
+
+    <!-- Episode I -->
+    <div class="episode">
+      <div class="ep-num">I</div>
+      <div class="ep-info">
+        <div class="ep-title">STATEROOM 77</div>
+        <div class="ep-sub">The door is locked from the outside. The note says: find what I left you.</div>
+        <div class="ep-meta">≈ 15 min · no key required</div>
+      </div>
+      <div class="ep-action">
+        <a class="btn" href="games/level-1-stateroom-77.html">Play</a>
+      </div>
+    </div>
+
+    <!-- Episode II -->
+    <div class="episode">
+      <div class="ep-num">II</div>
+      <div class="ep-info">
+        <div class="ep-title">THE CHART ROOM</div>
+        <div class="ep-sub">The gangway rose without you. R is aboard — and has left the room itself as a message.</div>
+        <div class="ep-meta" id="meta-2">≈ 20 min · sealed</div>
+      </div>
+      <div class="ep-action" id="action-2"></div>
+    </div>
+    <div class="gate" id="gate-2">
+      <div class="gate-inner">
+        <p>This chapter is sealed. Enter the code that opened the stateroom door in Chapter I.</p>
+        <div class="gate-row">
+          <input class="gate-input" id="input-2" inputmode="numeric" maxlength="8" placeholder="····" aria-label="Chapter II code">
+          <button class="btn" id="try-2">Unseal</button>
+        </div>
+        <div class="gate-feedback" id="fb-2"></div>
+      </div>
+    </div>
+
+    <!-- Episode III -->
+    <div class="episode">
+      <div class="ep-num">III</div>
+      <div class="ep-info">
+        <div class="ep-title">THE LANTERN</div>
+        <div class="ep-sub">The keeper is gone. The lamp is cold. The ship is coming. Finale.</div>
+        <div class="ep-meta" id="meta-3">≈ 25 min · sealed</div>
+      </div>
+      <div class="ep-action" id="action-3"></div>
+    </div>
+    <div class="gate" id="gate-3">
+      <div class="gate-inner">
+        <p>This chapter is sealed. Enter the word you transmitted from the Meridian's wireless in Chapter II.</p>
+        <div class="gate-row">
+          <input class="gate-input" id="input-3" maxlength="8" placeholder="····" aria-label="Chapter III code">
+          <button class="btn" id="try-3">Unseal</button>
+        </div>
+        <div class="gate-feedback" id="fb-3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMING SOON ============ -->
+  <section class="soon" aria-label="Next series">
+    <div class="eyebrow">Series Two</div>
+    <p>A new story, a new world, a new way to be locked in. The Key Room is just getting started.</p>
+  </section>
+
+  <footer>
+    <a href="https://seeking77degrees.com">seeking77degrees</a> · The Key Room · MCMXXXIV
+  </footer>
+</div>
+
+<script>
+/* ================================================================
+   Gating: each sealed chapter requires the answer earned by
+   finishing the one before it. Answers are stored as SHA-256
+   hashes; unlocks persist in localStorage when available.
+   ================================================================ */
+const EPISODES = {
+  2: {
+    href: 'games/level-2-chart-room.html',
+    hash: 'd83e303f681b94d24fdb0c6e7a1e730b964953b70284cfd9d55dbe096281058a',
+    wrong: 'The seal holds. That code never opened a stateroom door.',
+    right: 'The seal breaks. Welcome back aboard.'
+  },
+  3: {
+    href: 'games/level-3-the-lantern.html',
+    hash: '4ea140588150773ce3aace786aeef7f4049ce100fa649c94fbbddb960f1da942',
+    wrong: 'The shore stays dark. That was not the word.',
+    right: 'The Lantern answers. Go ashore.'
+  }
+};
+
+/* --- storage (safe wrapper: falls back to memory if unavailable) --- */
+const mem = {};
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return mem[k] ?? null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){ mem[k]=v; } }
+};
+function isUnlocked(n){ return store.get('keyroom.unlock.'+n) === '1'; }
+function setUnlocked(n){ store.set('keyroom.unlock.'+n, '1'); }
+
+/* --- hashing --- */
+async function sha256(text){
+  const data = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* --- UI wiring --- */
+function renderEpisode(n){
+  const action = document.getElementById('action-'+n);
+  const gate = document.getElementById('gate-'+n);
+  const meta = document.getElementById('meta-'+n);
+  action.innerHTML = '';
+  if (isUnlocked(n)) {
+    const a = document.createElement('a');
+    a.className = 'btn';
+    a.textContent = 'Play';
+    a.href = EPISODES[n].href;
+    action.appendChild(a);
+    gate.classList.remove('open');
+    meta.textContent = meta.textContent.replace('sealed','unsealed');
+  } else {
+    const b = document.createElement('button');
+    b.className = 'btn locked';
+    b.textContent = '🔒 Sealed';
+    b.setAttribute('aria-expanded','false');
+    b.addEventListener('click', ()=>{
+      const open = gate.classList.toggle('open');
+      b.setAttribute('aria-expanded', String(open));
+      if (open) document.getElementById('input-'+n).focus();
+    });
+    action.appendChild(b);
+  }
+}
+
+async function tryUnlock(n){
+  const input = document.getElementById('input-'+n);
+  const fb = document.getElementById('fb-'+n);
+  const guess = input.value.trim().toLowerCase();
+  if (!guess) return;
+  const h = await sha256(guess);
+  if (h === EPISODES[n].hash) {
+    setUnlocked(n);
+    fb.textContent = EPISODES[n].right;
+    fb.className = 'gate-feedback good';
+    setTimeout(()=>{ renderEpisode(n); }, 700);
+  } else {
+    fb.textContent = EPISODES[n].wrong;
+    fb.className = 'gate-feedback bad';
+    input.classList.add('shake');
+    setTimeout(()=>input.classList.remove('shake'), 380);
+    input.select();
+  }
+}
+
+[2,3].forEach(n=>{
+  renderEpisode(n);
+  document.getElementById('try-'+n).addEventListener('click', ()=>tryUnlock(n));
+  document.getElementById('input-'+n).addEventListener('keydown', e=>{
+    if (e.key === 'Enter') tryUnlock(n);
+  });
+});
+</script>
+</body>
+</html>
