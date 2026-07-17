@@ -27,7 +27,7 @@ body{
   overflow:hidden;
   user-select:none;
 }
-button{font-family:inherit;cursor:pointer}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
 
 .deco-frame{
   position:fixed;inset:8px;
@@ -66,6 +66,10 @@ h1 .num{color:var(--brass)}
 }
 .btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
 .btn.small{padding:8px 18px;font-size:11px;letter-spacing:.2em}
+.btn.ghost{border-color:var(--brass-dim,rgba(197,160,90,.4));color:var(--parchment,#d8c9a8);opacity:.75}
+.btn.ghost:hover,.btn.ghost:focus-visible{opacity:1;background:none;border-color:var(--brass);color:var(--brass)}
+.victory-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.victory-actions .btn{text-decoration:none;display:inline-block}
 
 #hud{
   position:fixed;top:0;left:0;right:0;z-index:30;
@@ -478,7 +482,10 @@ h1 .num{color:var(--brass)}
     <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
     <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
   </div>
-  <button class="btn" onclick="location.reload()">Play Again</button>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Return to Home Screen</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
   <div class="series-note">— End of the Meridian Trilogy —</div>
 </div>
 

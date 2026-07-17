@@ -26,7 +26,7 @@ body{
   overflow:hidden;
   user-select:none;
 }
-button{font-family:inherit;cursor:pointer}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
 
 .deco-frame{
   position:fixed;inset:8px;
@@ -65,6 +65,14 @@ h1 .num{color:var(--brass)}
 }
 .btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
 .btn.small{padding:8px 18px;font-size:11px;letter-spacing:.2em}
+.btn.ghost{border-color:var(--brass-dim,rgba(197,160,90,.4));color:var(--parchment,#d8c9a8);opacity:.75}
+.btn.ghost:hover,.btn.ghost:focus-visible{opacity:1;background:none;border-color:var(--brass);color:var(--brass)}
+.next-note{margin:6px auto 26px;max-width:420px;border:1px dashed var(--brass-dim,rgba(197,160,90,.4));border-radius:4px;padding:16px 20px;text-align:center}
+.next-note .nn-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;opacity:.7}
+.next-note .nn-code{font-family:'IBM Plex Mono',monospace;font-size:30px;letter-spacing:.35em;color:var(--brass);margin:8px 0 6px}
+.next-note .nn-hint{font-size:13px;opacity:.62;line-height:1.5}
+.victory-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
+.victory-actions .btn{text-decoration:none;display:inline-block}
 
 #hud{
   position:fixed;top:0;left:0;right:0;z-index:30;
@@ -392,7 +400,15 @@ h1 .num{color:var(--brass)}
     <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
     <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
   </div>
-  <button class="btn" onclick="location.reload()">Play Again</button>
+  <div class="next-note">
+    <div class="nn-label">Remember this word — you'll need it to unseal Chapter III</div>
+    <div class="nn-code">HOME</div>
+    <div class="nn-hint">Return to the home screen and enter it to open <em>Chapter III — The Lantern</em>.</div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Continue to Chapter III →</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
 </div>
 
 <script>
