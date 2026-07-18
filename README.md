@@ -37,14 +37,14 @@ Lowercase the code before hashing — the gate normalizes input with
 
 ## Deploy to GitHub Pages
 
-1. Create a repo (e.g. `keyroom`) and push these files to `main`.
-2. Repo → Settings → Pages → Source: **Deploy from a branch** → `main` / `/ (root)`.
-3. Site goes live at `https://<user>.github.io/keyroom/`.
+This repo lives at **`Northbound-House/game-keyroom`** and deploys from `main` /
+`/ (root)` via Settings → Pages (Source: **Deploy from a branch**).
 
-For a custom subdomain (e.g. `keyroom.seeking77degrees.com`): add a `CNAME`
-file containing the subdomain, and a DNS CNAME record pointing the subdomain
-at `<user>.github.io` — same pattern as the existing roadrover/nopeify/cadence
-subdomains.
+- github.io URL: `https://northbound-house.github.io/game-keyroom/`
+- Custom domain: **`keyroom.northboundhouse.com`** (set by the `CNAME` file),
+  same pattern as the `cadence.northboundhouse.com` / `roadrover.northboundhouse.com`
+  subdomains. The DNS `CNAME` record `keyroom` → `northbound-house.github.io`
+  must exist for the custom domain to serve.
 
 ## Adding a new series
 

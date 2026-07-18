@@ -64,19 +64,20 @@ location.reload();
 
 Or just use a private window for a fresh-player run.
 
-## Custom subdomain (optional)
+## Custom subdomain
 
-To serve at `keyroom.seeking77degrees.com`:
+Served at **`keyroom.northboundhouse.com`** via the `CNAME` file in the repo
+root (same pattern as `cadence.northboundhouse.com` / `roadrover.northboundhouse.com`).
 
-```bash
-echo "keyroom.seeking77degrees.com" > CNAME
-git add CNAME && git commit -m "Add custom domain" && git push
+To go live, add one DNS record on `northboundhouse.com`:
+
+```
+Type: CNAME   Host/Name: keyroom   Value: northbound-house.github.io
 ```
 
-Then add a DNS `CNAME` record: `keyroom` → `<your-user>.github.io`
-(same pattern as the roadrover / nopeify / cadence subdomains). Re-enter the
-domain under Settings → Pages → Custom domain, and enable **Enforce HTTPS**
-once the certificate provisions.
+Once it resolves, GitHub provisions the TLS certificate automatically; then
+enable **Enforce HTTPS** under Settings → Pages. Until the DNS record exists,
+the site stays reachable at `https://northbound-house.github.io/game-keyroom/`.
 
 ## Notes
 
