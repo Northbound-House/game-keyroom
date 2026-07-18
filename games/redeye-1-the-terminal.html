@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Terminal — The Red-Eye, Chapter I</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Work+Sans:ital,wght@0,400;0,500;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0b1521;
+  --panam:#0e4d92;
+  --sky:#3a8dde;
+  --chrome:#cdd5dd;
+  --tan:#c69a6b;
+  --neon:#ff3b30;
+  --cream:#efe7d6;
+  --ink:#141b24;
+  --board-bg:#0a0e12;
+  --board-fg:#f4e9c1;
+  --go:#5ec48c;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--night);
+  color:var(--chrome);
+  font-family:'Work Sans',system-ui,sans-serif;
+  overflow:hidden;
+  user-select:none;
+}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+
+/* ---------- Frame ---------- */
+.deco-frame{
+  position:fixed;inset:8px;
+  border:1px solid rgba(58,141,222,.35);
+  outline:1px solid rgba(58,141,222,.15);
+  outline-offset:4px;
+  pointer-events:none;z-index:50;
+}
+.deco-frame::before,.deco-frame::after{
+  content:"";position:absolute;width:26px;height:26px;
+  border:2px solid var(--sky);
+}
+.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+/* ---------- Screens ---------- */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;z-index:40;overflow-y:auto}
+.screen.active{display:flex}
+#intro{background:radial-gradient(ellipse at 50% 120%, #123a63 0%, var(--night) 62%)}
+.eyebrow{
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--sky);margin-bottom:18px;
+}
+h1{
+  font-family:'Oswald',sans-serif;font-weight:500;
+  font-size:clamp(42px,9vw,82px);letter-spacing:.06em;line-height:1.02;
+  text-transform:uppercase;color:var(--cream);
+}
+h1 .num{color:var(--neon)}
+.intro-story{
+  max-width:540px;font-size:clamp(16px,2.3vw,20px);line-height:1.6;
+  margin:24px 0 32px;color:#cdd5dd;
+}
+.intro-story em{color:var(--cream);font-style:italic}
+.btn{
+  background:none;border:1px solid var(--sky);color:var(--sky);
+  font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.28em;
+  text-transform:uppercase;padding:14px 34px;transition:all .22s;
+}
+.btn:hover,.btn:focus-visible{background:var(--sky);color:var(--night);outline:none}
+.btn.small{padding:8px 18px;font-size:11px;letter-spacing:.18em}
+.btn.ghost{border-color:rgba(205,213,221,.4);color:var(--chrome);opacity:.8}
+.btn.ghost:hover,.btn.ghost:focus-visible{opacity:1;background:none;border-color:var(--sky);color:var(--sky)}
+.next-note{margin:6px auto 26px;max-width:430px;border:1px dashed rgba(58,141,222,.5);border-radius:4px;padding:16px 20px;text-align:center}
+.next-note .nn-label{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;opacity:.72}
+.next-note .nn-code{font-family:'Space Mono',monospace;font-weight:700;font-size:30px;letter-spacing:.3em;color:var(--neon);margin:8px 0 6px}
+.next-note .nn-hint{font-size:13px;opacity:.66;line-height:1.5}
+.victory-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
+.victory-actions .btn{text-decoration:none;display:inline-block}
+
+/* ---------- HUD ---------- */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:none;justify-content:space-between;align-items:center;
+  padding:22px 30px 10px;
+}
+#hud.on{display:flex}
+#timer{
+  font-family:'Space Mono',monospace;font-size:18px;letter-spacing:.12em;
+  color:var(--sky);
+}
+#timer.late{color:var(--neon);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.45}}
+#hud .title-sm{
+  font-family:'Oswald',sans-serif;font-weight:400;font-size:15px;letter-spacing:.28em;
+  text-transform:uppercase;opacity:.7
+}
+#hud .hud-right{display:flex;gap:10px;align-items:center}
+.icon-btn{
+  background:none;border:1px solid rgba(58,141,222,.45);color:var(--sky);
+  width:34px;height:34px;font-size:15px;line-height:1;
+  transition:border-color .2s;
+}
+.icon-btn:hover{border-color:var(--sky)}
+
+/* ---------- Room ---------- */
+#room-wrap{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  padding:64px 16px 96px;
+}
+#room-wrap.on{display:flex}
+#room{
+  width:min(96vw,900px);aspect-ratio:16/10;max-height:calc(100vh - 170px);
+  position:relative;
+}
+#room svg{width:100%;height:100%;display:block}
+.hotspot{cursor:pointer;transition:filter .2s}
+.hotspot:hover{filter:brightness(1.3) drop-shadow(0 0 6px rgba(58,141,222,.6))}
+.hotspot.done{cursor:default}
+.hotspot.done:hover{filter:none}
+
+/* ---------- Inventory ---------- */
+#inventory{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+  justify-content:center;gap:12px;padding:16px 20px 22px;flex-wrap:wrap;
+  background:linear-gradient(transparent, rgba(6,11,18,.94) 40%);
+}
+#inventory.on{display:flex}
+.inv-item{
+  width:56px;height:56px;border:1px solid rgba(58,141,222,.5);
+  background:rgba(14,36,60,.7);display:flex;align-items:center;justify-content:center;
+  font-size:24px;position:relative;transition:border-color .2s, transform .15s;
+}
+.inv-item:hover{border-color:var(--sky);transform:translateY(-2px)}
+.inv-item .tag{
+  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.06em;
+  color:var(--sky);white-space:nowrap;text-transform:uppercase;
+}
+#inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
+
+/* ---------- Modal ---------- */
+#modal-veil{
+  position:fixed;inset:0;background:rgba(4,9,15,.8);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(2px);
+}
+#modal-veil.on{display:flex}
+#modal{
+  width:min(93vw,500px);max-height:88vh;overflow-y:auto;
+  background:#10233a;border:1px solid rgba(58,141,222,.5);
+  padding:30px 28px 26px;position:relative;text-align:center;
+}
+#modal::before{
+  content:"";position:absolute;inset:6px;border:1px solid rgba(58,141,222,.18);
+  pointer-events:none;
+}
+#modal h2{
+  font-family:'Oswald',sans-serif;font-weight:500;font-size:25px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--sky);margin-bottom:14px;
+}
+#modal .body{font-size:17px;line-height:1.55;color:#dbe2e8;margin-bottom:18px}
+#modal .body em{color:var(--cream);font-style:italic}
+
+/* paper props */
+.paper{
+  background:var(--cream);color:var(--ink);padding:18px 16px;margin:14px 0;
+  font-size:16px;line-height:1.5;font-style:italic;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);transform:rotate(-.5deg);
+}
+.paper.straight{transform:none}
+.paper .mono{font-family:'Space Mono',monospace;font-style:normal;font-size:13px;letter-spacing:.03em}
+
+/* boarding pass */
+.bpass{
+  background:linear-gradient(90deg,#eae2d0 0 68%, #d9cdb4 68% 100%);
+  color:var(--ink);text-align:left;padding:14px 16px;margin:14px 0;
+  border:1px solid #b8ac92;box-shadow:0 2px 10px rgba(0,0,0,.4);
+  font-family:'Space Mono',monospace;font-size:13px;line-height:1.7;
+}
+.bpass .bp-h{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.12em;font-size:15px;color:var(--panam);text-transform:uppercase}
+.bpass .smudge{background:#4a4034;color:#4a4034;border-radius:2px;padding:0 6px;user-select:none}
+
+/* split-flap board */
+.board{
+  background:var(--board-bg);border:2px solid #1c2732;padding:12px 10px;margin:14px 0;
+  font-family:'Space Mono',monospace;font-size:13px;color:var(--board-fg);
+  overflow-x:auto;
+}
+.board table{width:100%;border-collapse:collapse;white-space:nowrap}
+.board th{
+  color:var(--sky);font-weight:400;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;text-align:left;padding:2px 8px 8px;border-bottom:1px solid #22303d;
+}
+.board td{padding:5px 8px;letter-spacing:.06em}
+.board tr.hi td{color:#fff;background:rgba(58,141,222,.16)}
+.board .st-board{color:var(--go)}
+.board .st-delay{color:var(--neon)}
+.board .st-dep{color:#7c8794}
+.flap{display:inline-block;animation:flap .5s steps(3) both}
+@keyframes flap{0%{filter:blur(1px);transform:translateY(-30%);opacity:.2}100%{filter:none;transform:none;opacity:1}}
+.board-legend{
+  font-family:'Space Mono',monospace;font-size:11px;color:#9fb0c0;
+  margin-top:10px;line-height:1.7;text-align:left;
+}
+.board-legend b{color:var(--board-fg);font-weight:700}
+
+/* code entry */
+.code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.code-input{
+  width:50px;height:60px;text-align:center;font-family:'Space Mono',monospace;
+  font-size:26px;background:rgba(8,14,22,.9);border:1px solid rgba(58,141,222,.5);
+  color:var(--cream);caret-color:var(--sky);text-transform:uppercase;
+}
+.code-input:focus{outline:none;border-color:var(--sky)}
+.feedback{min-height:22px;font-size:15px;font-style:italic;margin-bottom:6px}
+.feedback.bad{color:var(--neon)}
+.feedback.good{color:var(--go)}
+.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.hint-link{
+  background:none;border:none;color:#7c98b4;font-size:14px;font-style:italic;
+  text-decoration:underline;text-underline-offset:3px;margin-top:14px;
+}
+.hint-link:hover{color:var(--sky)}
+.hint-text{
+  font-size:15px;color:#a9c3dc;font-style:italic;margin-top:10px;line-height:1.5;
+  border-top:1px dashed rgba(124,152,180,.5);padding-top:10px;
+}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ---------- Victory ---------- */
+#victory{background:radial-gradient(ellipse at 50% -20%, #17456f 0%, var(--night) 70%)}
+.stats{display:flex;gap:36px;margin:26px 0 34px}
+.stat .v{font-family:'Space Mono',monospace;font-size:28px;color:var(--sky)}
+.stat .l{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;opacity:.6;margin-top:6px}
+
+@media (max-width:600px){
+  #hud .title-sm{display:none}
+  .stats{gap:22px}
+  #room-wrap{padding:58px 8px 96px}
+  .board{font-size:11px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .flap{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">Meridian Airways · Idlewild · July 1962 · 11:32 PM</div>
+  <h1>THE TERMINAL <span class="num">·</span> 077</h1>
+  <p class="intro-story">The most photographed woman in America stops beside you at Gate 12, presses a brass locker key and a folded claim-ticket into your palm, and never breaks stride: <em>"Everything's in the letters. Bring them aboard Flight 077 — and trust the woman in blue."</em><br><br>Then Coralie Vance is gone into the crowd, and the board above you clatters over to <em>BOARDING</em>.</p>
+  <button class="btn" id="start-btn">Begin</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.5;font-style:italic">Everything you need is in this terminal. No outside knowledge required.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">15:00</div>
+  <div class="title-sm">THE TERMINAL</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="A 1962 airport departures hall at night">
+    <defs>
+      <radialGradient id="hallgrad" cx="50%" cy="30%" r="85%">
+        <stop offset="0%" stop-color="#173250"/>
+        <stop offset="100%" stop-color="#0a1019"/>
+      </radialGradient>
+      <radialGradient id="nightglass" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#12283f"/>
+        <stop offset="100%" stop-color="#060c14"/>
+      </radialGradient>
+    </defs>
+    <!-- walls / terrazzo floor -->
+    <rect x="0" y="0" width="800" height="380" fill="url(#hallgrad)"/>
+    <rect x="0" y="380" width="800" height="120" fill="#20262e"/>
+    <g fill="#2c333c" opacity=".7">
+      <circle cx="80" cy="430" r="3"/><circle cx="170" cy="460" r="2.5"/><circle cx="300" cy="440" r="3"/>
+      <circle cx="470" cy="465" r="2.5"/><circle cx="560" cy="435" r="3"/><circle cx="690" cy="458" r="2.5"/>
+      <circle cx="740" cy="430" r="3"/><circle cx="230" cy="470" r="2.5"/><circle cx="400" cy="470" r="2.5"/>
+    </g>
+    <line x1="0" y1="384" x2="800" y2="384" stroke="#3a8dde" stroke-width="1.5" opacity=".4"/>
+
+    <!-- DEPARTURES BOARD -->
+    <g id="hs-board" class="hotspot" tabindex="0" role="button" aria-label="Split-flap departures board">
+      <rect x="250" y="40" width="380" height="128" fill="#0a0e12" stroke="#3a8dde" stroke-width="2"/>
+      <rect x="250" y="40" width="380" height="22" fill="#0e4d92"/>
+      <text x="264" y="56" font-family="'Space Mono',monospace" font-size="12" fill="#f4e9c1" letter-spacing="3">DEPARTURES</text>
+      <g font-family="'Space Mono',monospace" font-size="11" fill="#f4e9c1">
+        <text x="264" y="82">MA214  NEW YORK</text><text x="588" y="82" fill="#7c8794">DEP</text>
+        <text x="264" y="104">MA118  ROME</text><text x="588" y="104" fill="#5ec48c">BRD</text>
+        <text x="264" y="126" fill="#ffffff">MA077  LISBON</text><text x="588" y="126" fill="#5ec48c">BRD</text>
+        <text x="264" y="148">BA502  LONDON</text><text x="588" y="148" fill="#ff3b30">DLY</text>
+      </g>
+      <rect x="258" y="116" width="330" height="16" fill="none" stroke="#3a8dde" stroke-width="1" opacity=".7"/>
+    </g>
+
+    <!-- BIG WINDOW + JET -->
+    <g id="hs-window" class="hotspot" tabindex="0" role="button" aria-label="Apron window with a waiting jet">
+      <rect x="40" y="60" width="170" height="150" fill="#3a8dde"/>
+      <rect x="46" y="66" width="158" height="138" fill="url(#nightglass)"/>
+      <line x1="125" y1="66" x2="125" y2="204" stroke="#0a1019" stroke-width="2"/>
+      <line x1="46" y1="135" x2="204" y2="135" stroke="#0a1019" stroke-width="2"/>
+      <!-- jet silhouette -->
+      <g fill="#26384a">
+        <ellipse cx="130" cy="170" rx="60" ry="9"/>
+        <path d="M96 168 l-30 -22 6 -2 40 18 z"/>
+        <rect x="150" y="150" width="4" height="18"/>
+        <path d="M150 152 l22 -6 -2 5 -20 6 z"/>
+      </g>
+      <circle cx="180" cy="170" r="2" fill="#ff3b30"/><circle cx="80" cy="170" r="2" fill="#5ec48c"/>
+    </g>
+
+    <!-- WALL CLOCK -->
+    <g id="hs-clock" class="hotspot" tabindex="0" role="button" aria-label="Terminal clock">
+      <circle cx="690" cy="96" r="30" fill="#0e4d92"/>
+      <circle cx="690" cy="96" r="25" fill="#efe7d6"/>
+      <line x1="690" y1="96" x2="690" y2="78" stroke="#141b24" stroke-width="2.5"/>
+      <line x1="690" y1="96" x2="704" y2="100" stroke="#141b24" stroke-width="2"/>
+      <circle cx="690" cy="96" r="2.5" fill="#141b24"/>
+    </g>
+
+    <!-- LEFT-LUGGAGE LOCKERS -->
+    <g id="hs-locker" class="hotspot" tabindex="0" role="button" aria-label="Bank of coin-operated left-luggage lockers">
+      <rect x="60" y="250" width="150" height="132" fill="#24425f" stroke="#3a8dde" stroke-width="2"/>
+      <g stroke="#16283b" stroke-width="2">
+        <line x1="110" y1="250" x2="110" y2="382"/><line x1="160" y1="250" x2="160" y2="382"/>
+        <line x1="60" y1="294" x2="210" y2="294"/><line x1="60" y1="338" x2="210" y2="338"/>
+      </g>
+      <g fill="#cdd5dd" font-family="'Space Mono',monospace" font-size="8">
+        <text x="70" y="268">14</text><text x="120" y="268">15</text><text x="170" y="268">16</text>
+        <text x="70" y="312">17</text><text x="120" y="312">18</text><text x="170" y="312">19</text>
+        <text x="70" y="356">20</text><text x="120" y="356">21</text><text x="170" y="356">22</text>
+      </g>
+      <!-- highlighted locker 19 -->
+      <rect x="160" y="294" width="50" height="44" fill="none" stroke="#f4e9c1" stroke-width="1.5"/>
+      <circle cx="200" cy="316" r="3" fill="#c69a6b"/>
+    </g>
+
+    <!-- OPS / TICKETING DESK -->
+    <g id="hs-desk" class="hotspot" tabindex="0" role="button" aria-label="Airline operations desk with a locked drawer">
+      <rect x="470" y="286" width="220" height="16" fill="#3a2f22"/>
+      <rect x="484" y="302" width="192" height="60" fill="#2c2417"/>
+      <rect x="500" y="312" width="160" height="24" fill="#3a2f22" stroke="#c69a6b" stroke-width="1.5"/>
+      <circle cx="580" cy="324" r="4" fill="#c69a6b"/>
+      <rect x="490" y="362" width="12" height="30" fill="#2c2417"/>
+      <rect x="660" y="362" width="12" height="30" fill="#2c2417"/>
+      <!-- telex printout + placard on desk -->
+      <rect x="496" y="270" width="52" height="18" fill="#efe7d6" transform="rotate(-5 522 279)"/>
+      <rect x="600" y="272" width="70" height="16" fill="#0e4d92"/>
+      <text x="606" y="284" font-family="'Space Mono',monospace" font-size="8" fill="#f4e9c1">MER · OPS</text>
+    </g>
+
+    <!-- PHOTO BOOTH -->
+    <g id="hs-booth" class="hotspot" tabindex="0" role="button" aria-label="Automatic photo booth">
+      <rect x="290" y="238" width="120" height="150" fill="#101c2b" stroke="#3a8dde" stroke-width="2"/>
+      <rect x="300" y="248" width="100" height="70" fill="#0a1019"/>
+      <rect x="306" y="254" width="88" height="58" fill="#16283b"/>
+      <rect x="300" y="330" width="100" height="20" fill="#0e4d92"/>
+      <text x="350" y="344" text-anchor="middle" font-family="'Oswald',sans-serif" font-size="12" fill="#f4e9c1" letter-spacing="2">PHOTOS</text>
+      <rect x="336" y="352" width="28" height="10" fill="#efe7d6"/>
+    </g>
+
+    <!-- BOARDING GATE / JETWAY DOOR -->
+    <g id="hs-gate" class="hotspot" tabindex="0" role="button" aria-label="Gate 12 jetway door">
+      <rect x="700" y="210" width="86" height="172" fill="#1a2e44" stroke="#3a8dde" stroke-width="2"/>
+      <rect x="712" y="228" width="62" height="96" fill="none" stroke="#c69a6b" stroke-width="1.5"/>
+      <rect x="712" y="150" width="74" height="26" fill="#0e4d92"/>
+      <text x="749" y="168" text-anchor="middle" font-family="'Oswald',sans-serif" font-size="14" fill="#f4e9c1" letter-spacing="2">GATE 12</text>
+      <rect x="724" y="334" width="40" height="18" fill="#0a0e12" stroke="#c69a6b" stroke-width="1.5"/>
+      <text x="744" y="347" text-anchor="middle" font-family="'Space Mono',monospace" font-size="10" fill="#c69a6b">▢▢</text>
+      <circle cx="769" cy="300" r="4" fill="#ff3b30"/>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">The jet bridge, doors about to close</div>
+  <h1>YOU'RE <span class="num">ABOARD</span></h1>
+  <p class="intro-story" id="victory-story">You slide into your seat as the cabin door seals with a pressurized sigh. Across the aisle, Coralie Vance doesn't look at you — but a stewardess in Meridian blue meets your eye and, very slightly, nods. In your bag: the letters, and a film canister that has nothing to do with love. The engines spool up. There's a whole night over the Atlantic to find out what you're really carrying.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <div class="next-note">
+    <div class="nn-label">Remember this — you'll need it to unseal Chapter II</div>
+    <div class="nn-code">7A</div>
+    <div class="nn-hint">Your seat on Flight 077. Return to the home screen and enter it to open <em>Chapter II — The Red-Eye</em>.</div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Continue to Chapter II →</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:15*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  inv:{},
+  flags:{ board:false, locker:false, desk:false, sawManifest:false, booth:false, gate:false },
+  hintLevel:{},
+  soundOn:false, audioCtx:null, noiseNode:null,
+};
+
+/* ================= TIMER + boarding calls ================= */
+function fmt(t){const neg=t<0;t=Math.abs(t);const m=Math.floor(t/60),s=t%60;return (neg?'+':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+const BEATS={
+  [10*60]:'“Meridian Airways announces the boarding of Flight 077 to Lisbon, now at Gate 12.”',
+  [5*60]:'“Second call for Flight 077. Will all passengers please proceed to Gate 12.”',
+  [2*60]:'“Final call — Flight 077. The doors are closing.”'
+};
+function tick(){
+  S.t--;
+  const el=document.getElementById('timer');
+  el.textContent=fmt(S.t);
+  if(BEATS[S.t]&&!veil.classList.contains('on')){
+    openModal({title:'On the Public Address',body:'<em>'+BEATS[S.t]+'</em>',actions:[closeBtn('Keep moving')]});
+  }
+  if(S.t<0){el.classList.add('late'); if(!S.overtime){S.overtime=true; toast('The gate agent holds the door a crack longer, watching you. Go.');}}
+  else if(S.t<=120){el.classList.add('late');}
+}
+
+/* ================= SOUND (terminal hum) ================= */
+function toggleSound(){
+  if(!S.audioCtx){
+    const C=new (window.AudioContext||window.webkitAudioContext)();
+    const bufferSize=2*C.sampleRate;
+    const buffer=C.createBuffer(1,bufferSize,C.sampleRate);
+    const data=buffer.getChannelData(0);
+    let last=0;
+    for(let i=0;i<bufferSize;i++){const w=Math.random()*2-1;data[i]=(last+.02*w)/1.02;last=data[i];data[i]*=2.6;}
+    const src=C.createBufferSource();src.buffer=buffer;src.loop=true;
+    const filt=C.createBiquadFilter();filt.type='lowpass';filt.frequency.value=240;
+    const gain=C.createGain();gain.gain.value=0.05;
+    src.connect(filt).connect(gain).connect(C.destination);src.start();
+    S.audioCtx=C;S.noiseNode=gain;S.soundOn=true;
+  } else {
+    S.soundOn=!S.soundOn;
+    S.noiseNode.gain.value=S.soundOn?0.05:0;
+  }
+  document.getElementById('sound-btn').style.opacity=S.soundOn?1:.4;
+}
+document.getElementById('sound-btn').addEventListener('click',toggleSound);
+document.getElementById('sound-btn').style.opacity=.4;
+
+/* ================= INVENTORY ================= */
+function addItem(key,icon,label){
+  if(S.inv[key])return;
+  S.inv[key]={icon,label};
+  renderInv();
+}
+function renderInv(){
+  const inv=document.getElementById('inventory');
+  inv.innerHTML='';
+  const keys=Object.keys(S.inv);
+  if(!keys.length){inv.innerHTML='<span id="inv-empty">Your pockets are empty.</span>';return;}
+  keys.forEach(k=>{
+    const it=S.inv[k];
+    const d=document.createElement('button');
+    d.className='inv-item';d.innerHTML=it.icon+'<span class="tag">'+it.label+'</span>';
+    d.setAttribute('aria-label',it.label);
+    d.addEventListener('click',()=>inspectItem(k));
+    inv.appendChild(d);
+  });
+}
+function inspectItem(k){
+  if(k==='ticket') openModal({title:'Left-Luggage Claim Ticket',body:'A cardboard stub from the terminal lockers, and a small brass key.',
+    extra:'<div class="paper"><span class="mono">MERIDIAN AIR · LEFT LUGGAGE</span><br>"The lock is set to <em>her</em> departure — the flight I\'m running from. Read the board; it knows the hour. Bring what\'s inside to 077. — C."</div>',actions:[closeBtn()]});
+  if(k==='letters') openModal({title:'The Love Letters',body:'A ribbon-tied bundle in a woman\'s hand. Tender, reckless — and oddly precise:',
+    extra:'<div class="paper">"…I count the days like a fool: <span class="mono">4</span>, then <span class="mono">19</span>, then <span class="mono">7</span>, then <span class="mono">22</span>, and then your face at the gate. Burn this. You never do. — J."</div><div style="font-style:italic;opacity:.72;font-size:14px">Why would a love letter keep count in numbers?</div>',actions:[closeBtn()]});
+  if(k==='film') openModal({title:'Film Canister',body:'A flat steel canister, taped shut. No studio label. Stamped along the rim:',
+    extra:'<div class="paper straight"><span class="mono">MERIDIAN AIR — CORPORATE<br>REEL 3 · DO NOT DEVELOP<br>PROPERTY RETURN: J. ROSCOE, VP</span></div><div style="font-style:italic;opacity:.72;font-size:14px">Corporate reels aren\'t the sort of thing film stars smuggle for love.</div>',actions:[closeBtn()]});
+  if(k==='bpass') showBoardingPass();
+}
+
+/* ================= MODAL ================= */
+const veil=document.getElementById('modal-veil');
+function openModal({title,body,extra='',actions=[],puzzleId=null,onOpen=null}){
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-body').innerHTML=body;
+  document.getElementById('m-extra').innerHTML=extra;
+  const fb=document.getElementById('m-feedback');fb.textContent='';fb.className='feedback';
+  const act=document.getElementById('m-actions');act.innerHTML='';
+  actions.forEach(a=>act.appendChild(a));
+  renderHints(puzzleId);
+  veil.classList.add('on');
+  if(onOpen)onOpen();
+}
+function closeModal(){veil.classList.remove('on');}
+veil.addEventListener('click',e=>{if(e.target===veil)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function closeBtn(txt='Step back'){const b=document.createElement('button');b.className='btn small';b.textContent=txt;b.addEventListener('click',closeModal);return b;}
+function feedback(msg,ok){const fb=document.getElementById('m-feedback');fb.textContent=msg;fb.className='feedback '+(ok?'good':'bad');if(!ok){document.getElementById('modal').classList.add('shake');setTimeout(()=>document.getElementById('modal').classList.remove('shake'),380);}}
+function toast(msg){openModal({title:'…',body:msg,actions:[closeBtn('Continue')]});}
+
+/* ================= HINTS (3 tiers, via the gate agent / PA) ================= */
+const HINTS={
+  locker:[
+    'The gate agent, without looking up: <em>"Coin lockers set their own combinations, hon. Whoever gave you the key set it to a number they\'d never forget."</em>',
+    '<em>"The ticket says it\'s her departure. The big board lists every departure tonight — find her flight and read the hour."</em>',
+    '<em>"Flight 077 to Lisbon departs 23:47. Four digits: 2-3-4-7."</em>'
+  ],
+  desk:[
+    '<em>"That\'s airline property. Ops drawers lock to the night\'s destination — three letters, the way it prints on your bag tag."</em>',
+    '<em>"Where\'s 077 headed? The board spells the city; the legend spells the three-letter code."</em>',
+    '<em>"Lisbon. The code is L-I-S."</em>'
+  ],
+  gate:[
+    'The agent taps the podium: <em>"No one boards without a seat, and I can\'t read a smudged pass. What\'s your seat number?"</em>',
+    '<em>"Your boarding pass is smeared, but the manifest in the desk isn\'t. Find your name — or the seat right beside Miss Vance in 7B."</em>',
+    '<em>"You\'re in 7A."</em>'
+  ]
+};
+function renderHints(pid){
+  const z=document.getElementById('m-hintzone');z.innerHTML='';
+  if(!pid||!HINTS[pid])return;
+  const lvl=S.hintLevel[pid]||0;
+  for(let i=0;i<lvl;i++){const p=document.createElement('div');p.className='hint-text';p.innerHTML=HINTS[pid][i];z.appendChild(p);}
+  if(lvl<3){
+    const b=document.createElement('button');b.className='hint-link';
+    b.textContent=lvl===0?'Ask the gate agent':'Ask again — more directly';
+    b.addEventListener('click',()=>{S.hintLevel[pid]=lvl+1;S.hintsUsed++;renderHints(pid);});
+    z.appendChild(b);
+  }
+}
+
+/* ================= CODE ENTRY ================= */
+function codeRow(n,type='num'){
+  const wrap=document.createElement('div');wrap.className='code-row';
+  for(let i=0;i<n;i++){
+    const inp=document.createElement('input');
+    inp.className='code-input';inp.maxLength=1;
+    inp.inputMode=type==='num'?'numeric':'text';
+    inp.addEventListener('input',()=>{inp.value=inp.value.replace(type==='num'?/[^0-9]/g:/[^a-zA-Z0-9]/g,'');if(inp.value&&inp.nextElementSibling)inp.nextElementSibling.focus();});
+    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&inp.previousElementSibling)inp.previousElementSibling.focus();});
+    wrap.appendChild(inp);
+  }
+  return wrap;
+}
+function readCode(wrap){return [...wrap.querySelectorAll('input')].map(i=>i.value).join('').toUpperCase();}
+
+/* ================= ROOM OBJECTS ================= */
+function bindHotspot(id,fn){
+  const el=document.getElementById(id);
+  el.addEventListener('click',fn);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});
+}
+
+/* --- Departures board (info hub) --- */
+function boardHTML(){
+  const rows=[
+    ['MA 214','NEW YORK','04','23:05','DEPARTED','st-dep'],
+    ['MA 118','ROME','09','23:20','BOARDING','st-board'],
+    ['MA 077','LISBON','12','23:47','BOARDING','st-board hi'],
+    ['BA 502','LONDON','07','00:05','DELAYED','st-delay'],
+    ['MA 340','DAKAR','15','00:30','ON TIME','st-dep'],
+  ];
+  let h='<div class="board"><table><thead><tr><th>Flight</th><th>Destination</th><th>Gate</th><th>Dep</th><th>Status</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const hi=r[5].includes('hi')?' class="hi"':'';
+    const stcls=r[5].replace(' hi','');
+    h+=`<tr${hi}><td>${r[0]}</td><td><span class="flap">${r[1]}</span></td><td>${r[2]}</td><td><span class="flap">${r[3]}</span></td><td class="${stcls}">${r[4]}</td></tr>`;
+  });
+  h+='</tbody></table>';
+  h+='<div class="board-legend">IATA destination codes (as printed on your bag tag): '
+    +'<b>NYC</b> New York · <b>ROM</b> Rome · <b>LIS</b> Lisbon · <b>LON</b> London · <b>DKR</b> Dakar</div></div>';
+  return h;
+}
+bindHotspot('hs-board',()=>{
+  S.flags.board=true;
+  openModal({
+    title:'The Departures Board',
+    body:'The great Solari board clatters and resettles. Coralie\'s flight is up in white:',
+    extra:boardHTML(),
+    actions:[closeBtn()]
+  });
+});
+
+/* --- Left-luggage locker (2347) --- */
+bindHotspot('hs-locker',()=>{
+  if(S.flags.locker){
+    openModal({title:'Locker 19',body:'Open and empty. You have the letters and the canister.',actions:[closeBtn()]});
+    return;
+  }
+  const row=codeRow(4);
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Turn the dial';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='2347'){
+      S.flags.locker=true;
+      addItem('letters','✉','Love letters');
+      addItem('film','🎞','Film canister');
+      feedback('The bolt snaps back.',true);
+      setTimeout(()=>openModal({
+        title:'Inside Locker 19',
+        body:'A ribbon-tied bundle of <em>love letters</em> — and, wrapped in a silk scarf behind them, a flat steel <em>film canister</em> with no studio label at all.',
+        actions:[closeBtn('Take both')]
+      }),700);
+    } else feedback('The dial spins back to zero. Wrong number.',false);
+  });
+  openModal({
+    title:'Left-Luggage Locker 19',
+    body:'A coin-op locker, its four-digit dial cold under your thumb. The claim ticket said the lock is set to <em>her departure</em>.',
+    actions:[submit,closeBtn()],
+    puzzleId:'locker',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* --- Ops desk drawer (LIS) → boarding pass + manifest --- */
+bindHotspot('hs-desk',()=>{
+  if(S.flags.desk){ showManifest(); return; }
+  const row=codeRow(3,'alpha');
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Try the letters';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='LIS'){
+      S.flags.desk=true;
+      addItem('bpass','🎫','Boarding pass');
+      feedback('The drawer rolls open.',true);
+      setTimeout(()=>{
+        openModal({
+          title:'The Ops Desk Drawer',
+          body:'A blank <em>boarding pass</em> already made out in your name for Flight 077 — the seat smudged past reading — clipped to tonight\'s <em>passenger manifest</em>.',
+          extra:manifestHTML(),
+          actions:[closeBtn('Take the pass')]
+        });
+        S.flags.sawManifest=true;
+      },700);
+    } else feedback('The letter-wheels settle wrong. Not tonight\'s city.',false);
+  });
+  openModal({
+    title:'Meridian Ops Desk',
+    body:'An unmanned ticketing desk. The drawer is held by three brass letter-wheels; a card taped above reads <em>"SET TO TONIGHT\'S DESTINATION."</em>',
+    actions:[submit,closeBtn()],
+    puzzleId:'desk',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+function manifestHTML(){
+  return '<div class="paper straight"><span class="mono">FLIGHT MA 077 · LIS · MANIFEST (partial)</span><br>'
+    +'<span class="mono">7A .... [BEARER — courier]<br>7B .... VANCE, CORALIE<br>9C .... ROSCOE, J. (VP, unconfirmed)<br>11A ... a woman, Meridian blue — no name</span></div>';
+}
+function showManifest(){
+  openModal({title:'The Ops Desk',body:'The drawer\'s open. The manifest, again:',extra:manifestHTML(),actions:[closeBtn()]});
+}
+function showBoardingPass(){
+  const seatKnown=S.flags.sawManifest;
+  openModal({
+    title:'Boarding Pass · Flight 077',
+    body:'Meridian Airways, first-class stock. Your name, tonight\'s red-eye — and a seat the ink has smeared.',
+    extra:'<div class="bpass"><span class="bp-h">Meridian Airways ✦ 077</span><br>NEW YORK (IDL) → LISBON (LIS)<br>DEP 23:47 · GATE 12<br>SEAT '
+      +(seatKnown?'<b>7A</b>':'<span class="smudge">7_</span>')+'<br>REC LOC · V7QK</div>'
+      +(seatKnown?'':'<div style="font-style:italic;opacity:.72;font-size:14px">The seat\'s unreadable. The manifest in the ops desk would have it.</div>'),
+    actions:[closeBtn()]
+  });
+}
+
+/* --- Photo booth (flavor + character clue) --- */
+bindHotspot('hs-booth',()=>{
+  S.flags.booth=true;
+  openModal({
+    title:'The Photo Booth',
+    body:'The curtain\'s half-drawn. A forgotten strip of photos curls in the tray — four frames:',
+    extra:'<div class="paper straight"><span class="mono">frame 1 — Coralie, laughing<br>frame 2 — a man in a Meridian blazer, VP pin<br>frame 3 — the two of them, close<br>frame 4 — his hand, passing her a steel canister</span></div><div style="font-style:italic;opacity:.72;font-size:14px">The last frame isn\'t romance. It\'s a handoff.</div>',
+    actions:[closeBtn()]
+  });
+});
+
+/* --- Window & clock (atmosphere) --- */
+bindHotspot('hs-window',()=>{
+  openModal({title:'The Apron Window',body:'Out on the wet tarmac, the Meridian jet waits under sodium light, stairs still kissed to the forward door. Beyond it, only the dark and the Atlantic.',actions:[closeBtn()]});
+});
+bindHotspot('hs-clock',()=>{
+  openModal({title:'The Terminal Clock',body:'Eleven-forty. Twenty-two minutes until 077 pushes back — less, if the agent loses patience.',actions:[closeBtn()]});
+});
+
+/* --- Boarding gate (final: seat 7A, needs the goods) --- */
+bindHotspot('hs-gate',()=>{
+  const row=codeRow(2,'alpha');
+  const submit=document.createElement('button');submit.className='btn small';submit.textContent='Show your seat';
+  submit.addEventListener('click',()=>{
+    if(readCode(row)==='7A'){
+      if(!(S.inv.letters&&S.inv.film&&S.inv.bpass)){
+        feedback('The agent waves you back: “Boarding pass and all your carry-on, please.” You\'re still missing something.',false);
+        return;
+      }
+      win();
+    } else feedback('“That\'s not a seat on this aircraft.” The agent doesn\'t move.',false);
+  });
+  openModal({
+    title:'Gate 12 — Flight 077',
+    body:'The jet-bridge door, and a gate agent with a clipboard and no patience. <em>"Boarding pass and your seat number, please."</em>',
+    actions:[submit,closeBtn()],
+    puzzleId:'gate',
+    onOpen:()=>{document.getElementById('m-extra').appendChild(row);row.querySelector('input').focus();}
+  });
+});
+
+/* ================= WIN ================= */
+function win(){
+  closeModal();
+  clearInterval(S.timerId);
+  document.getElementById('hud').classList.remove('on');
+  document.getElementById('room-wrap').classList.remove('on');
+  document.getElementById('inventory').classList.remove('on');
+  const used=15*60-S.t;
+  document.getElementById('stat-time').textContent=fmt(used);
+  document.getElementById('stat-hints').textContent=S.hintsUsed;
+  let rank='Standby Passenger';
+  if(used<=6*60&&S.hintsUsed===0)rank='The Jet Set';
+  else if(used<=9*60&&S.hintsUsed<=2)rank='First Class';
+  else if(used<=15*60)rank='Frequent Flyer';
+  document.getElementById('stat-rank').textContent=rank;
+  document.getElementById('victory').classList.add('active');
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click',()=>{
+  document.getElementById('intro').classList.remove('active');
+  document.getElementById('hud').classList.add('on');
+  document.getElementById('room-wrap').classList.add('on');
+  document.getElementById('inventory').classList.add('on');
+  addItem('ticket','🔑','Claim ticket');
+  S.started=true;
+  S.timerId=setInterval(tick,1000);
+});
+renderInv();
+</script>
+</body>
+</html>
