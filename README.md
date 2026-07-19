@@ -50,11 +50,16 @@ someone else) · the same plumbing (3-tier in-character hints, countdown with be
 victory ranks).
 
 **How Series Two differs** *(new world, new feel):* era & place (1962 airport + jet
-vs 1934 liner) · palette & type (Pan-Am blue, chrome, terrazzo, red DEPARTURES neon
-vs deco brass) · core mechanic (split-flap board / airport & time-zone codes / telex
-vs Morse & flags) · tone & verb (glamour-noir scandal; *intercept & uncover* vs
-earnest rescue; escape *out*) · structure (terminal → confined cabin → multi-zone
-arrivals vs room → dual room → multi-floor).
+vs 1934 liner) · **palette** (Pan-Am blue, chrome, terrazzo, red DEPARTURES neon vs
+deco brass) · core mechanic (split-flap board / airport & time-zone codes / telex vs
+Morse & flags) · tone & verb (glamour-noir scandal; *intercept & uncover* vs earnest
+rescue; escape *out*) · structure (terminal → confined cabin → multi-zone arrivals
+vs room → dual room → multi-floor).
+
+> **House rule — same font, same formatting, own colours.** Every trilogy uses the
+> same type system (Poiret One · Cormorant Garamond · IBM Plex Mono) and the same
+> component formatting. **Colour is the only visual variable.** See
+> [`SERIES-PLAN.md`](SERIES-PLAN.md) for the palette contract.
 
 ## Gating
 

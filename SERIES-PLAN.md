@@ -31,12 +31,20 @@ world). Design a new trilogy by keeping the left column and re-inventing the rig
 - **Two-axis escalation.** *Structure:* one room → dual-track room → multi-area
   finale. *Emotion:* escape yourself → act for someone else.
 - **The plumbing.** 3-tier in-character hints, a countdown with an overtime grace
-  and story beats, SVG hotspot rooms, an inventory, victory ranks, and one
-  cohesive palette + type system per series.
+  and story beats, SVG hotspot rooms, an inventory, and victory ranks.
+- **The type system and formatting.** Every trilogy uses the same typography —
+  **Poiret One** (display) + **Cormorant Garamond** (body) + **IBM Plex Mono**
+  (codes, boards, labels) — and the same component formatting: sizes, spacing,
+  letter-spacing, button and modal proportions. A player should never be able to
+  tell two trilogies apart by their layout.
 
 ### Variables — turn these differently every time
-Era & place · palette & type · the new "language" mechanic · the POV verb ·
-tone · the structural gimmick.
+**Colour is the only visual variable.** Era & place · **palette** · the new
+"language" mechanic · the POV verb · tone · the structural gimmick.
+
+> **House rule:** *same font, same formatting, own colours.* Type and layout are
+> the constant that makes the anthology feel like one collection; the palette is
+> what makes each trilogy its own world.
 
 ### Optional meta-thread
 A recurring **77** and a **lantern-over-crossed-flags crest** appear once, hidden,
@@ -109,7 +117,8 @@ love letters were code.*
 | Variable | The Meridian | The Red-Eye |
 |---|---|---|
 | Era / place | 1934 ocean liner | 1962 international airport + a transatlantic jet |
-| Palette / type | night-blue, brass, parchment; deco Poiret | **Pan-Am blue, chrome, terrazzo, tan leather, red DEPARTURES neon**; mid-century sans + split-flap mono |
+| Palette | night-blue, brass, parchment | **Pan-Am blue, chrome, terrazzo, tan leather, red DEPARTURES neon** |
+| Type & formatting | Poiret One · Cormorant Garamond · IBM Plex Mono | *identical — shared house style* |
 | Core mechanic | Morse & signal flags | **split-flap departures board · airport (IATA) & phonetic codes · time-zone / meridian math · telex** |
 | Tone / verb | earnest rescue; escape *out* | glamour-noir scandal; *intercept & uncover*, then get someone through |
 | Structure gimmick | room → dual-track room → multi-floor | **terminal (many gates) → confined jet cabin → multi-zone arrivals/customs** |
@@ -193,16 +202,30 @@ engine (state, timer, sound, modal, inventory, hotspots, 3-tier hints, code/mors
 builders) is proven across three Meridian chapters and is copy-pasteable.
 
 **Per new series you author:** new SVG rooms, new clue prose, one or two new
-mechanic modules (e.g., a split-flap board replaces the Morse lamp), and a new
-palette (CSS variables) + type pairing.
+mechanic modules (e.g., a split-flap board replaces the Morse lamp), and **a new
+palette only** — type and formatting are inherited.
 
-**One structural upgrade to do as The Red-Eye scales:** today each chapter file
-duplicates the whole engine and hardcodes its palette. Extract a shared
-`engine.js` + `theme.css` (per-series palette via CSS variables) so a new
-trilogy's aesthetic is a ~6-variable swap instead of a copy-paste. Highest-leverage
-refactor for the anthology; do it once The Red-Eye's three chapters are scoped so
-the shared surface is known. (Chapter I ships self-contained for now, matching the
-existing Meridian files.)
+**The structural upgrade the house rule now requires.** Today each chapter file
+duplicates the whole engine *and* the formatting, so "same font and formatting
+everywhere" is enforced only by hand. It already drifted: an audit of the 76 CSS
+rules shared between `level-1-stateroom-77.html` and `redeye-1-the-terminal.html`
+found **31 formatting differences** (letter-spacing, font sizes, modal widths)
+after nothing more than one careful hand-port. At 4 trilogies × 3 chapters = 12
+files, hand-enforcement will not hold.
+
+Extract:
+- **`theme.css`** — all shared formatting and the type system. One file, one truth.
+- **a per-trilogy palette block** — each series defines only its colour variables.
+- **`engine.js`** — state, timer, modal, inventory, hotspots, hints, code entry.
+
+Then a new trilogy is genuinely "author the rooms, pick ~10 colours."
+
+**The palette contract.** Every trilogy must define the same semantic variables so
+shared CSS keeps working: `--night` (page bg) · `--surface` (modal/panel) ·
+`--accent` (primary/brass-equivalent) · `--accent-dim` · `--muted` (secondary text)
+· `--paper` (prop bg) · `--ink` (text on paper) · `--error` · `--success`.
+Check each new palette for contrast — dimmed text (hints, `.ep-meta`, `.nn-hint`)
+is where a new colour scheme usually goes illegible.
 
 **Wiring a chapter's gate** (unchanged from README):
 1. Drop the game file in `games/`.
