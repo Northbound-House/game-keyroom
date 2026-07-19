@@ -1,0 +1,40 @@
+/* ============================================================
+   PALETTE — THE MERIDIAN (Series One, 1934)
+   Night-blue, brass, parchment. Colours only; formatting lives
+   in theme.css. Load AFTER theme.css.
+   ============================================================ */
+:root{
+  /* --- semantic contract (consumed by theme.css) --- */
+  --night:        #0A1622;
+  --surface:      #122436;
+  --surface-soft: rgba(18,36,54,.8);
+  --accent:       #C9A227;
+  --accent-dim:   #8a6f1d;
+  --accent-soft:  rgba(201,162,39,.45);
+  --accent-ghost: rgba(201,162,39,.25);
+  --accent-wash:  rgba(201,162,39,.12);
+  --accent-glow:  rgba(201,162,39,.55);
+  --text:         #E8DCC3;
+  --text-soft:    #dfd4bc;
+  --text-faint:   rgba(232,220,195,.4);
+  --muted:        #3E6B6B;
+  --muted-bright: #a8c2c2;
+  --muted-rule:   rgba(62,107,107,.5);
+  --paper:        #E8DCC3;
+  --ink:          #1a1408;
+  --error:        #c96a4a;
+  --success:      #8fbf8f;
+  --veil:         rgba(4,9,15,.78);
+  --veil-fade:    rgba(6,12,19,.92);
+  --input-bg:     rgba(10,22,34,.9);
+
+  /* --- trilogy-specific (used by chapter component CSS) --- */
+  --hull:      #122436;
+  --brass:     #C9A227;
+  --brass-dim: #8a6f1d;
+  --parchment: #E8DCC3;
+  --oxblood:   #6E2B2B;
+  --fog:       #3E6B6B;
+  --rust:      #c96a4a;
+  --lamp:      #ffd47a;
+}

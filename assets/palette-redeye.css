@@ -1,0 +1,41 @@
+/* ============================================================
+   PALETTE — THE RED-EYE (Series Two, 1962)
+   Pan-Am blue, chrome, terrazzo, red DEPARTURES neon.
+   Colours only; formatting lives in theme.css. Load AFTER it.
+   ============================================================ */
+:root{
+  /* --- semantic contract (consumed by theme.css) --- */
+  --night:        #0b1521;
+  --surface:      #10233a;
+  --surface-soft: rgba(14,36,60,.7);
+  --accent:       #3a8dde;
+  --accent-dim:   rgba(58,141,222,.5);
+  --accent-soft:  rgba(58,141,222,.45);
+  --accent-ghost: rgba(58,141,222,.2);
+  --accent-wash:  rgba(58,141,222,.14);
+  --accent-glow:  rgba(58,141,222,.6);
+  --text:         #cdd5dd;
+  --text-soft:    #dbe2e8;
+  --text-faint:   rgba(205,213,221,.45);
+  --muted:        #7c98b4;
+  --muted-bright: #a9c3dc;
+  --muted-rule:   rgba(124,152,180,.5);
+  --paper:        #efe7d6;
+  --ink:          #141b24;
+  --error:        #ff3b30;
+  --success:      #5ec48c;
+  --veil:         rgba(4,9,15,.8);
+  --veil-fade:    rgba(6,11,18,.94);
+  --input-bg:     rgba(8,14,22,.9);
+
+  /* --- trilogy-specific (used by chapter component CSS) --- */
+  --panam:    #0e4d92;
+  --sky:      #3a8dde;
+  --chrome:   #cdd5dd;
+  --tan:      #c69a6b;
+  --neon:     #ff3b30;
+  --cream:    #efe7d6;
+  --go:       #5ec48c;
+  --board-bg: #0a0e12;
+  --board-fg: #f4e9c1;
+}

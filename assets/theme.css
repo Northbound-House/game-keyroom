@@ -1,0 +1,254 @@
+/* ============================================================
+   THE KEY ROOM — SHARED THEME
+   House rule: same font, same formatting, own colours.
+
+   This file owns ALL shared typography and formatting. Every
+   trilogy loads it, then a palette file that defines colours only.
+   Do not put colour literals here — use the palette contract:
+
+     --night        page background
+     --surface      modal / panel background
+     --accent       primary (brass, sky, …)
+     --accent-dim   muted primary
+     --text         body text
+     --muted        secondary / hint text
+     --paper        prop background (letters, charts)
+     --ink          text on --paper
+     --error        wrong answers
+     --success      right answers
+
+   Formatting changes belong HERE and nowhere else. If a chapter
+   needs a one-off component (a morse lamp, a departures board),
+   that component's rules live in that chapter's <style>.
+   ============================================================ */
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{
+  background:var(--night);
+  color:var(--text);
+  font-family:'Cormorant Garamond',serif;
+  min-height:100%;
+}
+/* Chapters are fixed-viewport experiences; the landing page scrolls.
+   Game files carry <body class="chapter">. */
+body.chapter{height:100%;overflow:hidden;user-select:none}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+a{color:inherit}
+
+/* ---------- Deco frame ---------- */
+.deco-frame{
+  position:fixed;inset:8px;
+  border:1px solid var(--accent-dim);
+  outline:1px solid var(--accent-ghost);
+  outline-offset:4px;
+  pointer-events:none;z-index:50;
+}
+.deco-frame::before,.deco-frame::after{
+  content:"";position:absolute;width:26px;height:26px;
+  border:1px solid var(--accent);
+}
+.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+/* ---------- Screens ---------- */
+.screen{
+  position:fixed;inset:0;display:none;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:32px;z-index:40;overflow-y:auto;
+}
+.screen.active{display:flex}
+
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:18px;
+}
+h1{
+  font-family:'Poiret One',cursive;font-weight:400;
+  font-size:clamp(42px,9vw,84px);letter-spacing:.08em;line-height:1.05;
+}
+h1 .num{color:var(--accent)}
+.intro-story{
+  max-width:520px;font-size:clamp(17px,2.4vw,21px);line-height:1.55;
+  margin:26px 0 34px;color:var(--text-soft);font-style:italic;
+}
+.intro-story em{color:var(--text)}
+
+/* ---------- Buttons ---------- */
+.btn{
+  background:none;border:1px solid var(--accent);color:var(--accent);
+  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.3em;
+  text-transform:uppercase;padding:14px 34px;transition:all .25s;
+}
+.btn:hover,.btn:focus-visible{background:var(--accent);color:var(--night);outline:none}
+.btn.small{padding:8px 18px;font-size:11px;letter-spacing:.2em}
+.btn.ghost{border-color:var(--accent-dim);color:var(--text);opacity:.75}
+.btn.ghost:hover,.btn.ghost:focus-visible{opacity:1;background:none;border-color:var(--accent);color:var(--accent)}
+.btn.locked{border-color:var(--accent-ghost);color:var(--text-faint)}
+.btn.locked:hover{background:var(--accent-wash);color:var(--text)}
+
+/* ---------- Carried-code note ---------- */
+.next-note{
+  margin:6px auto 26px;max-width:420px;
+  border:1px dashed var(--accent-dim);border-radius:4px;
+  padding:16px 20px;text-align:center;
+}
+.next-note .nn-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;
+  text-transform:uppercase;opacity:.7;
+}
+.next-note .nn-code{
+  font-family:'IBM Plex Mono',monospace;font-size:30px;letter-spacing:.35em;
+  color:var(--accent);margin:8px 0 6px;
+}
+.next-note .nn-hint{font-size:13px;opacity:.62;line-height:1.5}
+.victory-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
+.victory-actions .btn{text-decoration:none;display:inline-block}
+
+/* ---------- HUD ---------- */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:none;justify-content:space-between;align-items:center;
+  padding:22px 30px 10px;
+}
+#hud.on{display:flex}
+#timer{
+  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.15em;
+  color:var(--accent);
+}
+#timer.late{color:var(--error);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.45}}
+#hud .title-sm{
+  font-family:'Poiret One',cursive;font-size:16px;letter-spacing:.25em;opacity:.7;
+}
+#hud .hud-right{display:flex;gap:10px;align-items:center}
+.icon-btn{
+  background:none;border:1px solid var(--accent-soft);color:var(--accent);
+  width:34px;height:34px;font-size:15px;line-height:1;border-radius:0;
+  transition:border-color .2s;
+}
+.icon-btn:hover{border-color:var(--accent)}
+
+/* ---------- Room ---------- */
+#room-wrap{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  padding:64px 16px 96px;
+}
+#room-wrap.on{display:flex}
+#room{
+  width:min(96vw,900px);aspect-ratio:16/10;max-height:calc(100vh - 170px);
+  position:relative;
+}
+#room svg{width:100%;height:100%;display:block}
+.hotspot{cursor:pointer;transition:filter .2s}
+.hotspot:hover{filter:brightness(1.35) drop-shadow(0 0 6px var(--accent-glow))}
+.hotspot.done{cursor:default}
+.hotspot.done:hover{filter:none}
+
+/* ---------- Inventory ---------- */
+#inventory{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
+  justify-content:center;gap:12px;padding:16px 20px 26px;flex-wrap:wrap;
+  background:linear-gradient(transparent, var(--veil-fade) 40%);
+}
+#inventory.on{display:flex}
+.inv-item{
+  width:56px;height:56px;border:1px solid var(--accent-soft);
+  background:var(--surface-soft);display:flex;align-items:center;justify-content:center;
+  font-size:24px;position:relative;transition:border-color .2s, transform .15s;
+}
+.inv-item:hover{border-color:var(--accent);transform:translateY(-2px)}
+.inv-item .tag{
+  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;
+  color:var(--accent);white-space:nowrap;text-transform:uppercase;
+}
+#inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
+
+/* ---------- Modal ---------- */
+#modal-veil{
+  position:fixed;inset:0;background:var(--veil);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(2px);
+}
+#modal-veil.on{display:flex}
+#modal{
+  width:min(92vw,460px);max-height:86vh;overflow-y:auto;
+  background:var(--surface);border:1px solid var(--accent-dim);
+  padding:30px 28px 26px;position:relative;text-align:center;
+}
+#modal::before{
+  content:"";position:absolute;inset:6px;border:1px solid var(--accent-ghost);
+  pointer-events:none;
+}
+#modal h2{
+  font-family:'Poiret One',cursive;font-weight:400;font-size:26px;
+  letter-spacing:.12em;color:var(--accent);margin-bottom:14px;
+}
+#modal .body{font-size:18px;line-height:1.55;color:var(--text-soft);margin-bottom:18px}
+#modal .body em{color:var(--text);font-style:italic}
+
+/* ---------- Paper props ---------- */
+.paper{
+  background:var(--paper);color:var(--ink);padding:18px 16px;margin:14px 0;
+  font-size:17px;line-height:1.5;font-style:italic;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);
+  transform:rotate(-.6deg);
+}
+.paper.straight{transform:none}
+.paper .mono{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:14px;letter-spacing:.08em}
+
+/* ---------- Code entry ---------- */
+.code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.code-input{
+  width:52px;height:60px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:26px;background:var(--input-bg);border:1px solid var(--accent-dim);
+  color:var(--text);caret-color:var(--accent);text-transform:uppercase;
+}
+.code-input:focus{outline:none;border-color:var(--accent)}
+.word-input{
+  width:min(80%,260px);height:52px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:20px;
+  background:var(--input-bg);border:1px solid var(--accent-dim);
+  color:var(--text);text-transform:uppercase;margin:14px 0;letter-spacing:.2em;
+}
+.word-input:focus{outline:none;border-color:var(--accent)}
+
+/* ---------- Feedback & hints ---------- */
+.feedback{min-height:22px;font-size:15px;font-style:italic;margin-bottom:6px}
+.feedback.bad{color:var(--error)}
+.feedback.good{color:var(--success)}
+.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.hint-link{
+  background:none;border:none;color:var(--muted);font-size:14px;font-style:italic;
+  text-decoration:underline;text-underline-offset:3px;margin-top:14px;
+}
+.hint-link:hover{color:var(--accent)}
+.hint-text{
+  font-size:15px;color:var(--muted-bright);font-style:italic;margin-top:10px;line-height:1.5;
+  border-top:1px dashed var(--muted-rule);padding-top:10px;
+}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ---------- Victory ---------- */
+.stats{display:flex;gap:36px;margin:26px 0 34px}
+.stat .v{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--accent)}
+.stat .l{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;opacity:.6;margin-top:6px;
+}
+.series-note{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;opacity:.45;margin-top:26px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:600px){
+  #hud .title-sm{display:none}
+  .stats{gap:22px}
+  #room-wrap{padding:58px 8px 92px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
