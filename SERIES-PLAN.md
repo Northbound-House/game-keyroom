@@ -140,8 +140,10 @@ Two trails that meet at the teleprinter (echo of the Chart Room). **Cabin track:
 seat 7A, the galley, a lipstick-marked napkin, the **attaché case** in the overhead
 (*the safe again*). **Purser track:** the **telex** clatters a coded message — you
 learn to read it, and the letters' numbers turn out to be the **one-time key**.
-Decode → the film is evidence of corruption, not romance. Then you send one back.
-"V" shows her hand. *Provisional carry-out → `DAYLIGHT`.*
+Decode (`PXKCIK` → `LEDGER`) → the film is evidence of corruption, not romance. Then
+the finale makes you *write* in the cipher: encode `PRINT` → `TKPJX` and send it.
+"V" reveals the lantern-and-flags pin — the Meridian crest, in 1962.
+*Locks:* attaché `077` · decode `LEDGER` · transmit `TKPJX`. *Carries out → `PRINT`.*
 
 **III — ARRIVALS** · *~25–30 min · customs & passport hall, dawn landing · finale*
 Multi-zone finale (the lighthouse's floors, reincarnated as immigration → customs →

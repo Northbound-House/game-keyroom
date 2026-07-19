@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Red-Eye — The Red-Eye, Chapter II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-redeye.css">
+<style>
+/* ---- Chapter II components only. Shared formatting lives in theme.css ---- */
+
+/* telex printout */
+.telex{
+  background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.95;
+  padding:16px 14px;margin:14px 0;text-align:left;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);
+  border-left:3px dotted #b9ab8c;border-right:3px dotted #b9ab8c;
+}
+.telex .grp{background:#ddcfae;padding:1px 6px;letter-spacing:.24em;font-weight:500}
+.telex .dim{color:#7a715e}
+
+/* the receiving lamp */
+.tx-lamp{
+  width:22px;height:22px;border-radius:50%;background:#2b2f36;margin:0 auto 10px;
+  border:2px solid var(--accent-dim);
+}
+.tx-lamp.lit{background:var(--accent);box-shadow:0 0 16px 3px var(--accent-glow)}
+
+/* A=1..Z=26 reference */
+.cipher-table{
+  display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin:12px 0;
+}
+.cipher-table div{
+  background:var(--input-bg);border:1px solid var(--accent-ghost);
+  padding:5px 1px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text);
+}
+.cipher-table b{display:block;color:var(--accent);font-weight:500;font-size:12px}
+
+/* the repeating key */
+.keystrip{
+  font-family:'IBM Plex Mono',monospace;font-size:17px;letter-spacing:.28em;
+  color:var(--accent);background:var(--input-bg);
+  border:1px dashed var(--accent-dim);padding:11px 8px;margin:12px 0;
+}
+.keystrip small{display:block;letter-spacing:.14em;font-size:10px;color:var(--muted);margin-top:6px}
+
+/* lipstick napkin */
+.napkin{
+  background:#f7f2ea;color:#8d2f3f;font-style:italic;font-size:17px;line-height:1.5;
+  padding:20px 18px;margin:14px 0;transform:rotate(1.3deg);
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+
+/* transmit echo */
+.tx-echo{
+  font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.28em;
+  color:var(--accent);min-height:30px;margin:8px 0;
+}
+
+/* V's lapel pin */
+.pin{
+  display:inline-block;border:1px solid var(--accent);border-radius:50%;
+  width:74px;height:74px;line-height:70px;text-align:center;font-size:30px;
+  color:var(--accent);margin:10px auto;
+}
+
+@media (max-width:480px){
+  .cipher-table{grid-template-columns:repeat(7,1fr)}
+  .telex{font-size:11px}
+}
+</style>
+</head>
+<body class="chapter">
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">Meridian Airways 077 · Somewhere over the Atlantic · Level II</div>
+  <h1>THE RED-<span class="num">EYE</span></h1>
+  <p class="intro-story">Cabin lights down. Forty souls asleep at nineteen thousand feet, and the drone of four engines swallowing every other sound.<br><br>Coralie Vance is not in 7B. Her seat is turned down, her scarf still folded on it — and tucked into your own seat pocket, in a hand you don't recognise, a single line:<br><br><em>"When the cabin sleeps, come to the purser's station. Bring what she gave you. — V"</em></p>
+  <button class="btn" id="start-btn">Unbuckle</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.5;font-style:italic">Two trails run through this cabin. They meet at the teleprinter.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">25:00</div>
+  <div class="title-sm">THE RED-EYE</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="The darkened cabin of a 1962 airliner at night">
+    <defs>
+      <radialGradient id="cabin" cx="50%" cy="28%" r="85%">
+        <stop offset="0%" stop-color="#1b2c3e"/>
+        <stop offset="100%" stop-color="#080f18"/>
+      </radialGradient>
+      <radialGradient id="nightsky" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#0e2033"/>
+        <stop offset="100%" stop-color="#04080e"/>
+      </radialGradient>
+    </defs>
+
+    <rect x="0" y="0" width="800" height="392" fill="url(#cabin)"/>
+    <rect x="0" y="392" width="800" height="108" fill="#2a2118"/>
+    <!-- aisle carpet -->
+    <rect x="250" y="392" width="300" height="108" fill="#34281c"/>
+    <line x1="0" y1="392" x2="800" y2="392" stroke="#c69a6b" stroke-width="1" opacity=".35"/>
+    <!-- fuselage curve -->
+    <path d="M0 30 Q400 -18 800 30" stroke="#2f4459" stroke-width="3" fill="none" opacity=".7"/>
+
+    <!-- OVERHEAD BIN -->
+    <g id="hs-overhead" class="hotspot" tabindex="0" role="button" aria-label="Overhead luggage bin">
+      <rect x="150" y="52" width="330" height="54" rx="8" fill="#24384c" stroke="#3a8dde" stroke-width="2"/>
+      <line x1="315" y1="56" x2="315" y2="102" stroke="#16283b" stroke-width="2"/>
+      <circle cx="300" cy="79" r="4" fill="#c69a6b"/><circle cx="330" cy="79" r="4" fill="#c69a6b"/>
+    </g>
+
+    <!-- CABIN WINDOWS -->
+    <g id="hs-window" class="hotspot" tabindex="0" role="button" aria-label="Cabin window over the ocean">
+      <rect x="176" y="130" width="54" height="70" rx="26" fill="#3a8dde"/>
+      <rect x="182" y="136" width="42" height="58" rx="20" fill="url(#nightsky)"/>
+      <rect x="286" y="130" width="54" height="70" rx="26" fill="#3a8dde"/>
+      <rect x="292" y="136" width="42" height="58" rx="20" fill="url(#nightsky)"/>
+      <circle cx="313" cy="158" r="1.6" fill="#e8eef4" opacity=".8"/>
+      <circle cx="205" cy="170" r="1.4" fill="#e8eef4" opacity=".6"/>
+    </g>
+
+    <!-- SEAT 7A (yours) -->
+    <g id="hs-seat7a" class="hotspot" tabindex="0" role="button" aria-label="Your seat, 7A, and its seat pocket">
+      <rect x="176" y="232" width="96" height="120" rx="10" fill="#2e4a63"/>
+      <rect x="184" y="242" width="80" height="52" rx="8" fill="#3a5b78"/>
+      <rect x="186" y="306" width="76" height="34" rx="4" fill="#24394d" stroke="#c69a6b" stroke-width="1.2"/>
+      <text x="224" y="328" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#c69a6b">7A</text>
+      <rect x="176" y="352" width="96" height="10" fill="#1b2b3a"/>
+    </g>
+
+    <!-- SEAT 7B (Coralie's, empty) -->
+    <g id="hs-seat7b" class="hotspot" tabindex="0" role="button" aria-label="Coralie Vance's empty seat, 7B">
+      <rect x="290" y="232" width="96" height="120" rx="10" fill="#2e4a63"/>
+      <rect x="298" y="242" width="80" height="52" rx="8" fill="#3a5b78"/>
+      <!-- folded scarf + napkin -->
+      <path d="M300 300 q22 -12 44 -2 q20 9 34 1 v16 q-40 10 -78 0 z" fill="#8d2f3f" opacity=".85"/>
+      <rect x="330" y="318" width="34" height="22" fill="#f7f2ea" transform="rotate(-7 347 329)"/>
+      <text x="338" y="352" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#c69a6b">7B</text>
+      <rect x="290" y="352" width="96" height="10" fill="#1b2b3a"/>
+    </g>
+
+    <!-- LAVATORY DOOR -->
+    <g id="hs-lav" class="hotspot" tabindex="0" role="button" aria-label="Lavatory door">
+      <rect x="36" y="150" width="92" height="212" rx="6" fill="#22384c" stroke="#3a8dde" stroke-width="2"/>
+      <rect x="48" y="166" width="68" height="120" fill="none" stroke="#c69a6b" stroke-width="1.2"/>
+      <rect x="60" y="300" width="44" height="16" fill="#0f1c28"/>
+      <text x="82" y="312" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="8" fill="#5ec48c">VACANT</text>
+    </g>
+
+    <!-- GALLEY CURTAIN -->
+    <g id="hs-galley" class="hotspot" tabindex="0" role="button" aria-label="Galley curtain">
+      <rect x="560" y="120" width="110" height="242" fill="#1d3348"/>
+      <g stroke="#2a4a66" stroke-width="3">
+        <line x1="576" y1="120" x2="576" y2="362"/><line x1="598" y1="120" x2="598" y2="362"/>
+        <line x1="620" y1="120" x2="620" y2="362"/><line x1="642" y1="120" x2="642" y2="362"/>
+        <line x1="658" y1="120" x2="658" y2="362"/>
+      </g>
+      <rect x="556" y="112" width="118" height="12" fill="#c69a6b" opacity=".7"/>
+      <circle id="galley-glow" cx="615" cy="200" r="0" fill="#ffd47a" opacity=".22"/>
+    </g>
+
+    <!-- PURSER'S STATION + TELEX -->
+    <g id="hs-telex" class="hotspot" tabindex="0" role="button" aria-label="Purser's teleprinter">
+      <rect x="686" y="238" width="96" height="70" fill="#26201a" stroke="#3a8dde" stroke-width="2"/>
+      <rect x="696" y="216" width="76" height="24" fill="#efe7d6"/>
+      <g stroke="#b9ab8c" stroke-width="1">
+        <line x1="700" y1="224" x2="766" y2="224"/><line x1="700" y1="232" x2="766" y2="232"/>
+      </g>
+      <circle id="rx-lamp" cx="770" cy="252" r="6" fill="#2b2f36" stroke="#8a6f1d" stroke-width="1.2"/>
+      <rect x="696" y="286" width="56" height="8" fill="#c69a6b"/>
+      <rect x="686" y="308" width="96" height="54" fill="#1d2a36"/>
+    </g>
+
+    <!-- PURSER'S LOGBOOK -->
+    <g id="hs-log" class="hotspot" tabindex="0" role="button" aria-label="Purser's logbook on the jump seat">
+      <rect x="596" y="300" width="66" height="44" rx="3" fill="#6E2B2B" transform="rotate(-5 629 322)"/>
+      <rect x="602" y="306" width="54" height="32" fill="#efe7d6" transform="rotate(-5 629 322)"/>
+      <line x1="608" y1="316" x2="648" y2="313" stroke="#1a1408" stroke-width="1" opacity=".5"/>
+      <line x1="608" y1="324" x2="648" y2="321" stroke="#1a1408" stroke-width="1" opacity=".5"/>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">Somewhere below, a night desk answers</div>
+  <h1>SENT AT <span class="num">DAWN</span></h1>
+  <p class="intro-story">The teleprinter stutters, stops, and goes still. Five letters gone into the dark toward a newsroom that has been waiting eleven months for them.<br><br>V takes the seat beside you and, for the first time all night, stops pretending to work. <em>"He wasn't hiding an affair. He was hiding a ledger — and she carried it through six countries in a hatbox because nobody searches a film star's luggage."</em><br><br>Behind her, the cabin sleeps on. Ahead, the first grey line of morning over Portugal — and a customs hall that does not yet know what is about to walk through it.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <div class="next-note">
+    <div class="nn-label">Remember this word — you'll need it to unseal Chapter III</div>
+    <div class="nn-code">PRINT</div>
+    <div class="nn-hint">The word you sent into daylight. Return to the home screen and enter it to open <em>Chapter III — Arrivals</em>.</div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Continue to Chapter III →</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:25*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  inv:{},
+  flags:{ seat:false, napkin:false, log:false, bin:false, case:false,
+          decoded:false, metV:false, lav:false },
+  hintLevel:{},
+  soundOn:false, audioCtx:null, noiseGain:null,
+  soundLowpass:180, soundGainUp:3.4,      /* engine hum: deeper than the terminal */
+};
+
+/* in-world hint voice */
+const HINT_LABELS = { first:'Ask the purser', again:'Press him — he knows more' };
+
+/* timed story beats (engine reads these) */
+const BEATS = {
+  [18*60]:'A cabin light blinks on three rows back, then off. Somebody is awake who should not be.',
+  [10*60]:'The teleprinter chatters twice, unprompted, and falls silent again.',
+  [4*60]:'The engines change pitch — the first descent. Portugal is close.'
+};
+function onOvertime(){
+  toast('The seatbelt sign chimes on. Whatever you are going to send, send it now.');
+}
+
+/* ================= THE CIPHER =================
+   One-time numeric key from Coralie's letters: 4 · 19 · 7 · 22, repeating.
+   A=1 … Z=26. Encode = add the key. Decode = subtract it.
+   Incoming: PXKCIK -> LEDGER.  Outgoing: PRINT -> TKPJX.
+   =============================================== */
+const KEY = [4,19,7,22];
+const RX_GROUP = 'PXKCIK';
+const RX_PLAIN = 'LEDGER';
+const TX_PLAIN = 'PRINT';
+const TX_CIPHER = 'TKPJX';
+
+function cipherTableHTML(){
+  let h = '<div class="cipher-table">';
+  for (let i=0;i<26;i++){
+    h += '<div><b>'+String.fromCharCode(65+i)+'</b>'+(i+1)+'</div>';
+  }
+  return h + '</div>';
+}
+function keyStripHTML(note){
+  return '<div class="keystrip">4 &nbsp; 19 &nbsp; 7 &nbsp; 22<small>'+note+'</small></div>';
+}
+
+/* ================= INVENTORY ================= */
+function inspectItem(k){
+  if (k === 'letters'){
+    openModal({
+      title:'The Love Letters',
+      body:'You have read them a dozen times tonight. The endearments are ordinary. The <em>numbers</em> are not — the same four, in the same order, in every single letter.',
+      extra:'<div class="paper">"…I count the days like a fool: <span class="mono">4</span>, then <span class="mono">19</span>, then <span class="mono">7</span>, then <span class="mono">22</span>, and then your face at the gate. Burn this. You never do. — J."</div>'
+        + (S.inv.cipher ? keyStripHTML('the key, in order, repeating') : '<div style="font-style:italic;opacity:.72;font-size:14px">Four numbers a woman in love would never need to repeat.</div>'),
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  if (k === 'film'){
+    openModal({
+      title:'Film Canister',
+      body: S.flags.decoded
+        ? 'Thirty-six exposures of a <em>ledger</em> — payments, dates, names of inspectors. Roscoe photographed it a page at a time and posted it to her, one frame per letter.'
+        : 'Steel, taped, unlabelled. Stamped along the rim:',
+      extra:'<div class="paper straight"><span class="mono">MERIDIAN AIR — CORPORATE<br>REEL 3 · DO NOT DEVELOP<br>PROPERTY RETURN: J. ROSCOE, VP</span></div>',
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  if (k === 'bpass'){
+    openModal({title:'Boarding Pass · 077',body:'Seat 7A. Lisbon by morning. It already feels like something you were handed rather than something you bought.',actions:[closeBtn()]});
+    return;
+  }
+  if (k === 'cipher'){
+    openModal({
+      title:"Roscoe's Cipher Card",
+      body:'A stiff card, typed and much handled. The method is almost insultingly simple — which is why it has never once been broken:',
+      extra:'<div class="paper straight"><span class="mono">EACH LETTER IS A NUMBER. A=1 … Z=26.<br>ADD THE KEY TO SEND. SUBTRACT IT TO READ.<br>THE KEY REPEATS. THE KEY IS HERS.</span></div>'
+        + keyStripHTML('from her letters — 4, 19, 7, 22, then round again')
+        + cipherTableHTML(),
+      actions:[closeBtn()]
+    });
+    return;
+  }
+}
+
+/* ================= FLOOR 1 — THE CABIN ================= */
+
+/* --- your seat: V's note --- */
+bindHotspot('hs-seat7a', () => {
+  S.flags.seat = true;
+  openModal({
+    title:'Seat 7A',
+    body:'Your own seat, and the note that started this walk down the aisle:',
+    extra:'<div class="paper">"When the cabin sleeps, come to the purser\'s station. Bring what she gave you.<br><br>He is three rows behind you and he is not asleep. Do not look. — V"</div>',
+    actions:[closeBtn()]
+  });
+});
+
+/* --- Coralie's seat: the napkin --- */
+bindHotspot('hs-seat7b', () => {
+  S.flags.napkin = true;
+  openModal({
+    title:'Seat 7B — Empty',
+    body:'Her scarf is folded as though she meant to come back. Under it, a cocktail napkin, blotted once with lipstick:',
+    extra:'<div class="napkin">"J — if they take me first, it\'s all in the case. I set the catch to the only number that was ever really ours. — C"</div>',
+    actions:[closeBtn()],
+    puzzleId:'case'
+  });
+});
+
+/* --- purser's logbook: establishes "ours" --- */
+bindHotspot('hs-log', () => {
+  S.flags.log = true;
+  openModal({
+    title:"The Purser's Logbook",
+    body:'Crew notes and repeat passengers, kept in a bored, tidy hand. Two names recur down the page like a heartbeat:',
+    extra:'<div class="paper straight"><span class="mono">VANCE, C. &nbsp;+ &nbsp;ROSCOE, J.<br>'
+      +'MAR — FLT 077 · 7A/7B<br>APR — FLT 077 · 7A/7B<br>MAY — FLT 077 · 7A/7B<br>JUN — FLT 077 · 7A/7B</span><br>'
+      +'<em>margin, pencil:</em> "Always the same flight. Never the same story."</div>'
+      +'<div style="font-style:italic;opacity:.72;font-size:14px">Twenty-two months. Always 077.</div>',
+    actions:[closeBtn()],
+    puzzleId:'case'
+  });
+});
+
+/* --- lavatory: atmosphere + nudge --- */
+bindHotspot('hs-lav', () => {
+  S.flags.lav = true;
+  openModal({
+    title:'The Lavatory',
+    body:'Empty. The mirror still holds the ghost of breath on it, and in the fog somebody has drawn — with a fingertip, hurriedly — an arrow pointing <em>up</em>.<br><br>Up, in a cabin this size, means one thing: the bins.',
+    actions:[closeBtn()]
+  });
+});
+
+/* --- overhead bin --> the attaché case --- */
+bindHotspot('hs-overhead', () => {
+  if (!S.flags.bin){
+    S.flags.bin = true;
+    openModal({
+      title:'The Overhead Bin',
+      body:'Coats, a hatbox, a cased umbrella — and pushed to the back where the curve of the fuselage hides it, a slim <em>attaché case</em> in oxblood leather. The initials by the handle are <span style="font-family:\'IBM Plex Mono\',monospace">J.R.</span>',
+      actions:[actionBtn('Take it down', () => { closeModal(); openCase(); }), closeBtn()]
+    });
+  } else {
+    openCase();
+  }
+});
+
+/* --- the case: combination 077 --- */
+function openCase(){
+  if (S.flags.case){
+    openModal({title:'The Attaché Case',body:'Open, and lighter than it looks. You have the card.',actions:[closeBtn()]});
+    return;
+  }
+  const row = codeRow(3);
+  const submit = actionBtn('Try the catch', () => {
+    if (readCode(row) === '077'){
+      S.flags.case = true;
+      addItem('cipher','🗝','Cipher card');
+      feedback('The catch gives on the third number.',true);
+      setTimeout(() => openModal({
+        title:'Inside the Case',
+        body:'No documents. No money. A stiff typed <em>cipher card</em>, and a letter that was clearly never meant to be posted:',
+        extra:'<div class="paper">"C —<br><br>If you are reading this on the aeroplane then I did not make the gate, and you are carrying it alone.<br><br>They will say it was an affair. Let them. An affair is the only thing a man in my position can be caught at that does not get him killed.<br><br>The reel is the ledger. The key is in your letters, where it has always been. Send it where it cannot be bought. — J"</div>',
+        actions:[closeBtn('Pocket the card')]
+      }), 700);
+    } else {
+      feedback('The catch holds. Three digits, and not those three.',false);
+    }
+  });
+  openModal({
+    title:'The Attaché Case',
+    body:'Oxblood leather, brass catch, a three-number wheel below the handle. Her napkin said he set it to <em>the only number that was ever really ours</em>.',
+    actions:[submit, closeBtn()],
+    puzzleId:'case',
+    onOpen:() => mountCode(row)
+  });
+}
+
+/* --- galley: V, after the decode --- */
+bindHotspot('hs-galley', () => {
+  if (!S.flags.decoded){
+    openModal({
+      title:'The Galley',
+      body:'A stewardess in Meridian blue is drying the same cup she was drying twenty minutes ago. She does not look up.<br><br><em>"Not yet,"</em> she says pleasantly, to the cup. <em>"Read it first."</em>',
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  S.flags.metV = true;
+  document.getElementById('galley-glow').setAttribute('r','58');
+  openModal({
+    title:'V',
+    body:'She sets the cup down at last.<br><br><em>"Veronique. I have been on this route since fifty-four, and I have carried eleven people out of countries that wanted them. Roscoe was going to be twelve."</em><br><br>She turns her lapel toward the light — a small enamel pin, worn thin: <em>a lantern, over crossed flags.</em><br><br><em>"There is a night desk in Lisbon that has been waiting eleven months for that reel. Don\'t send them the ledger. Send them one word, in his cipher, so they know it\'s real."</em>',
+    extra:'<div class="pin">✦</div><div class="paper straight"><span class="mono">SEND: <b style="font-size:17px;letter-spacing:.3em">PRINT</b></span><br><em>"Encode it before you send it. Add the key. They will subtract it and know exactly who it came from."</em></div>',
+    actions:[closeBtn('To the teleprinter')]
+  });
+});
+
+/* --- window: atmosphere --- */
+bindHotspot('hs-window', () => {
+  openModal({
+    title:'The Cabin Window',
+    body: S.flags.decoded
+      ? 'Black water, and somewhere under it the cable that will carry five letters faster than this aeroplane can carry you.'
+      : 'Nothing out there but the Atlantic and your own face looking back, lit blue by the wing light.<br><br>Three rows behind, reflected in the glass, a man who is not asleep looks steadily at the back of your head.',
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= THE TELEPRINTER ================= */
+bindHotspot('hs-telex', () => {
+  if (S.flags.decoded && S.flags.metV){ showTransmit(); return; }
+  if (S.flags.decoded){
+    openModal({
+      title:'The Teleprinter',
+      body:'The message reads clear now: <em>a ledger.</em> But a machine that can shout across an ocean is no use until you know what to shout — <em>and to whom.</em><br><br>The stewardess in the galley has been waiting for you to work that out.',
+      actions:[closeBtn()],
+      puzzleId:'decode'
+    });
+    return;
+  }
+  showReceive();
+});
+
+/* --- receive + decode --- */
+function showReceive(){
+  const hasCard = !!S.inv.cipher;
+  const input = document.createElement('input');
+  input.className = 'word-input'; input.maxLength = 10; input.placeholder = 'PLAINTEXT';
+  input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z]/g,'').toUpperCase(); });
+
+  const submit = actionBtn('Read it', () => {
+    if (input.value === RX_PLAIN){
+      S.flags.decoded = true;
+      document.getElementById('rx-lamp').setAttribute('fill','#3a8dde');
+      feedback('Six letters, and the whole night turns over.',true);
+      setTimeout(() => openModal({
+        title:'A Ledger',
+        body:'Not a love affair. A <em>ledger.</em><br><br>Thirty-six frames of a book that Meridian Airways keeps in a safe in Long Island City: inspectors paid, airframes signed off that were never opened, a run of numbers that stops abruptly in March next to the word <span style="font-family:\'IBM Plex Mono\',monospace">GRIEVANCE</span>.<br><br>Roscoe photographed it a page at a time and posted it to a film star, one frame per letter, because nobody on earth searches Coralie Vance\'s luggage.<br><br>The scandal was the <em>cover</em>. It always was.',
+        actions:[closeBtn('Find the woman in blue')]
+      }), 1000);
+    } else {
+      feedback('That is not what the key gives back. Work it letter by letter.',false);
+    }
+  });
+
+  const extra =
+    '<div class="tx-lamp' + (hasCard ? ' lit' : '') + '" aria-hidden="true"></div>'
+    + '<div class="telex">'
+    + '<span class="dim">ZCZC  MER077  RELAY LIS</span><br>'
+    + 'MERIDIAN OPS — EYES J ROSCOE VP<br>'
+    + 'REEL THREE CONTENTS CONFIRMED THIS END<br>'
+    + 'SUBJECT READS <span class="grp">' + RX_GROUP + '</span><br>'
+    + 'ADVISE BEFORE LISBON<br>'
+    + '<span class="dim">NNNN</span>'
+    + '</div>'
+    + (hasCard
+        ? keyStripHTML('her key — repeat it across the group') + cipherTableHTML()
+        : '<div style="font-style:italic;opacity:.75">Six letters that mean nothing at all without the method. Roscoe kept the method with him.</div>');
+
+  openModal({
+    title:'The Teleprinter — Receiving',
+    body: hasCard
+      ? 'The drum has printed the same message four times while you stood here. One group is not English. <em>Subtract the key and read it.</em>'
+      : 'The drum turns, prints, and waits. Ops in New York is asking Roscoe a question — and one word of it is deliberately not a word.',
+    extra,
+    actions: hasCard ? [submit, closeBtn()] : [closeBtn()],
+    puzzleId:'decode',
+    onOpen: () => { if (hasCard) document.getElementById('m-extra').appendChild(input); }
+  });
+}
+
+/* --- transmit: encode PRINT --> TKPJX --- */
+function showTransmit(){
+  const echo = document.createElement('div');
+  echo.className = 'tx-echo'; echo.textContent = '…';
+
+  const input = document.createElement('input');
+  input.className = 'word-input'; input.maxLength = 5; input.placeholder = 'CIPHERTEXT';
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/[^a-zA-Z]/g,'').toUpperCase();
+    echo.textContent = input.value.split('').join(' ') || '…';
+  });
+
+  const send = actionBtn('Send', () => {
+    if (input.value === TX_CIPHER){
+      win();
+    } else if (input.value === TX_PLAIN){
+      feedback('Not in the clear — anyone on the relay could read that. Add the key first.',false);
+    } else {
+      feedback('Lisbon acknowledges nothing. Check it against the table, letter by letter.',false);
+    }
+  });
+
+  openModal({
+    title:'The Teleprinter — Sending',
+    body:'You have spent this whole flight learning to <em>read</em> him. Now the machine wants you to write.<br><br>Encode <span style="font-family:\'IBM Plex Mono\',monospace;letter-spacing:.2em">' + TX_PLAIN + '</span> with her key — <em>add</em>, this time — and send the group.',
+    extra: keyStripHTML('add the key · A=1 … Z=26 · wrap past Z back to A') + cipherTableHTML(),
+    actions:[send, closeBtn()],
+    puzzleId:'transmit',
+    onOpen: () => {
+      const ex = document.getElementById('m-extra');
+      ex.insertBefore(echo, ex.firstChild);
+      ex.appendChild(input);
+      input.focus();
+    }
+  });
+}
+
+/* ================= HINTS ================= */
+const HINTS = {
+  case:[
+    'The purser, not looking up from his manifest: <em>"Regulars get sentimental about odd things. Flight numbers, mostly."</em>',
+    '<em>"Her napkin says the only number that was ever theirs. My logbook says they took the same flight every month for two years."</em>',
+    '<em>"It is the flight you are sitting on. Zero-seven-seven."</em>'
+  ],
+  decode:[
+    '<em>"That group in the middle of the message is not English, and Ops knows it. Roscoe carried the method on him — and you have been in his case."</em>',
+    '<em>"Letters are numbers. A is one, Z is twenty-six. Her four numbers repeat across the group. To read what came in, take them away."</em>',
+    '<em>"P minus 4 is L. X minus 19 is E. Keep going: the word is LEDGER."</em>'
+  ],
+  transmit:[
+    '<em>"Reading was the easy half. Now do it backwards — the same key, the other direction."</em>',
+    '<em>"P plus 4. R plus 19. I plus 7. N plus 22 — and when you run past Z, come round to A again."</em>',
+    '<em>"PRINT encodes to T-K-P-J-X."</em>'
+  ]
+};
+
+/* ================= WIN ================= */
+function win(){
+  finishChapter(25*60, [
+    {maxMinutes:12, maxHints:0, name:'The Courier'},
+    {maxMinutes:17, maxHints:2, name:"Purser's Confidant"},
+    {maxMinutes:25, name:'Night Passenger'},
+    {name:'Standby'}
+  ]);
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click', () => {
+  startChapter();
+  addItem('letters','✉','Love letters');
+  addItem('film','🎞','Film canister');
+  addItem('bpass','🎫','Boarding pass');
+});
+renderInv();
+</script>
+</body>
+</html>

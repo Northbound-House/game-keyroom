@@ -207,9 +207,19 @@ footer a:hover{color:var(--brass)}
       <div class="ep-info">
         <div class="ep-title">THE RED-EYE</div>
         <div class="ep-sub">Over the Atlantic, the telex spells out what the love letters were really counting.</div>
-        <div class="ep-meta">≈ 22 min · in production</div>
+        <div class="ep-meta" id="meta-r2">≈ 25 min · sealed</div>
       </div>
-      <div class="ep-action"><span class="btn locked" aria-disabled="true">In production</span></div>
+      <div class="ep-action" id="action-r2"></div>
+    </div>
+    <div class="gate" id="gate-r2">
+      <div class="gate-inner">
+        <p>This chapter is sealed. Enter the seat you boarded Flight 077 in.</p>
+        <div class="gate-row">
+          <input class="gate-input" id="input-r2" maxlength="8" placeholder="····" aria-label="Red-Eye Chapter II code">
+          <button class="btn" id="try-r2">Unseal</button>
+        </div>
+        <div class="gate-feedback" id="fb-r2"></div>
+      </div>
     </div>
 
     <!-- Episode III -->
@@ -251,6 +261,13 @@ const EPISODES = {
     hash: '4ea140588150773ce3aace786aeef7f4049ce100fa649c94fbbddb960f1da942',
     wrong: 'The shore stays dark. That was not the word.',
     right: 'The Lantern answers. Go ashore.'
+  },
+  /* --- Series Two: The Red-Eye --- */
+  r2: {
+    href: 'games/redeye-2-the-red-eye.html',
+    hash: 'fdee4726c2847c8788b39cb69f2777cf672711bb11d9622b07f0fe23fac1480e',
+    wrong: 'The gate agent shakes her head. Nobody sat there on 077.',
+    right: 'Seat confirmed. Welcome aboard the red-eye.'
   }
 };
 
@@ -318,7 +335,7 @@ async function tryUnlock(n){
   }
 }
 
-[2,3].forEach(n=>{
+Object.keys(EPISODES).forEach(n=>{
   renderEpisode(n);
   document.getElementById('try-'+n).addEventListener('click', ()=>tryUnlock(n));
   document.getElementById('input-'+n).addEventListener('keydown', e=>{
