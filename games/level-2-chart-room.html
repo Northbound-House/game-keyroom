@@ -6,189 +6,10 @@
 <title>The Chart Room — Stateroom 77, Level II</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-meridian.css">
 <style>
-:root{
-  --night:#0A1622;
-  --hull:#122436;
-  --brass:#C9A227;
-  --brass-dim:#8a6f1d;
-  --parchment:#E8DCC3;
-  --oxblood:#6E2B2B;
-  --fog:#3E6B6B;
-  --ink:#1a1408;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  background:var(--night);
-  color:var(--parchment);
-  font-family:'Cormorant Garamond',serif;
-  overflow:hidden;
-  user-select:none;
-}
-button{font-family:inherit;cursor:pointer;touch-action:manipulation}
-
-.deco-frame{
-  position:fixed;inset:8px;
-  border:1px solid var(--brass-dim);
-  outline:1px solid rgba(201,162,39,.25);
-  outline-offset:4px;
-  pointer-events:none;z-index:50;
-}
-.deco-frame::before,.deco-frame::after{
-  content:"";position:absolute;width:26px;height:26px;
-  border:1px solid var(--brass);
-}
-.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
-.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
-
-.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;z-index:40;overflow-y:auto}
-.screen.active{display:flex}
 #intro{background:radial-gradient(ellipse at 50% 120%, #16334a 0%, var(--night) 65%)}
-.eyebrow{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
-  text-transform:uppercase;color:var(--brass);margin-bottom:18px;
-}
-h1{
-  font-family:'Poiret One',cursive;font-weight:400;
-  font-size:clamp(38px,8vw,74px);letter-spacing:.08em;line-height:1.05;
-}
-h1 .num{color:var(--brass)}
-.intro-story{
-  max-width:540px;font-size:clamp(16px,2.3vw,20px);line-height:1.55;
-  margin:24px 0 30px;color:#d8ccb2;font-style:italic;
-}
-.btn{
-  background:none;border:1px solid var(--brass);color:var(--brass);
-  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.3em;
-  text-transform:uppercase;padding:14px 34px;transition:all .25s;
-}
-.btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
-.btn.small{padding:8px 18px;font-size:11px;letter-spacing:.2em}
-.btn.ghost{border-color:var(--brass-dim,rgba(197,160,90,.4));color:var(--parchment,#d8c9a8);opacity:.75}
-.btn.ghost:hover,.btn.ghost:focus-visible{opacity:1;background:none;border-color:var(--brass);color:var(--brass)}
-.next-note{margin:6px auto 26px;max-width:420px;border:1px dashed var(--brass-dim,rgba(197,160,90,.4));border-radius:4px;padding:16px 20px;text-align:center}
-.next-note .nn-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;opacity:.7}
-.next-note .nn-code{font-family:'IBM Plex Mono',monospace;font-size:30px;letter-spacing:.35em;color:var(--brass);margin:8px 0 6px}
-.next-note .nn-hint{font-size:13px;opacity:.62;line-height:1.5}
-.victory-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
-.victory-actions .btn{text-decoration:none;display:inline-block}
-
-#hud{
-  position:fixed;top:0;left:0;right:0;z-index:30;
-  display:none;justify-content:space-between;align-items:center;
-  padding:22px 30px 10px;
-}
-#hud.on{display:flex}
-#timer{
-  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.15em;
-  color:var(--brass);
-}
-#timer.late{color:#c96a4a;animation:pulse 1.2s infinite}
-@keyframes pulse{50%{opacity:.45}}
-#hud .title-sm{
-  font-family:'Poiret One',cursive;font-size:16px;letter-spacing:.25em;opacity:.7
-}
-#hud .hud-right{display:flex;gap:10px;align-items:center}
-.icon-btn{
-  background:none;border:1px solid rgba(201,162,39,.4);color:var(--brass);
-  width:34px;height:34px;font-size:15px;line-height:1;
-  transition:border-color .2s;
-}
-.icon-btn:hover{border-color:var(--brass)}
-
-#room-wrap{
-  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-  padding:64px 16px 96px;
-}
-#room-wrap.on{display:flex}
-#room{
-  width:min(96vw,900px);aspect-ratio:16/10;max-height:calc(100vh - 170px);
-  position:relative;
-}
-#room svg{width:100%;height:100%;display:block}
-.hotspot{cursor:pointer;transition:filter .2s}
-.hotspot:hover{filter:brightness(1.35) drop-shadow(0 0 6px rgba(201,162,39,.55))}
-
-#inventory{
-  position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
-  justify-content:center;gap:12px;padding:16px 20px 26px;
-  background:linear-gradient(transparent, rgba(6,12,19,.92) 40%);
-  flex-wrap:wrap;
-}
-#inventory.on{display:flex}
-.inv-item{
-  width:56px;height:56px;border:1px solid rgba(201,162,39,.45);
-  background:rgba(18,36,54,.8);display:flex;align-items:center;justify-content:center;
-  font-size:24px;position:relative;transition:border-color .2s, transform .15s;
-}
-.inv-item:hover{border-color:var(--brass);transform:translateY(-2px)}
-.inv-item .tag{
-  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
-  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;
-  color:var(--brass);white-space:nowrap;text-transform:uppercase;
-}
-#inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
-
-#modal-veil{
-  position:fixed;inset:0;background:rgba(4,9,15,.78);z-index:60;
-  display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(2px);
-}
-#modal-veil.on{display:flex}
-#modal{
-  width:min(92vw,480px);max-height:86vh;overflow-y:auto;
-  background:var(--hull);border:1px solid var(--brass-dim);
-  padding:30px 28px 26px;position:relative;text-align:center;
-}
-#modal::before{
-  content:"";position:absolute;inset:6px;border:1px solid rgba(201,162,39,.2);
-  pointer-events:none;
-}
-#modal h2{
-  font-family:'Poiret One',cursive;font-weight:400;font-size:26px;
-  letter-spacing:.12em;color:var(--brass);margin-bottom:14px;
-}
-#modal .body{font-size:18px;line-height:1.55;color:#dfd4bc;margin-bottom:18px}
-#modal .body em{color:var(--parchment)}
-.paper{
-  background:var(--parchment);color:var(--ink);padding:18px 16px;margin:14px 0;
-  font-size:17px;line-height:1.5;font-style:italic;
-  box-shadow:0 2px 10px rgba(0,0,0,.45);
-  transform:rotate(-.6deg);
-}
-.paper .mono{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:13px;letter-spacing:.06em}
-.paper.straight{transform:none}
-.code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
-.code-input{
-  width:48px;height:58px;text-align:center;font-family:'IBM Plex Mono',monospace;
-  font-size:24px;background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
-  color:var(--parchment);caret-color:var(--brass);text-transform:uppercase;
-}
-.code-input:focus{outline:none;border-color:var(--brass)}
-.word-input{
-  width:min(80%,260px);height:52px;text-align:center;font-family:'IBM Plex Mono',monospace;
-  font-size:20px;background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
-  color:var(--parchment);text-transform:uppercase;margin:14px 0;letter-spacing:.2em;
-}
-.word-input:focus{outline:none;border-color:var(--brass)}
-.feedback{min-height:22px;font-size:15px;font-style:italic;margin-bottom:6px}
-.feedback.bad{color:#c96a4a}
-.feedback.good{color:#8fbf8f}
-.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-.hint-link{
-  background:none;border:none;color:var(--fog);font-size:14px;font-style:italic;
-  text-decoration:underline;text-underline-offset:3px;margin-top:14px;
-}
-.hint-link:hover{color:var(--brass)}
-.hint-text{
-  font-size:15px;color:#a8c2c2;font-style:italic;margin-top:10px;line-height:1.5;
-  border-top:1px dashed rgba(62,107,107,.5);padding-top:10px;
-}
-.shake{animation:shake .35s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
-
-/* Morse display */
 .morse-line{
   font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.12em;
   color:var(--brass);background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
@@ -215,9 +36,9 @@ h1 .num{color:var(--brass)}
   column-count:4;column-gap:14px;text-align:left;margin:12px auto 0;max-width:360px;
   line-height:1.9;
 }
-@media (max-width:480px){.morse-ref{column-count:3}}
-
-/* Flag rendering */
+@media (max-width:480px){
+  .morse-ref{column-count:3}
+}
 .flag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:14px 0;justify-items:center}
 .flag-cell{display:flex;flex-direction:column;align-items:center;gap:5px}
 .flag-cell svg{width:56px;height:40px;border:1px solid rgba(0,0,0,.35);box-shadow:0 2px 6px rgba(0,0,0,.4)}
@@ -225,26 +46,17 @@ h1 .num{color:var(--brass)}
 .flag-row{display:flex;gap:14px;justify-content:center;margin:12px 0;flex-wrap:wrap}
 .flag-row svg{width:56px;height:40px;border:1px solid rgba(0,0,0,.35);box-shadow:0 2px 6px rgba(0,0,0,.4)}
 .flag-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink);text-align:center;margin-top:4px}
-
 #victory{background:radial-gradient(ellipse at 50% -20%, #1b3a54 0%, var(--night) 70%)}
-.stats{display:flex;gap:36px;margin:26px 0 34px}
-.stat .v{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--brass)}
-.stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;margin-top:6px}
-
 @media (max-width:600px){
-  #hud .title-sm{display:none}
-  .stats{gap:22px}
-  #room-wrap{padding:58px 8px 100px}
   .flag-grid{grid-template-columns:repeat(4,1fr);gap:8px}
   .flag-cell svg,.flag-row svg{width:46px;height:33px}
 }
 @media (prefers-reduced-motion: reduce){
-  *{animation:none!important;transition:none!important}
   .morse-lamp.lit{box-shadow:none}
 }
 </style>
 </head>
-<body>
+<body class="chapter">
 
 <div class="deco-frame" aria-hidden="true"></div>
 
@@ -411,7 +223,11 @@ h1 .num{color:var(--brass)}
   </div>
 </div>
 
+<script src="../assets/engine.js"></script>
 <script>
+/* modal-close hook: the engine calls this whenever a modal closes */
+function onModalClose(){ stopMorsePlayback(); }
+
 /* ================= STATE ================= */
 const S = {
   t:25*60, timerId:null, overtime:false, hintsUsed:0,
@@ -430,7 +246,7 @@ const S = {
 };
 
 /* ================= TIMER ================= */
-function fmt(t){const neg=t<0;t=Math.abs(t);const m=Math.floor(t/60),s=t%60;return (neg?'+':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+
 function tick(){
   S.t--;
   const el=document.getElementById('timer');
@@ -440,59 +256,9 @@ function tick(){
 }
 
 /* ================= SOUND ================= */
-function ensureAudio(){
-  if(S.audioCtx)return;
-  const C=new (window.AudioContext||window.webkitAudioContext)();
-  const bufferSize=2*C.sampleRate;
-  const buffer=C.createBuffer(1,bufferSize,C.sampleRate);
-  const data=buffer.getChannelData(0);
-  let last=0;
-  for(let i=0;i<bufferSize;i++){const w=Math.random()*2-1;data[i]=(last+.02*w)/1.02;last=data[i];data[i]*=2.8;}
-  const src=C.createBufferSource();src.buffer=buffer;src.loop=true;
-  const filt=C.createBiquadFilter();filt.type='lowpass';filt.frequency.value=220;
-  const gain=C.createGain();gain.gain.value=0;
-  src.connect(filt).connect(gain).connect(C.destination);src.start();
-  S.audioCtx=C;S.noiseGain=gain;
-}
-function toggleSound(){
-  ensureAudio();
-  S.soundOn=!S.soundOn;
-  S.noiseGain.gain.value=S.soundOn?0.05:0;
-  document.getElementById('sound-btn').style.opacity=S.soundOn?1:.4;
-}
-document.getElementById('sound-btn').addEventListener('click',toggleSound);
-document.getElementById('sound-btn').style.opacity=.4;
-function beep(dur){ // morse beep, only if sound on
-  if(!S.soundOn||!S.audioCtx)return;
-  const o=S.audioCtx.createOscillator(),g=S.audioCtx.createGain();
-  o.frequency.value=620;o.type='sine';
-  g.gain.setValueAtTime(0.08,S.audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001,S.audioCtx.currentTime+dur/1000);
-  o.connect(g).connect(S.audioCtx.destination);
-  o.start();o.stop(S.audioCtx.currentTime+dur/1000);
-}
 
 /* ================= INVENTORY ================= */
-function addItem(key,icon,label){
-  if(S.inv[key])return;
-  S.inv[key]={icon,label};
-  renderInv();
-}
-function removeItem(key){delete S.inv[key];renderInv();}
-function renderInv(){
-  const inv=document.getElementById('inventory');
-  inv.innerHTML='';
-  const keys=Object.keys(S.inv);
-  if(!keys.length){inv.innerHTML='<span id="inv-empty">Your pockets are empty.</span>';return;}
-  keys.forEach(k=>{
-    const it=S.inv[k];
-    const d=document.createElement('button');
-    d.className='inv-item';d.innerHTML=it.icon+'<span class="tag">'+it.label+'</span>';
-    d.setAttribute('aria-label',it.label);
-    d.addEventListener('click',()=>inspectItem(k));
-    inv.appendChild(d);
-  });
-}
+
 function inspectItem(k){
   if(k==='manifest'){
     if(!S.flags.manifestOpen){
@@ -527,23 +293,6 @@ function inspectItem(k){
 }
 
 /* ================= MODAL ================= */
-const veil=document.getElementById('modal-veil');
-function openModal({title,body,extra='',actions=[],puzzleId=null,onOpen=null}){
-  document.getElementById('m-title').textContent=title;
-  document.getElementById('m-body').innerHTML=body;
-  document.getElementById('m-extra').innerHTML=extra;
-  const fb=document.getElementById('m-feedback');fb.textContent='';fb.className='feedback';
-  const act=document.getElementById('m-actions');act.innerHTML='';
-  actions.forEach(a=>act.appendChild(a));
-  renderHints(puzzleId);
-  veil.classList.add('on');
-  if(onOpen)onOpen();
-}
-function closeModal(){veil.classList.remove('on');stopMorsePlayback();}
-veil.addEventListener('click',e=>{if(e.target===veil)closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-function closeBtn(txt='Step back'){const b=document.createElement('button');b.className='btn small';b.textContent=txt;b.addEventListener('click',closeModal);return b;}
-function feedback(msg,ok){const fb=document.getElementById('m-feedback');fb.textContent=msg;fb.className='feedback '+(ok?'good':'bad');if(!ok){document.getElementById('modal').classList.add('shake');setTimeout(()=>document.getElementById('modal').classList.remove('shake'),380);}}
 
 /* ================= HINTS ================= */
 const HINTS={
@@ -578,33 +327,8 @@ const HINTS={
     '<em>"HOME: four dots · dash-dash-dash · dash-dash · one dot. (.... / --- / -- / .)"</em>'
   ]
 };
-function renderHints(pid){
-  const z=document.getElementById('m-hintzone');z.innerHTML='';
-  if(!pid||!HINTS[pid])return;
-  const lvl=S.hintLevel[pid]||0;
-  for(let i=0;i<lvl;i++){const p=document.createElement('div');p.className='hint-text';p.innerHTML=HINTS[pid][i];z.appendChild(p);}
-  if(lvl<3){
-    const b=document.createElement('button');b.className='hint-link';
-    b.textContent=lvl===0?'Ask the steward (speaking tube)':'Ask again — be more direct';
-    b.addEventListener('click',()=>{S.hintLevel[pid]=lvl+1;S.hintsUsed++;renderHints(pid);});
-    z.appendChild(b);
-  }
-}
 
 /* ================= INPUT HELPERS ================= */
-function codeRow(n,type='num'){
-  const wrap=document.createElement('div');wrap.className='code-row';
-  for(let i=0;i<n;i++){
-    const inp=document.createElement('input');
-    inp.className='code-input';inp.maxLength=1;
-    inp.inputMode=type==='num'?'numeric':'text';
-    inp.addEventListener('input',()=>{inp.value=inp.value.replace(type==='num'?/[^0-9]/g:/[^a-zA-Z]/g,'');if(inp.value&&inp.nextElementSibling)inp.nextElementSibling.focus();});
-    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&inp.previousElementSibling)inp.previousElementSibling.focus();});
-    wrap.appendChild(inp);
-  }
-  return wrap;
-}
-function readCode(wrap){return [...wrap.querySelectorAll('input')].map(i=>i.value).join('').toUpperCase();}
 
 /* ================= FLAGS (SVG builders) ================= */
 function flagSVG(letter){
@@ -672,11 +396,6 @@ function playMorse(pattern){
 }
 
 /* ================= HOTSPOTS ================= */
-function bindHotspot(id,fn){
-  const el=document.getElementById(id);
-  el.addEventListener('click',fn);
-  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});
-}
 
 /* --- Drawer: morse card + magnifier --- */
 bindHotspot('hs-drawer',()=>{

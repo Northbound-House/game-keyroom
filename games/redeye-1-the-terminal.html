@@ -6,175 +6,10 @@
 <title>The Terminal — The Red-Eye, Chapter I</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-redeye.css">
 <style>
-:root{
-  --night:#0b1521;
-  --panam:#0e4d92;
-  --sky:#3a8dde;
-  --chrome:#cdd5dd;
-  --tan:#c69a6b;
-  --neon:#ff3b30;
-  --cream:#efe7d6;
-  --ink:#141b24;
-  --board-bg:#0a0e12;
-  --board-fg:#f4e9c1;
-  --go:#5ec48c;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  background:var(--night);
-  color:var(--chrome);
-  font-family:'Cormorant Garamond',serif;
-  overflow:hidden;
-  user-select:none;
-}
-button{font-family:inherit;cursor:pointer;touch-action:manipulation}
-
-/* ---------- Frame ---------- */
-.deco-frame{
-  position:fixed;inset:8px;
-  border:1px solid rgba(58,141,222,.35);
-  outline:1px solid rgba(58,141,222,.15);
-  outline-offset:4px;
-  pointer-events:none;z-index:50;
-}
-.deco-frame::before,.deco-frame::after{
-  content:"";position:absolute;width:26px;height:26px;
-  border:2px solid var(--sky);
-}
-.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
-.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
-
-/* ---------- Screens ---------- */
-.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;z-index:40;overflow-y:auto}
-.screen.active{display:flex}
 #intro{background:radial-gradient(ellipse at 50% 120%, #123a63 0%, var(--night) 62%)}
-.eyebrow{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.34em;
-  text-transform:uppercase;color:var(--sky);margin-bottom:18px;
-}
-h1{
-  font-family:'Poiret One',cursive;font-weight:400;
-  font-size:clamp(42px,9vw,82px);letter-spacing:.09em;line-height:1.04;
-  color:var(--cream);
-}
-h1 .num{color:var(--neon)}
-.intro-story{
-  max-width:540px;font-size:clamp(17px,2.4vw,21px);line-height:1.55;
-  margin:26px 0 34px;color:#cdd5dd;font-style:italic;
-}
-.intro-story em{color:var(--cream);font-style:italic}
-.btn{
-  background:none;border:1px solid var(--sky);color:var(--sky);
-  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.28em;
-  text-transform:uppercase;padding:14px 34px;transition:all .22s;
-}
-.btn:hover,.btn:focus-visible{background:var(--sky);color:var(--night);outline:none}
-.btn.small{padding:8px 18px;font-size:11px;letter-spacing:.18em}
-.btn.ghost{border-color:rgba(205,213,221,.4);color:var(--chrome);opacity:.8}
-.btn.ghost:hover,.btn.ghost:focus-visible{opacity:1;background:none;border-color:var(--sky);color:var(--sky)}
-.next-note{margin:6px auto 26px;max-width:430px;border:1px dashed rgba(58,141,222,.5);border-radius:4px;padding:16px 20px;text-align:center}
-.next-note .nn-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;opacity:.72}
-.next-note .nn-code{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:30px;letter-spacing:.3em;color:var(--neon);margin:8px 0 6px}
-.next-note .nn-hint{font-size:13px;opacity:.66;line-height:1.5}
-.victory-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
-.victory-actions .btn{text-decoration:none;display:inline-block}
-
-/* ---------- HUD ---------- */
-#hud{
-  position:fixed;top:0;left:0;right:0;z-index:30;
-  display:none;justify-content:space-between;align-items:center;
-  padding:22px 30px 10px;
-}
-#hud.on{display:flex}
-#timer{
-  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.12em;
-  color:var(--sky);
-}
-#timer.late{color:var(--neon);animation:pulse 1.2s infinite}
-@keyframes pulse{50%{opacity:.45}}
-#hud .title-sm{
-  font-family:'Poiret One',cursive;font-weight:400;font-size:15px;letter-spacing:.28em;
-  text-transform:uppercase;opacity:.7
-}
-#hud .hud-right{display:flex;gap:10px;align-items:center}
-.icon-btn{
-  background:none;border:1px solid rgba(58,141,222,.45);color:var(--sky);
-  width:34px;height:34px;font-size:15px;line-height:1;
-  transition:border-color .2s;
-}
-.icon-btn:hover{border-color:var(--sky)}
-
-/* ---------- Room ---------- */
-#room-wrap{
-  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-  padding:64px 16px 96px;
-}
-#room-wrap.on{display:flex}
-#room{
-  width:min(96vw,900px);aspect-ratio:16/10;max-height:calc(100vh - 170px);
-  position:relative;
-}
-#room svg{width:100%;height:100%;display:block}
-.hotspot{cursor:pointer;transition:filter .2s}
-.hotspot:hover{filter:brightness(1.3) drop-shadow(0 0 6px rgba(58,141,222,.6))}
-.hotspot.done{cursor:default}
-.hotspot.done:hover{filter:none}
-
-/* ---------- Inventory ---------- */
-#inventory{
-  position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;
-  justify-content:center;gap:12px;padding:16px 20px 22px;flex-wrap:wrap;
-  background:linear-gradient(transparent, rgba(6,11,18,.94) 40%);
-}
-#inventory.on{display:flex}
-.inv-item{
-  width:56px;height:56px;border:1px solid rgba(58,141,222,.5);
-  background:rgba(14,36,60,.7);display:flex;align-items:center;justify-content:center;
-  font-size:24px;position:relative;transition:border-color .2s, transform .15s;
-}
-.inv-item:hover{border-color:var(--sky);transform:translateY(-2px)}
-.inv-item .tag{
-  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
-  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.06em;
-  color:var(--sky);white-space:nowrap;text-transform:uppercase;
-}
-#inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
-
-/* ---------- Modal ---------- */
-#modal-veil{
-  position:fixed;inset:0;background:rgba(4,9,15,.8);z-index:60;
-  display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(2px);
-}
-#modal-veil.on{display:flex}
-#modal{
-  width:min(93vw,500px);max-height:88vh;overflow-y:auto;
-  background:#10233a;border:1px solid rgba(58,141,222,.5);
-  padding:30px 28px 26px;position:relative;text-align:center;
-}
-#modal::before{
-  content:"";position:absolute;inset:6px;border:1px solid rgba(58,141,222,.18);
-  pointer-events:none;
-}
-#modal h2{
-  font-family:'Poiret One',cursive;font-weight:400;font-size:26px;
-  letter-spacing:.12em;color:var(--sky);margin-bottom:14px;
-}
-#modal .body{font-size:18px;line-height:1.55;color:#dbe2e8;margin-bottom:18px}
-#modal .body em{color:var(--cream);font-style:italic}
-
-/* paper props */
-.paper{
-  background:var(--cream);color:var(--ink);padding:18px 16px;margin:14px 0;
-  font-size:17px;line-height:1.5;font-style:italic;
-  box-shadow:0 2px 10px rgba(0,0,0,.45);transform:rotate(-.6deg);
-}
-.paper.straight{transform:none}
-.paper .mono{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:13px;letter-spacing:.03em}
-
-/* boarding pass */
 .bpass{
   background:linear-gradient(90deg,#eae2d0 0 68%, #d9cdb4 68% 100%);
   color:var(--ink);text-align:left;padding:14px 16px;margin:14px 0;
@@ -183,8 +18,6 @@ h1 .num{color:var(--neon)}
 }
 .bpass .bp-h{font-family:'Poiret One',cursive;font-weight:400;letter-spacing:.14em;font-size:17px;color:var(--panam)}
 .bpass .smudge{background:#4a4034;color:#4a4034;border-radius:2px;padding:0 6px;user-select:none}
-
-/* split-flap board */
 .board{
   background:var(--board-bg);border:2px solid #1c2732;padding:12px 10px;margin:14px 0;
   font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--board-fg);
@@ -207,50 +40,16 @@ h1 .num{color:var(--neon)}
   margin-top:10px;line-height:1.7;text-align:left;
 }
 .board-legend b{color:var(--board-fg);font-weight:500}
-
-/* code entry */
-.code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
-.code-input{
-  width:50px;height:60px;text-align:center;font-family:'IBM Plex Mono',monospace;
-  font-size:26px;background:rgba(8,14,22,.9);border:1px solid rgba(58,141,222,.5);
-  color:var(--cream);caret-color:var(--sky);text-transform:uppercase;
-}
-.code-input:focus{outline:none;border-color:var(--sky)}
-.feedback{min-height:22px;font-size:15px;font-style:italic;margin-bottom:6px}
-.feedback.bad{color:var(--neon)}
-.feedback.good{color:var(--go)}
-.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-.hint-link{
-  background:none;border:none;color:#7c98b4;font-size:14px;font-style:italic;
-  text-decoration:underline;text-underline-offset:3px;margin-top:14px;
-}
-.hint-link:hover{color:var(--sky)}
-.hint-text{
-  font-size:15px;color:#a9c3dc;font-style:italic;margin-top:10px;line-height:1.5;
-  border-top:1px dashed rgba(124,152,180,.5);padding-top:10px;
-}
-.shake{animation:shake .35s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
-
-/* ---------- Victory ---------- */
 #victory{background:radial-gradient(ellipse at 50% -20%, #17456f 0%, var(--night) 70%)}
-.stats{display:flex;gap:36px;margin:26px 0 34px}
-.stat .v{font-family:'IBM Plex Mono',monospace;font-size:28px;color:var(--sky)}
-.stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;opacity:.6;margin-top:6px}
-
 @media (max-width:600px){
-  #hud .title-sm{display:none}
-  .stats{gap:22px}
-  #room-wrap{padding:58px 8px 96px}
   .board{font-size:11px}
 }
 @media (prefers-reduced-motion: reduce){
-  *{animation:none!important;transition:none!important}
   .flap{animation:none!important}
 }
 </style>
 </head>
-<body>
+<body class="chapter">
 
 <div class="deco-frame" aria-hidden="true"></div>
 
@@ -426,6 +225,7 @@ h1 .num{color:var(--neon)}
   </div>
 </div>
 
+<script src="../assets/engine.js"></script>
 <script>
 /* ================= STATE ================= */
 const S = {
@@ -438,7 +238,7 @@ const S = {
 };
 
 /* ================= TIMER + boarding calls ================= */
-function fmt(t){const neg=t<0;t=Math.abs(t);const m=Math.floor(t/60),s=t%60;return (neg?'+':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+
 const BEATS={
   [10*60]:'“Meridian Airways announces the boarding of Flight 077 to Lisbon, now at Gate 12.”',
   [5*60]:'“Second call for Flight 077. Will all passengers please proceed to Gate 12.”',
@@ -456,48 +256,9 @@ function tick(){
 }
 
 /* ================= SOUND (terminal hum) ================= */
-function toggleSound(){
-  if(!S.audioCtx){
-    const C=new (window.AudioContext||window.webkitAudioContext)();
-    const bufferSize=2*C.sampleRate;
-    const buffer=C.createBuffer(1,bufferSize,C.sampleRate);
-    const data=buffer.getChannelData(0);
-    let last=0;
-    for(let i=0;i<bufferSize;i++){const w=Math.random()*2-1;data[i]=(last+.02*w)/1.02;last=data[i];data[i]*=2.6;}
-    const src=C.createBufferSource();src.buffer=buffer;src.loop=true;
-    const filt=C.createBiquadFilter();filt.type='lowpass';filt.frequency.value=240;
-    const gain=C.createGain();gain.gain.value=0.05;
-    src.connect(filt).connect(gain).connect(C.destination);src.start();
-    S.audioCtx=C;S.noiseNode=gain;S.soundOn=true;
-  } else {
-    S.soundOn=!S.soundOn;
-    S.noiseNode.gain.value=S.soundOn?0.05:0;
-  }
-  document.getElementById('sound-btn').style.opacity=S.soundOn?1:.4;
-}
-document.getElementById('sound-btn').addEventListener('click',toggleSound);
-document.getElementById('sound-btn').style.opacity=.4;
 
 /* ================= INVENTORY ================= */
-function addItem(key,icon,label){
-  if(S.inv[key])return;
-  S.inv[key]={icon,label};
-  renderInv();
-}
-function renderInv(){
-  const inv=document.getElementById('inventory');
-  inv.innerHTML='';
-  const keys=Object.keys(S.inv);
-  if(!keys.length){inv.innerHTML='<span id="inv-empty">Your pockets are empty.</span>';return;}
-  keys.forEach(k=>{
-    const it=S.inv[k];
-    const d=document.createElement('button');
-    d.className='inv-item';d.innerHTML=it.icon+'<span class="tag">'+it.label+'</span>';
-    d.setAttribute('aria-label',it.label);
-    d.addEventListener('click',()=>inspectItem(k));
-    inv.appendChild(d);
-  });
-}
+
 function inspectItem(k){
   if(k==='ticket') openModal({title:'Left-Luggage Claim Ticket',body:'A cardboard stub from the terminal lockers, and a small brass key.',
     extra:'<div class="paper"><span class="mono">MERIDIAN AIR · LEFT LUGGAGE</span><br>"The lock is set to <em>her</em> departure — the flight I\'m running from. Read the board; it knows the hour. Bring what\'s inside to 077. — C."</div>',actions:[closeBtn()]});
@@ -509,24 +270,6 @@ function inspectItem(k){
 }
 
 /* ================= MODAL ================= */
-const veil=document.getElementById('modal-veil');
-function openModal({title,body,extra='',actions=[],puzzleId=null,onOpen=null}){
-  document.getElementById('m-title').textContent=title;
-  document.getElementById('m-body').innerHTML=body;
-  document.getElementById('m-extra').innerHTML=extra;
-  const fb=document.getElementById('m-feedback');fb.textContent='';fb.className='feedback';
-  const act=document.getElementById('m-actions');act.innerHTML='';
-  actions.forEach(a=>act.appendChild(a));
-  renderHints(puzzleId);
-  veil.classList.add('on');
-  if(onOpen)onOpen();
-}
-function closeModal(){veil.classList.remove('on');}
-veil.addEventListener('click',e=>{if(e.target===veil)closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-function closeBtn(txt='Step back'){const b=document.createElement('button');b.className='btn small';b.textContent=txt;b.addEventListener('click',closeModal);return b;}
-function feedback(msg,ok){const fb=document.getElementById('m-feedback');fb.textContent=msg;fb.className='feedback '+(ok?'good':'bad');if(!ok){document.getElementById('modal').classList.add('shake');setTimeout(()=>document.getElementById('modal').classList.remove('shake'),380);}}
-function toast(msg){openModal({title:'…',body:msg,actions:[closeBtn('Continue')]});}
 
 /* ================= HINTS (3 tiers, via the gate agent / PA) ================= */
 const HINTS={
@@ -546,40 +289,10 @@ const HINTS={
     '<em>"You\'re in 7A."</em>'
   ]
 };
-function renderHints(pid){
-  const z=document.getElementById('m-hintzone');z.innerHTML='';
-  if(!pid||!HINTS[pid])return;
-  const lvl=S.hintLevel[pid]||0;
-  for(let i=0;i<lvl;i++){const p=document.createElement('div');p.className='hint-text';p.innerHTML=HINTS[pid][i];z.appendChild(p);}
-  if(lvl<3){
-    const b=document.createElement('button');b.className='hint-link';
-    b.textContent=lvl===0?'Ask the gate agent':'Ask again — more directly';
-    b.addEventListener('click',()=>{S.hintLevel[pid]=lvl+1;S.hintsUsed++;renderHints(pid);});
-    z.appendChild(b);
-  }
-}
 
 /* ================= CODE ENTRY ================= */
-function codeRow(n,type='num'){
-  const wrap=document.createElement('div');wrap.className='code-row';
-  for(let i=0;i<n;i++){
-    const inp=document.createElement('input');
-    inp.className='code-input';inp.maxLength=1;
-    inp.inputMode=type==='num'?'numeric':'text';
-    inp.addEventListener('input',()=>{inp.value=inp.value.replace(type==='num'?/[^0-9]/g:/[^a-zA-Z0-9]/g,'');if(inp.value&&inp.nextElementSibling)inp.nextElementSibling.focus();});
-    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&inp.previousElementSibling)inp.previousElementSibling.focus();});
-    wrap.appendChild(inp);
-  }
-  return wrap;
-}
-function readCode(wrap){return [...wrap.querySelectorAll('input')].map(i=>i.value).join('').toUpperCase();}
 
 /* ================= ROOM OBJECTS ================= */
-function bindHotspot(id,fn){
-  const el=document.getElementById(id);
-  el.addEventListener('click',fn);
-  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});
-}
 
 /* --- Departures board (info hub) --- */
 function boardHTML(){
@@ -710,7 +423,7 @@ bindHotspot('hs-clock',()=>{
 
 /* --- Boarding gate (final: seat 7A, needs the goods) --- */
 bindHotspot('hs-gate',()=>{
-  const row=codeRow(2,'alpha');
+  const row=codeRow(2,'alnum');
   const submit=document.createElement('button');submit.className='btn small';submit.textContent='Show your seat';
   submit.addEventListener('click',()=>{
     if(readCode(row)==='7A'){

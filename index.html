@@ -7,59 +7,16 @@
 <meta name="description" content="Browser escape rooms by seeking77degrees. Solve one to earn the key to the next.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/palette-meridian.css">
 <style>
-:root{
-  --night:#0A1622;
-  --hull:#122436;
-  --brass:#C9A227;
-  --brass-dim:#8a6f1d;
-  --parchment:#E8DCC3;
-  --fog:#3E6B6B;
-  --rust:#c96a4a;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{
-  background:var(--night);
-  background-image:radial-gradient(ellipse at 50% -10%, #16334a 0%, var(--night) 60%);
-  color:var(--parchment);
-  font-family:'Cormorant Garamond',serif;
-  min-height:100vh;
-}
-button{font-family:inherit;cursor:pointer}
-a{color:inherit}
-
-.deco-frame{
-  position:fixed;inset:8px;
-  border:1px solid var(--brass-dim);
-  outline:1px solid rgba(201,162,39,.25);
-  outline-offset:4px;
-  pointer-events:none;z-index:50;
-}
-.deco-frame::before,.deco-frame::after{
-  content:"";position:absolute;width:26px;height:26px;
-  border:1px solid var(--brass);
-}
-.deco-frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
-.deco-frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
-
 .wrap{max-width:760px;margin:0 auto;padding:64px 26px 90px}
-
 header{text-align:center;margin-bottom:56px}
-.eyebrow{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
-  text-transform:uppercase;color:var(--brass);margin-bottom:16px;
-}
-h1{
-  font-family:'Poiret One',cursive;font-weight:400;
-  font-size:clamp(44px,10vw,84px);letter-spacing:.1em;line-height:1;
-}
 h1 .accent{color:var(--brass)}
 .tagline{
   font-style:italic;font-size:clamp(16px,2.4vw,19px);color:#c9bda2;
   margin-top:16px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.5;
 }
-
-/* Series card */
 .series{
   border:1px solid var(--brass-dim);position:relative;
   background:rgba(18,36,54,.55);
@@ -82,7 +39,6 @@ h1 .accent{color:var(--brass)}
   font-style:italic;color:#c0b499;font-size:16px;margin-top:10px;line-height:1.5;
   max-width:520px;margin-left:auto;margin-right:auto;
 }
-
 .episode{
   display:flex;align-items:center;gap:18px;
   padding:22px 28px;
@@ -105,19 +61,6 @@ h1 .accent{color:var(--brass)}
   text-transform:uppercase;color:var(--fog);margin-top:7px;
 }
 .ep-action{flex-shrink:0}
-.btn{
-  background:none;border:1px solid var(--brass);color:var(--brass);
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
-  text-transform:uppercase;padding:11px 20px;transition:all .25s;
-  text-decoration:none;display:inline-block;
-}
-.btn:hover,.btn:focus-visible{background:var(--brass);color:var(--night);outline:none}
-.btn.locked{
-  border-color:rgba(201,162,39,.35);color:rgba(232,220,195,.4);
-}
-.btn.locked:hover{background:rgba(201,162,39,.12);color:var(--parchment)}
-
-/* Gate (password) row */
 .gate{
   display:none;padding:0 28px 24px;
 }
@@ -139,17 +82,12 @@ h1 .accent{color:var(--brass)}
 }
 .gate-feedback.bad{color:var(--rust)}
 .gate-feedback.good{color:#8fbf8f}
-.shake{animation:shake .35s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
-/* Coming soon */
 .soon{
   border:1px dashed rgba(201,162,39,.3);
   padding:34px 26px;text-align:center;color:#8f866f;
 }
 .soon .eyebrow{color:var(--brass-dim)}
 .soon p{font-style:italic;font-size:16px;line-height:1.5;max-width:420px;margin:6px auto 0}
-
 footer{
   text-align:center;margin-top:56px;
   font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
@@ -157,7 +95,6 @@ footer{
 }
 footer a{text-decoration:none;color:rgba(201,162,39,.6)}
 footer a:hover{color:var(--brass)}
-
 @media (max-width:560px){
   .episode{flex-wrap:wrap;padding:20px 18px}
   .ep-num{width:34px;font-size:28px}
