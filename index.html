@@ -286,44 +286,7 @@ footer{
 }
 footer a{text-decoration:none;color:var(--accent);opacity:.7}
 footer a:hover{opacity:1}
-.crest{
-  display:inline-block;margin:0 auto 18px;width:34px;height:34px;cursor:pointer;
-  opacity:.35;transition:opacity .3s,transform .3s;
-}
-.crest:hover{opacity:.9;transform:translateY(-2px)}
-.crest svg{width:100%;height:100%;display:block}
-
-/* ---------- Curator card (easter egg) ---------- */
-#curator-veil{
-  position:fixed;inset:0;background:var(--veil);z-index:60;
-  display:none;align-items:center;justify-content:center;padding:24px;
-  backdrop-filter:blur(2px);
-}
-#curator-veil.on{display:flex}
-.curator-card{
-  width:min(92vw,420px);background:var(--surface);border:1px solid var(--accent-dim);
-  padding:34px 30px 28px;position:relative;text-align:center;animation:rise .4s ease both;
-}
-.curator-card::before{content:"";position:absolute;inset:6px;border:1px solid var(--accent-ghost);pointer-events:none}
-.curator-card .cc-crest{width:44px;height:44px;margin:0 auto 16px;opacity:.9}
-.curator-card .cc-eyebrow{
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.4em;
-  text-transform:uppercase;color:var(--accent);margin-bottom:14px;
-}
-.curator-card p{
-  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;
-  line-height:1.6;color:var(--text-soft);
-}
-.curator-card .sign{
-  font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.3em;
-  color:var(--accent);margin-top:18px;
-}
-.curator-card .close{
-  margin-top:22px;font-family:'IBM Plex Mono',monospace;font-size:10px;
-  letter-spacing:.3em;text-transform:uppercase;color:var(--muted);
-  background:none;border:none;
-}
-.curator-card .close:hover{color:var(--accent)}
+/* crest + curator styling now in assets/theme.css; behaviour in assets/easter-eggs.js */
 
 /* ---------- Responsive ---------- */
 @media (max-width:640px){
@@ -562,27 +525,6 @@ footer a:hover{opacity:1}
 
 </div>
 
-<!-- ============ Curator card (easter egg) ============ -->
-<div id="curator-veil" role="dialog" aria-modal="true" aria-label="The curator">
-  <div class="curator-card">
-    <div class="cc-crest">
-      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="1.4">
-        <line x1="8" y1="30" x2="22" y2="16"/>
-        <line x1="32" y1="30" x2="18" y2="16"/>
-        <path d="M8 30 l3 -6 l-3 0 z" fill="var(--accent)" stroke="none"/>
-        <path d="M32 30 l-3 -6 l3 0 z" fill="var(--accent)" stroke="none"/>
-        <rect x="16" y="10" width="8" height="10" rx="1"/>
-        <line x1="20" y1="6" x2="20" y2="10"/>
-        <line x1="16.5" y1="15" x2="23.5" y2="15"/>
-      </svg>
-    </div>
-    <div class="cc-eyebrow">the curator</div>
-    <p>One hand set all of these — the past you've played, the present that hasn't happened, and the future you haven't reached. Keep what each door teaches you.</p>
-    <div class="sign">77</div>
-    <button class="close" id="curator-close">close</button>
-  </div>
-</div>
-
 <script>
 /* ================================================================
    1) TENSE NAVIGATION — hero stays; the view below swaps.
@@ -710,28 +652,8 @@ Object.keys(EPISODES).forEach(n=>{
   });
 });
 
-/* ================================================================
-   3) EASTER EGGS — the curator card.
-      Reveal by clicking the crest, or typing 7-7 anywhere.
-   ================================================================ */
-const cv = document.getElementById('curator-veil');
-function openCurator(){ cv.classList.add('on'); }
-function closeCurator(){ cv.classList.remove('on'); }
-document.getElementById('crest').addEventListener('click', openCurator);
-document.getElementById('crest').addEventListener('keydown', e=>{
-  if (e.key==='Enter'||e.key===' '){ e.preventDefault(); openCurator(); }
-});
-document.getElementById('curator-close').addEventListener('click', closeCurator);
-cv.addEventListener('click', e=>{ if (e.target===cv) closeCurator(); });
-document.addEventListener('keydown', e=>{ if (e.key==='Escape') closeCurator(); });
 
-// type "77" to summon the curator
-let seq = '';
-document.addEventListener('keydown', e=>{
-  if (e.target.tagName === 'INPUT') return;          // don't hijack gate codes
-  if (e.key === '7'){ seq += '7'; if (seq.length > 2) seq = seq.slice(-2); if (seq === '77') { openCurator(); seq=''; } }
-  else { seq = ''; }
-});
 </script>
+<script src="assets/easter-eggs.js"></script>
 </body>
 </html>
