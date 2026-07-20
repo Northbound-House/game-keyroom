@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Station — The Waypoint, Chapter I</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-waypoint.css">
+<link rel="stylesheet" href="../assets/waypoint-components.css">
+<style>
+/* ---- Chapter I components only ---- */
+
+/* the keeper's console readout / roster */
+.readout{
+  background:var(--panel);border:1px solid var(--accent-ghost);
+  font-family:var(--font-mono);font-size:13px;line-height:1.9;color:var(--text);
+  padding:14px 14px;margin:14px 0;text-align:left;
+}
+.readout .k{color:var(--accent)}
+.readout .warn{color:var(--error)}
+.readout .ok{color:var(--success)}
+
+/* small caption under a taught mechanic */
+.note{font-family:var(--font-body);font-style:italic;font-size:14px;color:var(--muted);margin-top:8px;line-height:1.5}
+
+/* the drift-berth frost fade on intro */
+#intro{background:radial-gradient(ellipse at 50% 120%, #241a44 0%, var(--night) 66%)}
+#victory{background:radial-gradient(ellipse at 50% -20%, #2a2054 0%, var(--night) 72%)}
+</style>
+</head>
+<body class="chapter">
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">Waypoint 0077 · relay-and-beacon station · deep transit</div>
+  <h1>THE STATION</h1>
+  <p class="intro-story">You wake because the cold woke you — the drift-berth has been failing for hours, and so has everything else. Amber warnings crawl across dead consoles. The keeper's chair is empty. The station is a lantern strung between two inhabited systems, and its light has gone out.<br><br>On the long-range board, a single contact is inbound through the dark — and it is calling.</p>
+  <button class="btn" id="start-btn">Wake fully</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.55;font-style:italic">Everything you need is on this deck. Nothing here needs a code you don't earn.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">15:00</div>
+  <div class="title-sm">THE STATION</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="The watch deck of a failing deep-space beacon station">
+    <defs>
+      <radialGradient id="deck" cx="50%" cy="26%" r="90%">
+        <stop offset="0%" stop-color="#1b1636"/><stop offset="100%" stop-color="#070610"/>
+      </radialGradient>
+      <radialGradient id="void" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#140f2c"/><stop offset="100%" stop-color="#04030a"/>
+      </radialGradient>
+      <radialGradient id="beaconglow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#c9b3ff"/><stop offset="100%" stop-color="#4a3a86"/>
+      </radialGradient>
+    </defs>
+
+    <rect x="0" y="0" width="800" height="392" fill="url(#deck)"/>
+    <rect x="0" y="392" width="800" height="108" fill="#141026"/>
+    <line x1="0" y1="392" x2="800" y2="392" stroke="#9b7bff" stroke-width="1" opacity=".3"/>
+    <!-- ceiling struts -->
+    <g stroke="#2a2350" stroke-width="2" opacity=".6">
+      <line x1="120" y1="0" x2="150" y2="60"/><line x1="680" y1="0" x2="650" y2="60"/>
+      <line x1="400" y1="0" x2="400" y2="44"/>
+    </g>
+
+    <!-- VIEWPORT (stars + inbound smudge) -->
+    <g id="hs-viewport" class="hotspot" tabindex="0" role="button" aria-label="The forward viewport">
+      <rect x="286" y="40" width="228" height="120" rx="8" fill="#9b7bff"/>
+      <rect x="294" y="48" width="212" height="104" rx="6" fill="url(#void)"/>
+      <g fill="#e9e6ff">
+        <circle cx="330" cy="78" r="1.5"/><circle cx="372" cy="104" r="1.2"/><circle cx="418" cy="70" r="1.6"/>
+        <circle cx="452" cy="120" r="1.2"/><circle cx="486" cy="92" r="1.4"/><circle cx="356" cy="132" r="1.1"/>
+        <circle cx="470" cy="60" r="1.2"/>
+      </g>
+      <circle id="inbound-dot" cx="440" cy="100" r="2.6" fill="#c9b3ff"/>
+    </g>
+
+    <!-- APPROACH BOARD -->
+    <g id="hs-board" class="hotspot" tabindex="0" role="button" aria-label="Long-range approach board">
+      <rect x="40" y="70" width="196" height="120" fill="#0e0b1e" stroke="#9b7bff" stroke-width="2"/>
+      <rect x="40" y="70" width="196" height="20" fill="#221a44"/>
+      <text x="52" y="84" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff" letter-spacing="2">APPROACH</text>
+      <g font-family="'IBM Plex Mono',monospace" font-size="9" fill="#ded9f2">
+        <text x="52" y="108">MR-2  brg 214</text><text x="196" y="108" fill="#ff5f7a">DIST?</text>
+        <text x="52" y="128">SV-9  brg 031</text><text x="196" y="128" fill="#a7a1d6">TRAN</text>
+        <text x="52" y="148">LN-4  brg 188</text><text x="196" y="148" fill="#a7a1d6">LOST</text>
+      </g>
+      <rect x="48" y="99" width="180" height="14" fill="none" stroke="#9b7bff" stroke-width="1" opacity=".6"/>
+    </g>
+
+    <!-- BEACON READOUT -->
+    <g id="hs-beacon" class="hotspot" tabindex="0" role="button" aria-label="The beacon readout, cold">
+      <rect x="566" y="78" width="196" height="112" fill="#0e0b1e" stroke="#9b7bff" stroke-width="2"/>
+      <text x="578" y="98" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff" letter-spacing="2">BEACON — COLD</text>
+      <circle id="beacon-lamp-svg" cx="664" cy="140" r="20" fill="#241c3a" stroke="#4a3a86" stroke-width="2"/>
+      <g stroke="#4a3a86" stroke-width="1.4" opacity=".7">
+        <path d="M636 140 h-10"/><path d="M692 140 h10"/><path d="M664 112 v-8"/><path d="M664 168 v8"/>
+      </g>
+    </g>
+
+    <!-- EQUIPMENT LOCKER (safe) -->
+    <g id="hs-locker" class="hotspot" tabindex="0" role="button" aria-label="Equipment locker with a keypad">
+      <rect x="70" y="238" width="120" height="150" fill="#1c1638" stroke="#9b7bff" stroke-width="2"/>
+      <line x1="130" y1="238" x2="130" y2="388" stroke="#0e0b1e" stroke-width="2"/>
+      <rect x="96" y="300" width="26" height="20" fill="#0a0814" stroke="#c9b3ff" stroke-width="1.2"/>
+      <text x="109" y="315" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff">▢▢</text>
+      <circle cx="150" cy="314" r="3" fill="#b98cff"/>
+    </g>
+
+    <!-- KEEPER'S CONSOLE (desk) -->
+    <g id="hs-console" class="hotspot" tabindex="0" role="button" aria-label="The keeper's console with a locked panel">
+      <rect x="300" y="300" width="240" height="18" fill="#2a2350"/>
+      <rect x="316" y="318" width="208" height="66" fill="#181230"/>
+      <rect x="336" y="332" width="168" height="30" fill="#0e0b1e" stroke="#9b7bff" stroke-width="1.4"/>
+      <text x="420" y="352" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#c9b3ff" letter-spacing="3">W A Y · L A ▢ ▢ ▢ ▢</text>
+      <rect x="330" y="288" width="60" height="14" fill="#c9b3ff" opacity=".5"/>
+    </g>
+
+    <!-- KEEPER'S LOGBOOK (paper + crest) -->
+    <g id="hs-log" class="hotspot" tabindex="0" role="button" aria-label="The keeper's logbook">
+      <rect x="576" y="316" width="150" height="14" fill="#2a2350"/>
+      <rect x="588" y="288" width="120" height="30" fill="#3a2f66" transform="rotate(-3 648 303)"/>
+      <rect x="594" y="292" width="108" height="22" fill="#181230" transform="rotate(-3 648 303)"/>
+      <!-- pressed crest emblem on the cover -->
+      <g transform="translate(636 296) scale(0.5)" stroke="#c9b3ff" stroke-width="1.6" fill="none" opacity=".8">
+        <line x1="8" y1="30" x2="22" y2="16"/><line x1="32" y1="30" x2="18" y2="16"/>
+        <rect x="16" y="10" width="8" height="10" rx="1"/>
+      </g>
+    </g>
+
+    <!-- DRIFT-BERTH -->
+    <g id="hs-berth" class="hotspot" tabindex="0" role="button" aria-label="The drift-berth you woke from">
+      <rect x="210" y="330" width="70" height="58" rx="10" fill="#1c1638" stroke="#4a3a86" stroke-width="2"/>
+      <rect x="220" y="342" width="50" height="34" rx="6" fill="#0e0b1e"/>
+      <circle cx="245" cy="330" r="4" fill="#4fd8b6"/>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">The watch, accepted</div>
+  <h1>THE WATCH</h1>
+  <p class="intro-story" id="victory-story">You log the contact and take the empty chair. The relief is real, it is close, and it is running dark toward a light that isn't lit. Whatever happened to the keeper, the station is yours now — and so is the choice they left behind.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <div class="next-note">
+    <div class="nn-label">Remember this bearing — you'll need it to unseal Chapter II</div>
+    <div class="nn-code">214</div>
+    <div class="nn-hint">The bearing the relief is inbound on. Return to the home screen and enter it to open <em>Chapter II — The Approach</em>.</div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Continue to Chapter II →</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="../assets/waypoint.js"></script>
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:15*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  inv:{},
+  flags:{ sawBoard:false, sawBeacon:false, sawLog:false, locker:false,
+          console:false, identified:false },
+  hintLevel:{},
+  soundOn:false, audioCtx:null, noiseGain:null,
+  soundLowpass:150, soundGainUp:3.6,      /* deep station hum */
+};
+
+const HINT_LABELS = { first:"Consult the keeper's log", again:'Read further' };
+
+const BEATS = {
+  [10*60]:'A relay clicks somewhere in the walls, tries to route power, and fails. The lights dim one notch.',
+  [5*60]:'On the board, the inbound contact ticks a little closer. Whatever it is, it is not slowing.',
+  [2*60]:'The drift-berth alarm finally dies. The cold in here is settling in for good.'
+};
+function onOvertime(){
+  toast('The relief will reach the marker soon, lit or not. A dark station is a wall to a ship. Keep going.');
+}
+
+/* the station's beacon characteristic, and the inbound */
+const BEACON = { flashes:3, period:8 };   /* Fl(3) 8s — one flash per station the line has kept */
+const RELIEF_DESIG = 'MR-2';
+const RELIEF_BEARING = '214';
+const LOCKER_CODE = '0077';
+const CONSOLE_WORD = 'LANTERN';
+
+/* ================= INVENTORY ================= */
+function inspectItem(k){
+  if (k === 'lamp'){
+    openModal({title:'Hand-Lamp',body:'A cold-storage work lamp, charged. Enough light to read a dead console by — not enough to reach a ship.',actions:[closeBtn()]});
+    return;
+  }
+  if (k === 'bkey'){
+    openModal({title:'Beacon Key',body:'A heavy crank-key stamped with a lantern over crossed marks — the keeper\'s emblem. It arms the beacon\'s drive. The light receives on its own; to make it <em>speak</em> takes this.',actions:[closeBtn()]});
+    return;
+  }
+}
+
+/* ================= VIEWPORT ================= */
+bindHotspot('hs-viewport', () => {
+  openModal({
+    title:'The Forward Viewport',
+    body: S.flags.identified
+      ? 'The inbound contact is a real point of light now, holding its bearing dead steady. Not a wreck tumbling. A ship, flying a course — <em>toward you.</em>'
+      : 'Stars, and the long dark between systems. One mote among them is moving against the field — the inbound contact, still too far to read by eye.',
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= APPROACH BOARD ================= */
+function boardVessels(){
+  return [
+    { desig:'MR-2', bearing:RELIEF_BEARING, eta:'00:38',
+      status: S.flags.identified ? 'RELIEF · SIGNALLING' : 'DISTRESS ?',
+      sigClass: S.flags.identified ? 'inbound' : 'lost', hi:true },
+    { desig:'SV-9', bearing:'031', eta:'—', status:'IN TRANSIT' },
+    { desig:'LN-4', bearing:'188', eta:'—', status:'SIGNAL LOST', sigClass:'lost' },
+  ];
+}
+bindHotspot('hs-board', () => {
+  S.flags.sawBoard = true;
+  openModal({
+    title:'The Approach Board',
+    body: S.flags.identified
+      ? 'Read against the roster, the board resolves. <span class="k">MR-2</span> is no wreck — she is your relief, inbound on <span class="k">bearing 214</span>, calling because the light she was promised is dark.'
+      : 'Three contacts in range. Two are ghosts — a transit years off, a signal long lost. The third, <span class="k">MR-2</span>, is close and calling: the readout flags it <span class="warn">DISTRESS?</span> — with a question mark, because the station never confirmed it.',
+    extra: approachBoardHTML(boardVessels())
+      + (S.flags.identified
+          ? '<div class="note">You answer a relief the same way you answer a distress: with the light. First you have to make it burn.</div>'
+          : '<div class="note">A question mark is not a fact. What does the keeper\'s roster say MR-2 actually is?</div>'),
+    actions:[closeBtn()],
+    puzzleId:'bearing'
+  });
+});
+
+/* ================= BEACON READOUT (teach the pulse) ================= */
+bindHotspot('hs-beacon', () => {
+  S.flags.sawBeacon = true;
+  openModal({
+    title:'The Beacon — Cold',
+    body:'The great lamp is dark, but the readout still remembers the last thing it broadcast: the station\'s <em>characteristic</em> — its name in light. Every lighthouse has one. Read it the honest way: count the flashes in one cycle.',
+    extra:'<div class="beacon-lamp lit" aria-hidden="true"></div>'
+      + pulseStripHTML(BEACON.flashes, BEACON.period, 'last logged characteristic · ' + charNotation(BEACON.flashes, BEACON.period))
+      + '<div class="note">Three flashes — one, the log says, for each station the line has ever kept. The cells above hold the pattern even when the lamp will not. When the time comes, you will set a light like this one — you just won\'t have it lit yet.</div>',
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= EQUIPMENT LOCKER (safe · 0077) ================= */
+bindHotspot('hs-locker', () => {
+  if (S.flags.locker){
+    openModal({title:'Equipment Locker',body:'Open. You took the hand-lamp and the beacon key.',actions:[closeBtn()]});
+    return;
+  }
+  const row = codeRow(4);
+  const submit = actionBtn('Enter the sequence', () => {
+    if (readCode(row) === LOCKER_CODE){
+      S.flags.locker = true;
+      addItem('lamp','▮','Hand-lamp');
+      addItem('bkey','⚿','Beacon key');
+      feedback('The bolts withdraw with a tired sigh.',true);
+      setTimeout(() => openModal({
+        title:'Inside the Locker',
+        body:'A charged <em>hand-lamp</em>, and — clipped where the last keeper always left it — the <em>beacon key</em>, the crank that arms the light. Its handle wears the same emblem stamped on the logbook.',
+        actions:[closeBtn('Take both')]
+      }), 700);
+    } else {
+      feedback('The keypad rejects it. That was never our number.', false);
+    }
+  });
+  openModal({
+    title:'The Equipment Locker',
+    body:'A four-digit keypad, worn shiny by one keeper\'s thumb over a very long time.',
+    actions:[submit, closeBtn()],
+    puzzleId:'locker',
+    onOpen:() => mountCode(row)
+  });
+});
+
+/* ================= KEEPER'S CONSOLE (desk · LANTERN → roster → win) ================= */
+bindHotspot('hs-console', () => {
+  if (!S.flags.console){
+    const input = document.createElement('input');
+    input.className = 'word-input'; input.maxLength = 10; input.placeholder = 'STATION NAME';
+    input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z]/g,'').toUpperCase(); });
+    const submit = actionBtn('Unlock the panel', () => {
+      if (input.value === CONSOLE_WORD){
+        S.flags.console = true;
+        S.flags.identified = true;
+        document.getElementById('inbound-dot').setAttribute('fill', '#4fd8b6');
+        feedback('The panel wakes. Old light spills across the dead deck.', true);
+        setTimeout(consoleOpen, 800);
+      } else {
+        feedback('The panel stays dark. That is not what they called her.', false);
+      }
+    });
+    openModal({
+      title:"The Keeper's Console",
+      body:'The main panel is locked to a word — the station\'s name, half scoured off its own plate: <span style="font-family:\'IBM Plex Mono\',monospace">W A Y · L A _ _ _ _</span>. The log will have written it in full more than once.',
+      extra:'',
+      actions:[submit, closeBtn()],
+      puzzleId:'console',
+      onOpen:() => { document.getElementById('m-extra').appendChild(input); input.focus(); }
+    });
+    return;
+  }
+  consoleOpen();
+});
+
+function consoleOpen(){
+  const input = document.createElement('input');
+  input.className = 'word-input'; input.maxLength = 3; input.inputMode = 'numeric';
+  input.placeholder = 'BRG';
+  input.addEventListener('input', () => { input.value = input.value.replace(/[^0-9]/g,''); });
+  const accept = actionBtn('Accept the watch', () => {
+    if (input.value === RELIEF_BEARING){
+      win();
+    } else if (input.value === '031' || input.value === '188'){
+      feedback('That is a ghost — a transit or a lost signal. The relief is the one that is calling.', false);
+    } else {
+      feedback('The board has her bearing. Read it off MR-2 and log it.', false);
+    }
+  });
+  openModal({
+    title:"The Keeper's Console",
+    body:'The panel lists the station roster and the last orders on it. Two lines stop you cold:',
+    extra:'<div class="readout">'
+      + '<span class="k">WAYPOINT 0077 — RELIEF ROTATION</span><br>'
+      + 'OUTGOING KEEPER ..... <span class="warn">unlogged / absent</span><br>'
+      + 'INCOMING CREW ....... <span class="ok">MR-2</span>, due this cycle<br>'
+      + '<br>'
+      + 'CONTACT <span class="ok">MR-2</span> = the relief. Not a wreck. <span class="k">Bearing 214.</span><br>'
+      + 'The board misread her call as distress. <span class="warn">She is not the one in trouble.</span>'
+      + '</div>'
+      + '<div class="note">The station is the thing that is failing. They are coming to relieve <em>you</em> — and they can\'t dock onto a dark marker. Log the contact to accept the watch: enter the bearing she\'s inbound on.</div>',
+    actions:[accept, closeBtn()],
+    puzzleId:'bearing',
+    onOpen:() => { document.getElementById('m-extra').appendChild(input); input.focus(); }
+  });
+}
+
+/* ================= KEEPER'S LOGBOOK (mentor + clues; crest) ================= */
+bindHotspot('hs-log', () => {
+  S.flags.sawLog = true;
+  openModal({
+    title:"The Keeper's Log",
+    body:'A physical book, because the keeper never trusted the light with everything. The hand is neat, then less so, then hurried. A lantern-over-crossed-marks emblem is pressed into the cover.',
+    extra:'<div class="paper">"For whoever wakes after me —<br><br>The locker answers to our own number, as it always has: we are <span class="mono">Waypoint 0077</span>, and 77 is the only sequence I never changed.<br><br>The console opens to what we call her, not what the charts do. Every soul on this line calls this rock the same old word: <span class="mono">LANTERN</span>.<br><br>The light\'s characteristic is three — Fl(3) — one flash for every station the line has ever kept. Learn to read it. One day you\'ll have to set it.<br><br>If a ship calls and the board cries distress — <em>check the roster first.</em> Not everyone who comes for you is in trouble. — K."</div>',
+    actions:[closeBtn()],
+    puzzleId:'console'
+  });
+});
+
+/* ================= DRIFT-BERTH ================= */
+bindHotspot('hs-berth', () => {
+  openModal({
+    title:'The Drift-Berth',
+    body:'The pod you woke from, lid up, frost still boiling off the seal. Its cooling fought the failing station to the last and lost — which is why you\'re awake, and cold, and the only crew aboard.',
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= HINTS ================= */
+const HINTS = {
+  locker:[
+    'The log, first page: <em>"The locker answers to our own number, as it always has."</em>',
+    '<em>"The console plate and the roster both name the station. It is a number — the one the keeper never changed."</em>',
+    '<em>"Waypoint 0077. Enter 0-0-7-7."</em>'
+  ],
+  console:[
+    '<em>"The panel wants what the crews call her, not the chart designation."</em>',
+    '<em>"The log says every soul on the line calls this rock the same old word — and it is stamped, half-worn, on the console plate: W A Y · L A _ _ _ _."</em>',
+    '<em>"The word is LANTERN."</em>'
+  ],
+  bearing:[
+    '<em>"Three contacts. Two are ghosts. Which one is actually calling — and is it really in distress?"</em>',
+    '<em>"The console roster names the relief\'s transponder. Match it on the approach board and read its bearing."</em>',
+    '<em>"MR-2 is the relief, inbound on bearing 214. Log 214."</em>'
+  ]
+};
+
+/* ================= WIN ================= */
+function win(){
+  finishChapter(15*60, [
+    {maxMinutes:8,  maxHints:0, name:'The Waypoint'},
+    {maxMinutes:11, maxHints:2, name:'Lightkeeper'},
+    {maxMinutes:15, name:'Watchkeeper'},
+    {name:'Castaway'}
+  ]);
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click', () => {
+  startChapter();
+});
+renderInv();
+</script>
+<script src="../assets/easter-eggs.js"></script>
+</body>
+</html>
