@@ -1,0 +1,73 @@
+/* ============================================================
+   THE WAYPOINT — shared chapter components
+   Props used across Series Three (Future). Formatting only;
+   colours come from palette-waypoint.css. Load after theme.css
+   + palette-waypoint.css.
+   ============================================================ */
+
+/* ---- the approach board (descendant of the split-flap board) ---- */
+.approach-board{
+  background:var(--panel);border:2px solid var(--accent-dim);padding:12px 10px;margin:14px 0;
+  font-family:var(--font-mono);font-size:12.5px;color:var(--text);overflow-x:auto;
+}
+.approach-board table{width:100%;border-collapse:collapse;white-space:nowrap}
+.approach-board th{
+  color:var(--accent);font-weight:400;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;text-align:left;padding:2px 8px 8px;
+  border-bottom:1px solid var(--accent-ghost);
+}
+.approach-board td{padding:5px 8px;letter-spacing:.06em}
+.approach-board tr.hi td{color:var(--star);background:var(--accent-wash)}
+.approach-board .sig{color:var(--muted)}
+.approach-board .sig.inbound{color:var(--beacon)}
+.approach-board .sig.lost{color:var(--error)}
+
+/* ---- beacon lamp + accessible pulse-strip ---- */
+.beacon-lamp{
+  width:34px;height:34px;border-radius:50%;background:#241c3a;margin:0 auto 12px;
+  border:2px solid var(--accent-dim);transition:background .06s, box-shadow .06s;
+}
+.beacon-lamp.lit{background:var(--beacon);box-shadow:0 0 22px 5px var(--accent-glow)}
+
+/* the strip is the source of truth: positional, not colour/motion */
+.pulse-strip{
+  display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin:10px 0 4px;
+}
+.pulse-strip .cell{
+  width:16px;height:22px;border:1px solid var(--accent-ghost);background:transparent;
+  border-radius:2px;position:relative;
+}
+.pulse-strip .cell.on{background:var(--accent)}
+.pulse-strip .cell.on::after{           /* shape token, not just fill */
+  content:"";position:absolute;inset:5px 5px auto 5px;height:3px;background:var(--night);
+}
+.pulse-cap{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;
+  color:var(--muted);text-align:center;margin-top:4px;
+}
+
+/* ---- characteristic setter (the finale "write") ---- */
+.char-set{display:flex;gap:18px;justify-content:center;align-items:flex-end;margin:14px 0}
+.char-field{display:flex;flex-direction:column;align-items:center;gap:6px}
+.char-field label{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);
+}
+.char-step{display:flex;align-items:center;gap:10px}
+.char-step button{
+  width:34px;height:34px;background:var(--input-bg);border:1px solid var(--accent-dim);
+  color:var(--accent);font-family:var(--font-mono);font-size:18px;line-height:1;
+}
+.char-step button:hover{border-color:var(--accent)}
+.char-step .val{
+  font-family:var(--font-mono);font-size:22px;color:var(--text);min-width:28px;text-align:center;
+}
+.char-notation{
+  font-family:var(--font-mono);font-size:16px;letter-spacing:.22em;
+  color:var(--beacon);text-align:center;margin:6px 0;
+}
+
+@media (max-width:480px){
+  .approach-board{font-size:11px}
+  .pulse-strip .cell{width:13px;height:19px}
+}

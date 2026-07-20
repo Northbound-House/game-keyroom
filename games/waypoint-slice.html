@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Waypoint — Mechanic Slice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-waypoint.css">
+<link rel="stylesheet" href="../assets/waypoint-components.css">
+<style>
+/* slice harness only — not a chapter */
+.slice{max-width:620px;margin:0 auto;padding:56px 22px 90px}
+.slice h1{font-size:clamp(30px,6vw,50px);text-align:center;margin-bottom:6px}
+.slice .sub{font-family:var(--font-mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:40px}
+.panel{border:1px solid var(--accent-ghost);background:var(--surface);padding:22px 20px;margin-bottom:26px;position:relative}
+.panel h2{font-family:var(--font-display);font-size:15px;letter-spacing:.14em;color:var(--accent);margin-bottom:12px}
+.panel p{font-size:16px;line-height:1.5;color:var(--text-soft);margin-bottom:8px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.fb{min-height:22px;font-family:var(--font-mono);font-size:13px;text-align:center;margin-top:12px;letter-spacing:.06em}
+.fb.good{color:var(--success)}
+.fb.bad{color:var(--error)}
+.mini-input{
+  width:70px;height:46px;text-align:center;font-family:var(--font-mono);font-size:22px;
+  background:var(--input-bg);border:1px solid var(--accent-dim);color:var(--text);
+}
+.mini-input:focus{outline:none;border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="deco-frame" aria-hidden="true"></div>
+
+<div class="slice">
+  <h1>THE WAYPOINT</h1>
+  <div class="sub">Mechanic slice · not a chapter</div>
+
+  <!-- 1. APPROACH BOARD (READ) -->
+  <div class="panel">
+    <h2>The Approach Board — read the traffic</h2>
+    <p>Inbound contacts on the deep-space relay. One is your relief, running dark and waiting on your light.</p>
+    <div id="board"></div>
+    <p style="margin-top:14px">Which vessel is <em>inbound and signalling</em>? Enter its designation.</p>
+    <div class="row">
+      <input class="mini-input" id="desig-in" maxlength="4" placeholder="····" style="width:120px" aria-label="Vessel designation">
+      <button class="btn small" id="desig-go">Identify</button>
+    </div>
+    <div class="fb" id="desig-fb"></div>
+  </div>
+
+  <!-- 2. BEACON CHARACTERISTIC (READ) -->
+  <div class="panel">
+    <h2>The Beacon — read the characteristic</h2>
+    <p>The inbound ship's transponder repeats a pulse. Read its <em>characteristic</em>: how many flashes per cycle? The strip below shows one full cycle even if the lamp isn't blinking.</p>
+    <div class="beacon-lamp" id="lamp"></div>
+    <div id="strip"></div>
+    <div class="row">
+      <button class="btn small" id="replay">Watch again</button>
+      <input class="mini-input" id="count-in" inputmode="numeric" maxlength="2" placeholder="?" aria-label="Flash count">
+      <button class="btn small" id="count-go">Log it</button>
+    </div>
+    <div class="fb" id="count-fb"></div>
+  </div>
+
+  <!-- 3. SET THE BEACON (WRITE) -->
+  <div class="panel" id="write-panel" style="opacity:.5;pointer-events:none">
+    <h2>Light the Way — set your own characteristic</h2>
+    <p>Now answer her. Set your beacon to the <em>same characteristic</em> she's transmitting, so she knows the dock is yours and holds her approach.</p>
+    <div class="char-set">
+      <div class="char-field">
+        <label>Flashes</label>
+        <div class="char-step"><button id="f-dn">−</button><span class="val" id="f-val">1</span><button id="f-up">+</button></div>
+      </div>
+      <div class="char-field">
+        <label>Period (s)</label>
+        <div class="char-step"><button id="p-dn">−</button><span class="val" id="p-val">6</span><button id="p-up">+</button></div>
+      </div>
+    </div>
+    <div class="char-notation" id="notation">Fl(1) 6s</div>
+    <div id="preview"></div>
+    <div class="row"><button class="btn small" id="broadcast">Broadcast</button></div>
+    <div class="fb" id="write-fb"></div>
+  </div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="../assets/waypoint.js"></script>
+<script>
+/* minimal state so engine.beep() is safe to call from playBeacon */
+const S = { soundOn:false, audioCtx:null };
+
+/* the target characteristic the inbound ship is transmitting */
+const TARGET = { flashes:3, period:10 };
+const INBOUND_DESIG = 'KX7';
+
+/* ---- 1. approach board ---- */
+const VESSELS = [
+  {desig:'MR2', bearing:'088', eta:'—',      status:'DOCKED'},
+  {desig:'KX7', bearing:'214', eta:'00:41',  status:'INBOUND · SIGNALLING', sigClass:'inbound', hi:true},
+  {desig:'SV9', bearing:'305', eta:'12:20',  status:'TRANSIT'},
+  {desig:'LN4', bearing:'171', eta:'—',      status:'SIGNAL LOST', sigClass:'lost'},
+];
+document.getElementById('board').innerHTML = approachBoardHTML(VESSELS);
+document.getElementById('desig-go').addEventListener('click', () => {
+  const v = document.getElementById('desig-in').value.trim().toUpperCase();
+  const fb = document.getElementById('desig-fb');
+  if (v === INBOUND_DESIG){ fb.textContent = '✓ KX7 acquired — her transponder is live.'; fb.className='fb good'; }
+  else { fb.textContent = '✗ That contact is not inbound and signalling.'; fb.className='fb bad'; }
+});
+
+/* ---- 2. read the characteristic ---- */
+let beacon = null;
+function showStrip(){
+  document.getElementById('strip').innerHTML =
+    pulseStripHTML(TARGET.flashes, TARGET.period, 'one cycle · ' + TARGET.period + 's');
+}
+function playIt(){
+  if (beacon) beacon.stop();
+  beacon = playBeacon(document.getElementById('lamp'), TARGET.flashes, TARGET.period);
+}
+showStrip(); playIt();
+document.getElementById('replay').addEventListener('click', playIt);
+document.getElementById('count-go').addEventListener('click', () => {
+  const n = parseInt(document.getElementById('count-in').value, 10);
+  const fb = document.getElementById('count-fb');
+  if (n === TARGET.flashes){
+    fb.textContent = '✓ Three flashes per cycle. Characteristic: ' + charNotation(TARGET.flashes, TARGET.period);
+    fb.className = 'fb good';
+    const wp = document.getElementById('write-panel');
+    wp.style.opacity = 1; wp.style.pointerEvents = 'auto';
+  } else {
+    fb.textContent = '✗ Count the filled cells in the strip — flashes, not the dark tail.';
+    fb.className = 'fb bad';
+  }
+});
+
+/* ---- 3. write your own characteristic ---- */
+let sf = 1, sp = 6;
+function renderWrite(){
+  document.getElementById('f-val').textContent = sf;
+  document.getElementById('p-val').textContent = sp;
+  document.getElementById('notation').textContent = charNotation(sf, sp);
+  document.getElementById('preview').innerHTML = pulseStripHTML(sf, sp, 'your beacon');
+}
+function clampStep(which, d){
+  if (which === 'f') sf = Math.max(1, Math.min(9, sf + d));
+  else sp = Math.max(sf, Math.min(20, sp + d));   /* period can't be < flashes */
+  renderWrite();
+}
+document.getElementById('f-up').addEventListener('click', () => clampStep('f', 1));
+document.getElementById('f-dn').addEventListener('click', () => clampStep('f', -1));
+document.getElementById('p-up').addEventListener('click', () => clampStep('p', 1));
+document.getElementById('p-dn').addEventListener('click', () => clampStep('p', -1));
+document.getElementById('broadcast').addEventListener('click', () => {
+  const fb = document.getElementById('write-fb');
+  if (beaconMatches(sf, sp, TARGET)){
+    fb.textContent = '✓ Beacon lit. KX7 answers and holds her approach. The way is yours.';
+    fb.className = 'fb good';
+  } else {
+    fb.textContent = '✗ She reads a different light and waits. Match her characteristic exactly.';
+    fb.className = 'fb bad';
+  }
+});
+renderWrite();
+</script>
+</body>
+</html>

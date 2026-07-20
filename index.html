@@ -4,260 +4,620 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Key Room — Escape Adventures</title>
-<meta name="description" content="Browser escape rooms by seeking77degrees. Solve one to earn the key to the next.">
+<meta name="description" content="Browser escape rooms by Northbound House. Choose a tense — past, present, or future — and solve one to earn the key to the next.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Michroma&display=swap" rel="stylesheet">
+
+<!-- Shared components (buttons, deco frame, eyebrow, reduced-motion, shake).
+     Colour + per-tense typography are defined below; this file is the one
+     surface where FONT is allowed to vary (by tense). Everything else obeys
+     the house rule. -->
 <link rel="stylesheet" href="assets/theme.css">
-<link rel="stylesheet" href="assets/palette-meridian.css">
+
 <style>
-.wrap{max-width:760px;margin:0 auto;padding:64px 26px 90px}
-header{text-align:center;margin-bottom:56px}
-h1 .accent{color:var(--brass)}
+/* ============================================================
+   LANDING PALETTE + TENSE THEMING
+   The landing page is the hub above the trilogies. It defines
+   its own hub palette here (so theme.css has its semantic
+   tokens), then each tense overrides only ACCENT + the two
+   FONT variables. Mono stays universal.
+   ============================================================ */
+:root{
+  /* hub palette — cool near-black, tense-neutral */
+  --night:        #070c13;
+  --surface:      #0f1a28;
+  --surface-soft: rgba(15,26,40,.7);
+  --accent:       #C9A227;                 /* hero defaults to the origin (deco) accent */
+  --accent-dim:   #8a6f1d;
+  --accent-soft:  rgba(201,162,39,.42);
+  --accent-ghost: rgba(201,162,39,.22);
+  --accent-wash:  rgba(201,162,39,.12);
+  --accent-glow:  rgba(201,162,39,.5);
+  --text:         #e3e7ee;
+  --text-soft:    #cbd2dc;
+  --text-faint:   rgba(227,231,238,.4);
+  --muted:        #7c8aa0;
+  --muted-bright: #aebacb;
+  --muted-rule:   rgba(124,138,160,.5);
+  --paper:        #efe7d6;
+  --ink:          #141b24;
+  --error:        #d8664a;
+  --success:      #6fc48c;
+  --veil:         rgba(4,7,12,.82);
+  --veil-fade:    rgba(5,9,15,.94);
+  --input-bg:     rgba(6,11,18,.9);
+
+  /* tense typography — the one axis this page is allowed to vary */
+  --font-display: 'Poiret One', cursive;
+  --font-body:    'Cormorant Garamond', serif;
+  --font-mono:    'IBM Plex Mono', monospace;   /* universal */
+}
+
+/* ---- the three tenses: accent (spectrum) + font only ---- */
+.t-past{
+  --accent:#C9A227; --accent-dim:#8a6f1d;
+  --accent-soft:rgba(201,162,39,.42); --accent-ghost:rgba(201,162,39,.22);
+  --accent-wash:rgba(201,162,39,.12); --accent-glow:rgba(201,162,39,.5);
+  --font-display:'Poiret One',cursive; --font-body:'Cormorant Garamond',serif;
+}
+.t-present{
+  --accent:#3a8dde; --accent-dim:rgba(58,141,222,.55);
+  --accent-soft:rgba(58,141,222,.42); --accent-ghost:rgba(58,141,222,.2);
+  --accent-wash:rgba(58,141,222,.14); --accent-glow:rgba(58,141,222,.6);
+  --font-display:'Space Grotesk',sans-serif; --font-body:'Space Grotesk',sans-serif;
+}
+.t-future{
+  --accent:#9b7bff; --accent-dim:rgba(155,123,255,.55);
+  --accent-soft:rgba(155,123,255,.42); --accent-ghost:rgba(155,123,255,.22);
+  --accent-wash:rgba(155,123,255,.12); --accent-glow:rgba(155,123,255,.55);
+  --font-display:'Michroma',sans-serif; --font-body:'IBM Plex Mono',monospace;
+}
+
+/* per-trilogy accent chips inside Past — keeps each game's own colour,
+   so blue and yellow both live in the past. */
+.s-meridian{ --accent:#C9A227; --accent-dim:#8a6f1d;
+  --accent-soft:rgba(201,162,39,.42); --accent-ghost:rgba(201,162,39,.22);
+  --accent-wash:rgba(201,162,39,.12); --accent-glow:rgba(201,162,39,.5); }
+.s-redeye{ --accent:#3a8dde; --accent-dim:rgba(58,141,222,.55);
+  --accent-soft:rgba(58,141,222,.42); --accent-ghost:rgba(58,141,222,.2);
+  --accent-wash:rgba(58,141,222,.14); --accent-glow:rgba(58,141,222,.6); }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.wrap{max-width:820px;margin:0 auto;padding:66px 26px 90px;position:relative;z-index:1}
+
+/* hidden persistent 77 watermark */
+.wm77{
+  position:fixed;right:24px;bottom:18px;z-index:0;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.4em;
+  color:var(--accent);opacity:.16;user-select:none;pointer-events:none;
+}
+
+/* ---------- Hero ---------- */
+.hero{text-align:center;margin-bottom:20px}
+.hero h1{font-family:'Poiret One',cursive}
+.hero h1 .num{color:var(--accent)}
+.spectrum{
+  height:2px;width:min(320px,64%);margin:26px auto 0;
+  background:linear-gradient(90deg,#C9A227 0%,#3a8dde 52%,#9b7bff 100%);
+  opacity:.85;
+}
 .tagline{
-  font-style:italic;font-size:clamp(16px,2.4vw,19px);color:#c9bda2;
-  margin-top:16px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.5;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(16px,2.4vw,20px);color:var(--text-soft);
+  margin:22px auto 0;max-width:460px;line-height:1.5;
 }
+
+/* ---------- View machinery ---------- */
+.view{display:none}
+.view.active{display:block;animation:rise .5s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- The triptych of tenses ---------- */
+.triptych{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;
+}
+.door{
+  position:relative;background:var(--surface-soft);
+  border:1px solid var(--accent-ghost);
+  padding:34px 22px 26px;text-align:center;cursor:pointer;
+  transition:border-color .28s, transform .28s, background .28s;
+  display:flex;flex-direction:column;min-height:260px;
+}
+.door::before{content:"";position:absolute;inset:6px;border:1px solid var(--accent-wash);pointer-events:none}
+.door:hover,.door:focus-visible{
+  border-color:var(--accent);transform:translateY(-4px);
+  background:linear-gradient(180deg,var(--accent-wash),var(--surface-soft));outline:none;
+}
+.door .tense-word{
+  font-family:var(--font-display);color:var(--accent);
+  font-size:clamp(30px,6vw,44px);line-height:1;margin-bottom:4px;
+}
+.door.d-present .tense-word{letter-spacing:-.01em}
+.door.d-future .tense-word{font-size:clamp(20px,4.2vw,30px);letter-spacing:.02em;padding-top:6px}
+.door .tense-word .caret{
+  display:inline-block;width:.06em;height:1em;background:var(--accent);
+  margin-left:.08em;vertical-align:-.08em;animation:blink 1.1s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+.door .tense-status{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--accent);opacity:.85;margin-bottom:16px;
+}
+.door .tense-desc{
+  font-family:var(--font-body);font-size:15.5px;line-height:1.5;color:var(--text-soft);
+  flex:1;
+}
+.door.d-present .tense-desc,.door.d-future .tense-desc{font-style:normal;font-size:14px}
+.door.d-past .tense-desc{font-style:italic;font-size:16px}
+.door .enter{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);margin-top:18px;opacity:.7;
+  transition:opacity .25s,letter-spacing .25s;
+}
+.door:hover .enter{opacity:1;letter-spacing:.42em}
+
+/* ---------- Back link ---------- */
+.backlink{
+  display:inline-flex;align-items:center;gap:9px;margin:6px 0 34px;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--muted);background:none;border:none;
+}
+.backlink:hover{color:var(--accent)}
+.backlink .arrow{transition:transform .2s}
+.backlink:hover .arrow{transform:translateX(-4px)}
+
+.tense-head{text-align:center;margin-bottom:30px}
+.tense-head .eyebrow{color:var(--accent)}
+.tense-head h2{
+  font-family:var(--font-display);color:var(--accent);
+  font-size:clamp(30px,6.5vw,50px);line-height:1;
+}
+.t-future .tense-head h2{font-size:clamp(22px,5vw,34px);letter-spacing:.03em}
+.tense-head .sub{
+  font-family:var(--font-body);font-size:clamp(15px,2.2vw,18px);color:var(--text-soft);
+  max-width:520px;margin:14px auto 0;line-height:1.55;
+}
+.t-past .tense-head .sub{font-style:italic}
+
+/* ---------- Series card (Past) ---------- */
 .series{
-  border:1px solid var(--brass-dim);position:relative;
-  background:rgba(18,36,54,.55);
-  margin-bottom:34px;
+  border:1px solid var(--accent-ghost);position:relative;
+  background:var(--surface-soft);margin-bottom:30px;
 }
-.series::before{
-  content:"";position:absolute;inset:6px;border:1px solid rgba(201,162,39,.18);
-  pointer-events:none;
+.series::before{content:"";position:absolute;inset:6px;border:1px solid var(--accent-wash);pointer-events:none}
+.series-head{padding:26px 28px 18px;text-align:center;border-bottom:1px solid var(--accent-ghost)}
+.series-head .chip{
+  display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--accent);
+  border:1px solid var(--accent-soft);padding:3px 10px;margin-bottom:12px;
 }
-.series-head{
-  padding:28px 28px 18px;text-align:center;
-  border-bottom:1px solid rgba(201,162,39,.25);
-}
-.series-head .eyebrow{margin-bottom:10px}
-.series-head h2{
-  font-family:'Poiret One',cursive;font-weight:400;font-size:clamp(26px,5vw,36px);
-  letter-spacing:.12em;
+.series-head h3{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(24px,5vw,34px);letter-spacing:.1em;color:var(--text);
 }
 .series-head p{
-  font-style:italic;color:#c0b499;font-size:16px;margin-top:10px;line-height:1.5;
-  max-width:520px;margin-left:auto;margin-right:auto;
+  font-family:var(--font-body);font-style:italic;color:var(--text-soft);
+  font-size:16px;margin-top:10px;line-height:1.5;max-width:520px;
+  margin-left:auto;margin-right:auto;
 }
-.episode{
-  display:flex;align-items:center;gap:18px;
-  padding:22px 28px;
-  border-bottom:1px solid rgba(201,162,39,.15);
-}
+.episode{display:flex;align-items:center;gap:18px;padding:22px 28px;border-bottom:1px solid var(--accent-wash)}
 .episode:last-child{border-bottom:none}
-.ep-num{
-  font-family:'Poiret One',cursive;font-size:34px;color:var(--brass);
-  width:44px;flex-shrink:0;text-align:center;
-}
+.ep-num{font-family:var(--font-display);font-size:32px;color:var(--accent);width:44px;flex-shrink:0;text-align:center}
 .ep-info{flex:1;min-width:0}
-.ep-title{
-  font-family:'Poiret One',cursive;font-size:21px;letter-spacing:.08em;
-}
-.ep-sub{
-  font-style:italic;font-size:15px;color:#b3a88e;margin-top:3px;line-height:1.45;
-}
-.ep-meta{
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--fog);margin-top:7px;
-}
+.ep-title{font-family:var(--font-display);font-size:20px;letter-spacing:.06em;color:var(--text)}
+.ep-sub{font-family:var(--font-body);font-style:italic;font-size:15px;color:var(--text-soft);margin-top:3px;line-height:1.45}
+.ep-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:7px}
 .ep-action{flex-shrink:0}
-.gate{
-  display:none;padding:0 28px 24px;
-}
+a.btn{text-decoration:none;display:inline-block}
+
+/* ---------- Gate ---------- */
+.gate{display:none;padding:0 28px 24px}
 .gate.open{display:block}
-.gate-inner{
-  border:1px dashed rgba(201,162,39,.35);padding:18px;text-align:center;
-}
-.gate-inner p{font-style:italic;font-size:15px;color:#c0b499;margin-bottom:12px;line-height:1.5}
+.gate-inner{border:1px dashed var(--accent-soft);padding:18px;text-align:center}
+.gate-inner p{font-family:var(--font-body);font-style:italic;font-size:15px;color:var(--text-soft);margin-bottom:12px;line-height:1.5}
 .gate-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .gate-input{
   height:44px;width:min(60%,220px);text-align:center;
   font-family:'IBM Plex Mono',monospace;font-size:16px;letter-spacing:.25em;
-  background:rgba(10,22,34,.9);border:1px solid var(--brass-dim);
-  color:var(--parchment);text-transform:uppercase;
+  background:var(--input-bg);border:1px solid var(--accent-dim);
+  color:var(--text);text-transform:uppercase;
 }
-.gate-input:focus{outline:none;border-color:var(--brass)}
-.gate-feedback{
-  min-height:20px;font-size:14px;font-style:italic;margin-top:10px;
+.gate-input:focus{outline:none;border-color:var(--accent)}
+.gate-feedback{min-height:20px;font-size:14px;font-style:italic;margin-top:10px;font-family:var(--font-body)}
+.gate-feedback.bad{color:var(--error)}
+.gate-feedback.good{color:var(--success)}
+
+/* ---------- Present: empty state ---------- */
+.empty{
+  border:1px dashed var(--accent-soft);padding:56px 28px;text-align:center;
 }
-.gate-feedback.bad{color:var(--rust)}
-.gate-feedback.good{color:#8fbf8f}
-.soon{
-  border:1px dashed rgba(201,162,39,.3);
-  padding:34px 26px;text-align:center;color:#8f866f;
+.empty h3{
+  font-family:var(--font-display);font-size:clamp(24px,5vw,34px);color:var(--text);
+  letter-spacing:-.01em;
 }
-.soon .eyebrow{color:var(--brass-dim)}
-.soon p{font-style:italic;font-size:16px;line-height:1.5;max-width:420px;margin:6px auto 0}
+.empty .liveword{color:var(--accent)}
+.empty .liveword .caret{
+  display:inline-block;width:.07em;height:1em;background:var(--accent);
+  margin-left:.06em;vertical-align:-.08em;animation:blink 1.1s steps(1) infinite;
+}
+.empty p{
+  font-family:var(--font-body);font-size:16px;color:var(--text-soft);
+  max-width:440px;margin:16px auto 0;line-height:1.6;
+}
+.empty .status{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);opacity:.7;margin-top:26px;
+}
+
+/* ---------- Future: teaser ---------- */
+.teaser{
+  border:1px solid var(--accent-ghost);position:relative;
+  background:linear-gradient(180deg,var(--accent-wash),var(--surface-soft));
+  padding:50px 30px;text-align:center;overflow:hidden;
+}
+.teaser::before{content:"";position:absolute;inset:6px;border:1px solid var(--accent-wash);pointer-events:none}
+.teaser .work{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);opacity:.8;
+}
+.teaser h3{
+  font-family:var(--font-display);font-size:clamp(20px,4.4vw,30px);color:var(--text);
+  letter-spacing:.04em;margin:14px 0 6px;
+}
+.teaser p{
+  font-family:var(--font-body);font-size:14px;color:var(--text-soft);
+  max-width:460px;margin:16px auto 0;line-height:1.7;
+}
+.teaser .sealed{
+  display:inline-block;margin-top:26px;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);
+  border:1px solid var(--accent-soft);padding:12px 26px;opacity:.85;
+}
+
+/* ---------- Footer + curator crest ---------- */
 footer{
   text-align:center;margin-top:56px;
   font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
-  text-transform:uppercase;color:rgba(232,220,195,.35);
+  text-transform:uppercase;color:var(--text-faint);
 }
-footer a{text-decoration:none;color:rgba(201,162,39,.6)}
-footer a:hover{color:var(--brass)}
-@media (max-width:560px){
+footer a{text-decoration:none;color:var(--accent);opacity:.7}
+footer a:hover{opacity:1}
+.crest{
+  display:inline-block;margin:0 auto 18px;width:34px;height:34px;cursor:pointer;
+  opacity:.35;transition:opacity .3s,transform .3s;
+}
+.crest:hover{opacity:.9;transform:translateY(-2px)}
+.crest svg{width:100%;height:100%;display:block}
+
+/* ---------- Curator card (easter egg) ---------- */
+#curator-veil{
+  position:fixed;inset:0;background:var(--veil);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:24px;
+  backdrop-filter:blur(2px);
+}
+#curator-veil.on{display:flex}
+.curator-card{
+  width:min(92vw,420px);background:var(--surface);border:1px solid var(--accent-dim);
+  padding:34px 30px 28px;position:relative;text-align:center;animation:rise .4s ease both;
+}
+.curator-card::before{content:"";position:absolute;inset:6px;border:1px solid var(--accent-ghost);pointer-events:none}
+.curator-card .cc-crest{width:44px;height:44px;margin:0 auto 16px;opacity:.9}
+.curator-card .cc-eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.4em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:14px;
+}
+.curator-card p{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;
+  line-height:1.6;color:var(--text-soft);
+}
+.curator-card .sign{
+  font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.3em;
+  color:var(--accent);margin-top:18px;
+}
+.curator-card .close{
+  margin-top:22px;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--muted);
+  background:none;border:none;
+}
+.curator-card .close:hover{color:var(--accent)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:640px){
+  .triptych{grid-template-columns:1fr;gap:14px}
+  .door{min-height:0;padding:26px 20px 22px}
+  .wrap{padding:48px 18px 72px}
   .episode{flex-wrap:wrap;padding:20px 18px}
-  .ep-num{width:34px;font-size:28px}
+  .ep-num{width:34px;font-size:26px}
   .ep-action{width:100%;text-align:right;margin-top:2px}
-  .series-head{padding:24px 18px 16px}
+  .series-head{padding:22px 18px 16px}
   .gate{padding:0 18px 22px}
-  .wrap{padding:48px 18px 70px}
 }
 </style>
 </head>
 <body>
 
 <div class="deco-frame" aria-hidden="true"></div>
+<div class="wm77" aria-hidden="true">77</div>
 
 <div class="wrap">
-  <header>
-    <div class="eyebrow">seeking77degrees presents</div>
-    <h1>THE KEY <span class="accent">ROOM</span></h1>
-    <p class="tagline">Browser escape adventures, played in order and earned in order. Finish a chapter, keep what it taught you — the next door asks for it.</p>
+
+  <!-- ============ HERO (tense-neutral hub) ============ -->
+  <header class="hero">
+    <div class="eyebrow">Northbound House presents</div>
+    <h1>THE KEY <span class="num">ROOM</span></h1>
+    <div class="spectrum" aria-hidden="true"></div>
+    <p class="tagline">An anthology of browser escapes, played in order and earned in order. Three tenses — one hand behind all of them. Choose when to begin.</p>
   </header>
 
-  <!-- ============ THE MERIDIAN TRILOGY ============ -->
-  <section class="series" aria-label="The Meridian Trilogy">
-    <div class="series-head">
-      <div class="eyebrow">Series One · 1934</div>
-      <h2>THE MERIDIAN TRILOGY</h2>
-      <p>You wake in a locked stateroom on a ship you never boarded. Three chapters — a stateroom, a chart room, a lighthouse — and one promise carried across the sea.</p>
+  <!-- ============ VIEW: TENSE CHOOSER ============ -->
+  <div class="view active" id="view-tenses">
+    <nav class="triptych" aria-label="Choose a tense">
+
+      <button class="door d-past t-past" data-tense="past" aria-label="Enter the Past">
+        <div class="tense-word">PAST</div>
+        <div class="tense-status">1934–1962 · Two series</div>
+        <div class="tense-desc">Where the collection began. A liner, then an airport — Morse, signal flags, telex, and secrets carried by hand.</div>
+        <div class="enter">Enter →</div>
+      </button>
+
+      <button class="door d-present t-present" data-tense="present" aria-label="Enter the Present">
+        <div class="tense-word">PRESENT<span class="caret" aria-hidden="true"></span></div>
+        <div class="tense-status">Unwritten</div>
+        <div class="tense-desc">Nothing has happened here yet. The present is still being set — this is where the collection surfaces when it catches up to now.</div>
+        <div class="enter">Look in →</div>
+      </button>
+
+      <button class="door d-future t-future" data-tense="future" aria-label="Enter the Future">
+        <div class="tense-word">FUTURE</div>
+        <div class="tense-status">In production · One series</div>
+        <div class="tense-desc">Far, far ahead. An archivist is assembling what's left of us — and the language you'll learn hasn't been invented yet.</div>
+        <div class="enter">Look ahead →</div>
+      </button>
+
+    </nav>
+  </div>
+
+  <!-- ============ VIEW: PAST ============ -->
+  <div class="view t-past" id="view-past">
+    <button class="backlink" data-back><span class="arrow">←</span> All tenses</button>
+
+    <div class="tense-head">
+      <div class="eyebrow">The Past · 1934–1962</div>
+      <h2>PAST</h2>
+      <p class="sub">Two trilogies, opened in their own time and their own colour. Finish a chapter, keep what it taught you — the next door asks for it.</p>
     </div>
 
-    <!-- Episode I -->
-    <div class="episode">
-      <div class="ep-num">I</div>
-      <div class="ep-info">
-        <div class="ep-title">STATEROOM 77</div>
-        <div class="ep-sub">The door is locked from the outside. The note says: find what I left you.</div>
-        <div class="ep-meta">≈ 15 min · no key required</div>
+    <!-- ---- THE MERIDIAN (brass) ---- -->
+    <section class="series s-meridian" aria-label="The Meridian Trilogy">
+      <div class="series-head">
+        <div class="chip">Series One · 1934</div>
+        <h3>THE MERIDIAN</h3>
+        <p>You wake in a locked stateroom on a ship you never boarded. A stateroom, a chart room, a lighthouse — and one promise carried across the sea.</p>
       </div>
-      <div class="ep-action">
-        <a class="btn" href="games/level-1-stateroom-77.html">Play</a>
-      </div>
-    </div>
 
-    <!-- Episode II -->
-    <div class="episode">
-      <div class="ep-num">II</div>
-      <div class="ep-info">
-        <div class="ep-title">THE CHART ROOM</div>
-        <div class="ep-sub">The gangway rose without you. R is aboard — and has left the room itself as a message.</div>
-        <div class="ep-meta" id="meta-2">≈ 20 min · sealed</div>
-      </div>
-      <div class="ep-action" id="action-2"></div>
-    </div>
-    <div class="gate" id="gate-2">
-      <div class="gate-inner">
-        <p>This chapter is sealed. Enter the code that opened the stateroom door in Chapter I.</p>
-        <div class="gate-row">
-          <input class="gate-input" id="input-2" inputmode="numeric" maxlength="8" placeholder="····" aria-label="Chapter II code">
-          <button class="btn" id="try-2">Unseal</button>
+      <div class="episode">
+        <div class="ep-num">I</div>
+        <div class="ep-info">
+          <div class="ep-title">STATEROOM 77</div>
+          <div class="ep-sub">The door is locked from the outside. The note says: find what I left you.</div>
+          <div class="ep-meta">≈ 15 min · no key required</div>
         </div>
-        <div class="gate-feedback" id="fb-2"></div>
+        <div class="ep-action"><a class="btn" href="games/level-1-stateroom-77.html">Play</a></div>
       </div>
-    </div>
 
-    <!-- Episode III -->
-    <div class="episode">
-      <div class="ep-num">III</div>
-      <div class="ep-info">
-        <div class="ep-title">THE LANTERN</div>
-        <div class="ep-sub">The keeper is gone. The lamp is cold. The ship is coming. Finale.</div>
-        <div class="ep-meta" id="meta-3">≈ 25 min · sealed</div>
-      </div>
-      <div class="ep-action" id="action-3"></div>
-    </div>
-    <div class="gate" id="gate-3">
-      <div class="gate-inner">
-        <p>This chapter is sealed. Enter the word you transmitted from the Meridian's wireless in Chapter II.</p>
-        <div class="gate-row">
-          <input class="gate-input" id="input-3" maxlength="8" placeholder="····" aria-label="Chapter III code">
-          <button class="btn" id="try-3">Unseal</button>
+      <div class="episode">
+        <div class="ep-num">II</div>
+        <div class="ep-info">
+          <div class="ep-title">THE CHART ROOM</div>
+          <div class="ep-sub">The gangway rose without you. R is aboard — and has left the room itself as a message.</div>
+          <div class="ep-meta" id="meta-2">≈ 20 min · sealed</div>
         </div>
-        <div class="gate-feedback" id="fb-3"></div>
+        <div class="ep-action" id="action-2"></div>
       </div>
-    </div>
-  </section>
-
-  <!-- ============ THE RED-EYE (SERIES TWO) ============ -->
-  <section class="series" aria-label="The Red-Eye">
-    <div class="series-head">
-      <div class="eyebrow">Series Two · Meridian Airways · 1962</div>
-      <h2>THE RED-EYE</h2>
-      <p>A film star presses a locker key into your hand at the gate and vanishes. Three chapters — a terminal, a transatlantic jet, a customs hall — and an affair that was only ever the cover for the scandal.</p>
-    </div>
-
-    <!-- Episode I -->
-    <div class="episode">
-      <div class="ep-num">I</div>
-      <div class="ep-info">
-        <div class="ep-title">THE TERMINAL</div>
-        <div class="ep-sub">Read the board, crack the locker, and board Flight 077 before the doors close.</div>
-        <div class="ep-meta">≈ 15 min · no key required</div>
-      </div>
-      <div class="ep-action">
-        <a class="btn" href="games/redeye-1-the-terminal.html">Play</a>
-      </div>
-    </div>
-
-    <!-- Episode II -->
-    <div class="episode">
-      <div class="ep-num">II</div>
-      <div class="ep-info">
-        <div class="ep-title">THE RED-EYE</div>
-        <div class="ep-sub">Over the Atlantic, the telex spells out what the love letters were really counting.</div>
-        <div class="ep-meta" id="meta-r2">≈ 25 min · sealed</div>
-      </div>
-      <div class="ep-action" id="action-r2"></div>
-    </div>
-    <div class="gate" id="gate-r2">
-      <div class="gate-inner">
-        <p>This chapter is sealed. Enter the seat you boarded Flight 077 in.</p>
-        <div class="gate-row">
-          <input class="gate-input" id="input-r2" maxlength="8" placeholder="····" aria-label="Red-Eye Chapter II code">
-          <button class="btn" id="try-r2">Unseal</button>
+      <div class="gate" id="gate-2">
+        <div class="gate-inner">
+          <p>Sealed. Enter the code that opened the stateroom door in Chapter I.</p>
+          <div class="gate-row">
+            <input class="gate-input" id="input-2" inputmode="numeric" maxlength="8" placeholder="····" aria-label="Chapter II code">
+            <button class="btn" id="try-2">Unseal</button>
+          </div>
+          <div class="gate-feedback" id="fb-2"></div>
         </div>
-        <div class="gate-feedback" id="fb-r2"></div>
       </div>
-    </div>
 
-    <!-- Episode III -->
-    <div class="episode">
-      <div class="ep-num">III</div>
-      <div class="ep-info">
-        <div class="ep-title">ARRIVALS</div>
-        <div class="ep-sub">Dawn landing. Get the truth through customs before it turns back into the dark. Finale.</div>
-        <div class="ep-meta" id="meta-r3">≈ 30 min · sealed</div>
-      </div>
-      <div class="ep-action" id="action-r3"></div>
-    </div>
-    <div class="gate" id="gate-r3">
-      <div class="gate-inner">
-        <p>This chapter is sealed. Enter the word you sent from the teleprinter in Chapter II.</p>
-        <div class="gate-row">
-          <input class="gate-input" id="input-r3" maxlength="8" placeholder="····" aria-label="Red-Eye Chapter III code">
-          <button class="btn" id="try-r3">Unseal</button>
+      <div class="episode">
+        <div class="ep-num">III</div>
+        <div class="ep-info">
+          <div class="ep-title">THE LANTERN</div>
+          <div class="ep-sub">The keeper is gone. The lamp is cold. The ship is coming. Finale.</div>
+          <div class="ep-meta" id="meta-3">≈ 25 min · sealed</div>
         </div>
-        <div class="gate-feedback" id="fb-r3"></div>
+        <div class="ep-action" id="action-3"></div>
       </div>
+      <div class="gate" id="gate-3">
+        <div class="gate-inner">
+          <p>Sealed. Enter the word you transmitted from the Meridian's wireless in Chapter II.</p>
+          <div class="gate-row">
+            <input class="gate-input" id="input-3" maxlength="8" placeholder="····" aria-label="Chapter III code">
+            <button class="btn" id="try-3">Unseal</button>
+          </div>
+          <div class="gate-feedback" id="fb-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- THE RED-EYE (blue) ---- -->
+    <section class="series s-redeye" aria-label="The Red-Eye">
+      <div class="series-head">
+        <div class="chip">Series Two · Meridian Airways · 1962</div>
+        <h3>THE RED-EYE</h3>
+        <p>A film star presses a locker key into your hand at the gate and vanishes. A terminal, a transatlantic jet, a customs hall — and an affair that was only ever the cover for the scandal.</p>
+      </div>
+
+      <div class="episode">
+        <div class="ep-num">I</div>
+        <div class="ep-info">
+          <div class="ep-title">THE TERMINAL</div>
+          <div class="ep-sub">Read the board, crack the locker, and board Flight 077 before the doors close.</div>
+          <div class="ep-meta">≈ 15 min · no key required</div>
+        </div>
+        <div class="ep-action"><a class="btn" href="games/redeye-1-the-terminal.html">Play</a></div>
+      </div>
+
+      <div class="episode">
+        <div class="ep-num">II</div>
+        <div class="ep-info">
+          <div class="ep-title">THE RED-EYE</div>
+          <div class="ep-sub">Over the Atlantic, the telex spells out what the love letters were really counting.</div>
+          <div class="ep-meta" id="meta-r2">≈ 25 min · sealed</div>
+        </div>
+        <div class="ep-action" id="action-r2"></div>
+      </div>
+      <div class="gate" id="gate-r2">
+        <div class="gate-inner">
+          <p>Sealed. Enter the seat you boarded Flight 077 in.</p>
+          <div class="gate-row">
+            <input class="gate-input" id="input-r2" maxlength="8" placeholder="····" aria-label="Red-Eye Chapter II code">
+            <button class="btn" id="try-r2">Unseal</button>
+          </div>
+          <div class="gate-feedback" id="fb-r2"></div>
+        </div>
+      </div>
+
+      <div class="episode">
+        <div class="ep-num">III</div>
+        <div class="ep-info">
+          <div class="ep-title">ARRIVALS</div>
+          <div class="ep-sub">Dawn landing. Get the truth through customs before it turns back into the dark. Finale.</div>
+          <div class="ep-meta" id="meta-r3">≈ 30 min · sealed</div>
+        </div>
+        <div class="ep-action" id="action-r3"></div>
+      </div>
+      <div class="gate" id="gate-r3">
+        <div class="gate-inner">
+          <p>Sealed. Enter the word you sent from the teleprinter in Chapter II.</p>
+          <div class="gate-row">
+            <input class="gate-input" id="input-r3" maxlength="8" placeholder="····" aria-label="Red-Eye Chapter III code">
+            <button class="btn" id="try-r3">Unseal</button>
+          </div>
+          <div class="gate-feedback" id="fb-r3"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ VIEW: PRESENT ============ -->
+  <div class="view t-present" id="view-present">
+    <button class="backlink" data-back><span class="arrow">←</span> All tenses</button>
+
+    <div class="tense-head">
+      <div class="eyebrow">The Present · now</div>
+      <h2>PRESENT</h2>
     </div>
-  </section>
 
-  <footer style="margin-top:8px;margin-bottom:-24px">
-    <span style="opacity:.7">More series in the works — the collection is still being assembled.</span>
-  </footer>
+    <div class="empty">
+      <h3>The present is <span class="liveword">unwritten<span class="caret" aria-hidden="true"></span></span></h3>
+      <p>No series lives here yet. When the collection catches up to the day you're reading this, the first present-tense escape will surface right here.</p>
+      <div class="status">— awaiting —</div>
+    </div>
+  </div>
 
+  <!-- ============ VIEW: FUTURE ============ -->
+  <div class="view t-future" id="view-future">
+    <button class="backlink" data-back><span class="arrow">←</span> All tenses</button>
+
+    <div class="tense-head">
+      <div class="eyebrow">The Future · far, far ahead</div>
+      <h2>FUTURE</h2>
+    </div>
+
+    <div class="teaser">
+      <div class="work">Series in production</div>
+      <h3>[ untitled ]</h3>
+      <p>Long after the liner and the airport, someone is still keeping the record. The safe and the desk survive; the language does not. What you learn to read here, you will be asked to write back.</p>
+      <div class="sealed">Coming</div>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
   <footer>
-    <a href="https://seeking77degrees.com">seeking77degrees</a> · The Key Room · MCMXXXIV
+    <div class="crest" id="crest" role="button" tabindex="0" aria-label="The curator's mark">
+      <!-- lantern over crossed signal flags -->
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.4">
+        <line x1="8" y1="30" x2="22" y2="16"/>
+        <line x1="32" y1="30" x2="18" y2="16"/>
+        <path d="M8 30 l3 -6 l-3 0 z" fill="currentColor" stroke="none"/>
+        <path d="M32 30 l-3 -6 l3 0 z" fill="currentColor" stroke="none"/>
+        <rect x="16" y="10" width="8" height="10" rx="1"/>
+        <line x1="20" y1="6" x2="20" y2="10"/>
+        <line x1="16.5" y1="15" x2="23.5" y2="15"/>
+      </svg>
+    </div>
+    <div><a href="https://northboundhouse.com">Northbound House</a> · The Key Room · assembled across time</div>
   </footer>
+
+</div>
+
+<!-- ============ Curator card (easter egg) ============ -->
+<div id="curator-veil" role="dialog" aria-modal="true" aria-label="The curator">
+  <div class="curator-card">
+    <div class="cc-crest">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--accent)" stroke-width="1.4">
+        <line x1="8" y1="30" x2="22" y2="16"/>
+        <line x1="32" y1="30" x2="18" y2="16"/>
+        <path d="M8 30 l3 -6 l-3 0 z" fill="var(--accent)" stroke="none"/>
+        <path d="M32 30 l-3 -6 l3 0 z" fill="var(--accent)" stroke="none"/>
+        <rect x="16" y="10" width="8" height="10" rx="1"/>
+        <line x1="20" y1="6" x2="20" y2="10"/>
+        <line x1="16.5" y1="15" x2="23.5" y2="15"/>
+      </svg>
+    </div>
+    <div class="cc-eyebrow">the curator</div>
+    <p>One hand set all of these — the past you've played, the present that hasn't happened, and the future you haven't reached. Keep what each door teaches you.</p>
+    <div class="sign">77</div>
+    <button class="close" id="curator-close">close</button>
+  </div>
 </div>
 
 <script>
 /* ================================================================
-   Gating: each sealed chapter requires the answer earned by
-   finishing the one before it. Answers are stored as SHA-256
-   hashes; unlocks persist in localStorage when available.
+   1) TENSE NAVIGATION — hero stays; the view below swaps.
+      Light hash routing so #past / #present / #future deep-link.
+   ================================================================ */
+const views = {
+  tenses:  document.getElementById('view-tenses'),
+  past:    document.getElementById('view-past'),
+  present: document.getElementById('view-present'),
+  future:  document.getElementById('view-future')
+};
+function showView(name){
+  const key = views[name] ? name : 'tenses';
+  Object.values(views).forEach(v=>v.classList.remove('active'));
+  views[key].classList.add('active');
+  const hash = key === 'tenses' ? ' ' : '#'+key;
+  if (location.hash !== hash) history.replaceState(null,'',key==='tenses'?location.pathname:hash);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.door').forEach(d=>{
+  d.addEventListener('click',()=>showView(d.dataset.tense));
+});
+document.querySelectorAll('[data-back]').forEach(b=>{
+  b.addEventListener('click',()=>showView('tenses'));
+});
+// deep-link on load
+(function(){
+  const h = (location.hash||'').replace('#','');
+  if (h && views[h]) showView(h);
+})();
+
+/* ================================================================
+   2) GATING — each sealed chapter needs the answer earned by the
+      one before it. Answers stored as SHA-256; unlocks persist in
+      localStorage. (Ported verbatim from the original landing page.)
    ================================================================ */
 const EPISODES = {
   2: {
@@ -272,7 +632,6 @@ const EPISODES = {
     wrong: 'The shore stays dark. That was not the word.',
     right: 'The Lantern answers. Go ashore.'
   },
-  /* --- Series Two: The Red-Eye --- */
   r2: {
     href: 'games/redeye-2-the-red-eye.html',
     hash: 'fdee4726c2847c8788b39cb69f2777cf672711bb11d9622b07f0fe23fac1480e',
@@ -287,7 +646,6 @@ const EPISODES = {
   }
 };
 
-/* --- storage (safe wrapper: falls back to memory if unavailable) --- */
 const mem = {};
 const store = {
   get(k){ try { return localStorage.getItem(k); } catch(e){ return mem[k] ?? null; } },
@@ -296,14 +654,12 @@ const store = {
 function isUnlocked(n){ return store.get('keyroom.unlock.'+n) === '1'; }
 function setUnlocked(n){ store.set('keyroom.unlock.'+n, '1'); }
 
-/* --- hashing --- */
 async function sha256(text){
   const data = new TextEncoder().encode(text);
   const buf = await crypto.subtle.digest('SHA-256', data);
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-/* --- UI wiring --- */
 function renderEpisode(n){
   const action = document.getElementById('action-'+n);
   const gate = document.getElementById('gate-'+n);
@@ -311,16 +667,13 @@ function renderEpisode(n){
   action.innerHTML = '';
   if (isUnlocked(n)) {
     const a = document.createElement('a');
-    a.className = 'btn';
-    a.textContent = 'Play';
-    a.href = EPISODES[n].href;
+    a.className = 'btn'; a.textContent = 'Play'; a.href = EPISODES[n].href;
     action.appendChild(a);
     gate.classList.remove('open');
-    meta.textContent = meta.textContent.replace('sealed','unsealed');
+    if (meta) meta.textContent = meta.textContent.replace('sealed','unsealed');
   } else {
     const b = document.createElement('button');
-    b.className = 'btn locked';
-    b.textContent = '🔒 Sealed';
+    b.className = 'btn locked'; b.textContent = '🔒 Sealed';
     b.setAttribute('aria-expanded','false');
     b.addEventListener('click', ()=>{
       const open = gate.classList.toggle('open');
@@ -339,12 +692,10 @@ async function tryUnlock(n){
   const h = await sha256(guess);
   if (h === EPISODES[n].hash) {
     setUnlocked(n);
-    fb.textContent = EPISODES[n].right;
-    fb.className = 'gate-feedback good';
-    setTimeout(()=>{ renderEpisode(n); }, 700);
+    fb.textContent = EPISODES[n].right; fb.className = 'gate-feedback good';
+    setTimeout(()=>renderEpisode(n), 700);
   } else {
-    fb.textContent = EPISODES[n].wrong;
-    fb.className = 'gate-feedback bad';
+    fb.textContent = EPISODES[n].wrong; fb.className = 'gate-feedback bad';
     input.classList.add('shake');
     setTimeout(()=>input.classList.remove('shake'), 380);
     input.select();
@@ -357,6 +708,29 @@ Object.keys(EPISODES).forEach(n=>{
   document.getElementById('input-'+n).addEventListener('keydown', e=>{
     if (e.key === 'Enter') tryUnlock(n);
   });
+});
+
+/* ================================================================
+   3) EASTER EGGS — the curator card.
+      Reveal by clicking the crest, or typing 7-7 anywhere.
+   ================================================================ */
+const cv = document.getElementById('curator-veil');
+function openCurator(){ cv.classList.add('on'); }
+function closeCurator(){ cv.classList.remove('on'); }
+document.getElementById('crest').addEventListener('click', openCurator);
+document.getElementById('crest').addEventListener('keydown', e=>{
+  if (e.key==='Enter'||e.key===' '){ e.preventDefault(); openCurator(); }
+});
+document.getElementById('curator-close').addEventListener('click', closeCurator);
+cv.addEventListener('click', e=>{ if (e.target===cv) closeCurator(); });
+document.addEventListener('keydown', e=>{ if (e.key==='Escape') closeCurator(); });
+
+// type "77" to summon the curator
+let seq = '';
+document.addEventListener('keydown', e=>{
+  if (e.target.tagName === 'INPUT') return;          // don't hijack gate codes
+  if (e.key === '7'){ seq += '7'; if (seq.length > 2) seq = seq.slice(-2); if (seq === '77') { openCurator(); seq=''; } }
+  else { seq = ''; }
 });
 </script>
 </body>
