@@ -72,7 +72,7 @@ parchment. Type: Poiret One + Cormorant Garamond + IBM Plex Mono. Language: Mors
 
 ---
 
-## 3. Trilogy Two — THE RED-EYE *(in production)*
+## 3. Trilogy Two — THE RED-EYE *(complete)*
 
 ### Meridian Airways · 1962 — a scandal at 30,000 feet
 
@@ -145,14 +145,22 @@ the finale makes you *write* in the cipher: encode `PRINT` → `TKPJX` and send 
 "V" reveals the lantern-and-flags pin — the Meridian crest, in 1962.
 *Locks:* attaché `077` · decode `LEDGER` · transmit `TKPJX`. *Carries out → `PRINT`.*
 
-**III — ARRIVALS** · *~25–30 min · customs & passport hall, dawn landing · finale*
-Multi-zone finale (the lighthouse's floors, reincarnated as immigration → customs →
-tarmac). A **wall of world clocks** and **time-zone math** — the literal *meridians*
-the anthology is named for — give the last code. The countdown is the airline's
-fixers and the officials closing in. Like The Meridian, you're no longer saving
-yourself: you get Roscoe and the film through before the doors close, and send the
-proof into daylight. Final reveal ties the scandal, Meridian Airways, and the 77 /
-crest motif together.
+**III — ARRIVALS** · *~30 min · Lisbon, dawn landing · finale*
+Three zones (passports → customs → the apron), the trilogy's multi-area close.
+V's note gives the press deadline in **New York** time; the **wall of world clocks**
+gives the offset, so the crew door takes it in Lisbon time (`0740`) — the literal
+*meridian* math the anthology is named for. Customs seizes the reel on purpose
+(*"a bonded cage has a lock; a customs officer has a memory"*); the seizure tag plus
+the ledger's bay→category map opens the bonded store (`FILM`). At the press gate the
+courier will not take a word from just anyone: he offers Roscoe's cipher one last
+time (`PTTL`), and you must give back the clear — **`LAMP`**, which is what V wears
+on her collar. The last move is a choice, not a lock: the company man follows
+whoever moves, so you walk toward him and let Coralie through.
+*Locks:* crew door `0740` · bonded cage `FILM` · courier `LAMP`. *Carries out → —*
+
+**Reveal:** V's network has run since 1934 — *"twenty-eight years my grandmother ran
+this out of a chart room on a ship."* R's lantern-and-flags crest, still on a collar.
+
 
 ### Hint voice
 The **PA / gate agent** (Ch I), the **purser** (Ch II), a **customs clerk / "V"**

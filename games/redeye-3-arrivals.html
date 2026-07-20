@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arrivals — The Red-Eye, Chapter III</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-redeye.css">
+<link rel="stylesheet" href="../assets/redeye-components.css">
+<style>
+/* ---- Chapter III components only ---- */
+
+/* wall of world clocks */
+.clockwall{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0;
+}
+.clock{
+  background:var(--input-bg);border:1px solid var(--accent-ghost);padding:10px 4px;
+}
+.clock .city{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);
+}
+.clock .time{
+  font-family:'IBM Plex Mono',monospace;font-size:17px;color:var(--text);margin-top:5px;
+}
+.clock.here{border-color:var(--accent);background:var(--accent-wash)}
+
+/* customs seizure tag */
+.tag{
+  background:#d9c98f;color:var(--ink);font-family:'IBM Plex Mono',monospace;
+  font-size:13px;line-height:1.8;padding:14px 12px;margin:14px 0;
+  transform:rotate(-1.4deg);box-shadow:0 2px 8px rgba(0,0,0,.45);
+  border-left:6px solid #8d2f3f;
+}
+
+/* zone nav */
+#floornav{
+  position:fixed;left:0;right:0;bottom:84px;z-index:31;display:none;
+  justify-content:center;gap:8px;
+}
+#floornav.on{display:flex}
+.fl-btn{
+  background:var(--surface-soft);border:1px solid var(--accent-soft);color:var(--text);
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;
+  text-transform:uppercase;padding:8px 14px;transition:all .2s;
+}
+.fl-btn.cur{background:var(--accent);color:var(--night);border-color:var(--accent)}
+.fl-btn:disabled{opacity:.35;cursor:not-allowed}
+.fl-btn:not(:disabled):not(.cur):hover{border-color:var(--accent)}
+.zone{display:none}
+.zone.on{display:block}
+
+@media (max-width:600px){ #floornav{bottom:92px} }
+@media (max-width:480px){ .clockwall{grid-template-columns:repeat(3,1fr)} }
+</style>
+</head>
+<body class="chapter">
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">Lisbon · Portela Airport · 06:12 · Level III — Finale</div>
+  <h1>ARR<span class="num">IVALS</span></h1>
+  <p class="intro-story">The wheels touch at first light and the cabin exhales. Somewhere over the Azores you stopped being a passenger.<br><br>Coralie Vance goes down the steps ten rows ahead of you in dark glasses, carrying nothing. V does not look at either of you. And waiting at the bottom of the airstairs, in a good coat, holding a photograph — <em>your</em> photograph — is a man from the airline's own security office.<br><br>The reel is in your pocket. The night desk holds the front page for another hour and a half.</p>
+  <button class="btn" id="start-btn">Walk down the steps</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.5;font-style:italic">This time you are not getting yourself out. You are getting it out.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">30:00</div>
+  <div class="title-sm">ARRIVALS</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="Lisbon airport arrivals at dawn">
+    <defs>
+      <radialGradient id="hall" cx="50%" cy="28%" r="88%">
+        <stop offset="0%" stop-color="#1a3048"/><stop offset="100%" stop-color="#080f18"/>
+      </radialGradient>
+      <linearGradient id="dawnsky" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0%" stop-color="#c98a5a"/><stop offset="45%" stop-color="#4a5f7e"/>
+        <stop offset="100%" stop-color="#132339"/>
+      </linearGradient>
+    </defs>
+
+    <!-- ============ ZONE 1 — PASSPORT HALL ============ -->
+    <g id="zone-1" class="zone on">
+      <rect x="0" y="0" width="800" height="392" fill="url(#hall)"/>
+      <rect x="0" y="392" width="800" height="108" fill="#26303a"/>
+      <line x1="0" y1="392" x2="800" y2="392" stroke="#c69a6b" stroke-width="1" opacity=".3"/>
+
+      <!-- clock wall -->
+      <g id="hs-clocks" class="hotspot" tabindex="0" role="button" aria-label="Wall of world clocks">
+        <rect x="248" y="44" width="304" height="86" fill="#101c28" stroke="#3a8dde" stroke-width="2"/>
+        <g>
+          <circle cx="292" cy="88" r="22" fill="#efe7d6"/><circle cx="350" cy="88" r="22" fill="#efe7d6"/>
+          <circle cx="408" cy="88" r="22" fill="#efe7d6"/><circle cx="466" cy="88" r="22" fill="#efe7d6"/>
+          <circle cx="512" cy="88" r="22" fill="#efe7d6"/>
+        </g>
+        <g stroke="#141b24" stroke-width="2">
+          <line x1="292" y1="88" x2="292" y2="74"/><line x1="292" y1="88" x2="302" y2="92"/>
+          <line x1="350" y1="88" x2="350" y2="74"/><line x1="350" y1="88" x2="360" y2="92"/>
+          <line x1="408" y1="88" x2="408" y2="74"/><line x1="408" y1="88" x2="418" y2="92"/>
+          <line x1="466" y1="88" x2="466" y2="74"/><line x1="466" y1="88" x2="476" y2="92"/>
+          <line x1="512" y1="88" x2="512" y2="74"/><line x1="512" y1="88" x2="522" y2="92"/>
+        </g>
+        <text x="400" y="124" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#3a8dde" letter-spacing="3">WORLD TIME</text>
+      </g>
+
+      <!-- passport booths -->
+      <g id="hs-queue" class="hotspot" tabindex="0" role="button" aria-label="Passport control queue">
+        <rect x="80" y="230" width="150" height="96" fill="#22384c" stroke="#c69a6b" stroke-width="1.5"/>
+        <rect x="96" y="248" width="118" height="40" fill="#0f1c28"/>
+        <rect x="80" y="326" width="150" height="12" fill="#1a2a38"/>
+        <circle cx="120" cy="360" r="12" fill="#3a5b78"/><circle cx="156" cy="362" r="12" fill="#3a5b78"/>
+        <circle cx="192" cy="360" r="12" fill="#3a5b78"/>
+        <text x="155" y="272" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#5ec48c">PASSAPORTES</text>
+      </g>
+
+      <!-- Halloran -->
+      <g id="hs-halloran" class="hotspot" tabindex="0" role="button" aria-label="A man from the airline's security office">
+        <circle cx="620" cy="252" r="20" fill="#2c3d50"/>
+        <path d="M594 356 q26 -70 52 0 z" fill="#1d2b3a"/>
+        <rect x="612" y="290" width="16" height="20" fill="#8d2f3f"/>
+        <rect x="646" y="300" width="26" height="18" fill="#efe7d6" transform="rotate(8 659 309)"/>
+      </g>
+
+      <!-- crew door -->
+      <g id="hs-crewdoor" class="hotspot" tabindex="0" role="button" aria-label="Crew door with a four-digit lock">
+        <rect x="700" y="150" width="84" height="212" rx="4" fill="#1d3348" stroke="#3a8dde" stroke-width="2"/>
+        <rect x="712" y="168" width="60" height="96" fill="none" stroke="#c69a6b" stroke-width="1.2"/>
+        <rect x="722" y="300" width="40" height="18" fill="#0a0e12" stroke="#c69a6b" stroke-width="1.4"/>
+        <text x="742" y="313" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c69a6b">▢▢▢▢</text>
+        <text x="742" y="142" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#3a8dde">TRIPULAÇÃO</text>
+      </g>
+    </g>
+
+    <!-- ============ ZONE 2 — CUSTOMS HALL ============ -->
+    <g id="zone-2" class="zone">
+      <rect x="0" y="0" width="800" height="392" fill="url(#hall)"/>
+      <rect x="0" y="392" width="800" height="108" fill="#26303a"/>
+
+      <!-- inspection table -->
+      <g id="hs-inspection" class="hotspot" tabindex="0" role="button" aria-label="Customs inspection table">
+        <rect x="220" y="250" width="300" height="18" fill="#4a3a24"/>
+        <rect x="238" y="268" width="264" height="70" fill="#33281a"/>
+        <rect x="270" y="222" width="60" height="28" rx="4" fill="#5a6570"/>
+        <rect x="360" y="228" width="80" height="22" fill="#6E2B2B"/>
+        <text x="370" y="212" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#3a8dde">ALFÂNDEGA</text>
+      </g>
+
+      <!-- seizure ledger -->
+      <g id="hs-ledger" class="hotspot" tabindex="0" role="button" aria-label="Customs seizure ledger on the officer's desk">
+        <rect x="66" y="266" width="150" height="16" fill="#4a3a24"/>
+        <rect x="80" y="282" width="122" height="60" fill="#33281a"/>
+        <rect x="92" y="240" width="96" height="28" fill="#6E2B2B" transform="rotate(-3 140 254)"/>
+        <rect x="98" y="245" width="84" height="19" fill="#efe7d6" transform="rotate(-3 140 254)"/>
+      </g>
+
+      <!-- bonded cage -->
+      <g id="hs-cage" class="hotspot" tabindex="0" role="button" aria-label="Bonded store cage with a four-letter lock">
+        <rect x="580" y="150" width="180" height="212" fill="#101c28" stroke="#c69a6b" stroke-width="2"/>
+        <g stroke="#43566a" stroke-width="3">
+          <line x1="610" y1="150" x2="610" y2="362"/><line x1="640" y1="150" x2="640" y2="362"/>
+          <line x1="670" y1="150" x2="670" y2="362"/><line x1="700" y1="150" x2="700" y2="362"/>
+          <line x1="730" y1="150" x2="730" y2="362"/>
+          <line x1="580" y1="210" x2="760" y2="210"/><line x1="580" y1="280" x2="760" y2="280"/>
+        </g>
+        <rect x="636" y="296" width="58" height="22" fill="#0a0e12" stroke="#c69a6b" stroke-width="1.4"/>
+        <text x="665" y="312" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#c69a6b">✳ ✳ ✳ ✳</text>
+        <text x="670" y="140" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c69a6b">DEPÓSITO</text>
+      </g>
+
+      <!-- Coralie -->
+      <g id="hs-coralie" class="hotspot" tabindex="0" role="button" aria-label="Coralie Vance waiting by the barrier">
+        <circle cx="120" cy="176" r="18" fill="#c9a08a"/>
+        <path d="M98 254 q22 -60 44 0 z" fill="#8d2f3f"/>
+        <rect x="112" y="168" width="16" height="7" fill="#141b24"/>
+      </g>
+    </g>
+
+    <!-- ============ ZONE 3 — THE APRON ============ -->
+    <g id="zone-3" class="zone">
+      <rect x="0" y="0" width="800" height="250" fill="url(#dawnsky)"/>
+      <rect x="0" y="250" width="800" height="250" fill="#1e2731"/>
+      <line x1="0" y1="250" x2="800" y2="250" stroke="#3d4a58" stroke-width="2"/>
+      <!-- distant aircraft -->
+      <g fill="#141d27" opacity=".85">
+        <ellipse cx="180" cy="238" rx="90" ry="10"/>
+        <path d="M140 236 l-38 -24 7 -2 48 20 z"/>
+        <rect x="216" y="216" width="4" height="20"/>
+      </g>
+      <!-- runway lights -->
+      <g fill="#ffd47a"><circle cx="60" cy="300" r="3"/><circle cx="180" cy="312" r="3"/><circle cx="300" cy="324" r="3"/></g>
+
+      <!-- press gate -->
+      <g id="hs-gate" class="hotspot" tabindex="0" role="button" aria-label="The press gate">
+        <rect x="600" y="180" width="14" height="180" fill="#43566a"/>
+        <rect x="760" y="180" width="14" height="180" fill="#43566a"/>
+        <rect x="600" y="180" width="174" height="10" fill="#43566a"/>
+        <g stroke="#43566a" stroke-width="2">
+          <line x1="632" y1="190" x2="632" y2="360"/><line x1="664" y1="190" x2="664" y2="360"/>
+          <line x1="696" y1="190" x2="696" y2="360"/><line x1="728" y1="190" x2="728" y2="360"/>
+        </g>
+      </g>
+
+      <!-- the courier -->
+      <g id="hs-courier" class="hotspot" tabindex="0" role="button" aria-label="The night desk's courier">
+        <circle cx="480" cy="262" r="19" fill="#c9a08a"/>
+        <path d="M456 360 q24 -72 48 0 z" fill="#2c3d50"/>
+        <rect x="500" y="300" width="30" height="22" fill="#efe7d6" transform="rotate(-6 515 311)"/>
+        <rect x="470" y="248" width="20" height="8" fill="#33281a"/>
+      </g>
+
+      <!-- Halloran, closing -->
+      <g id="hs-halloran3" class="hotspot" tabindex="0" role="button" aria-label="The security man, closing the distance">
+        <circle cx="250" cy="272" r="19" fill="#2c3d50"/>
+        <path d="M226 368 q24 -70 48 0 z" fill="#1d2b3a"/>
+        <rect x="242" y="308" width="16" height="20" fill="#8d2f3f"/>
+      </g>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- ZONE NAV -->
+<div id="floornav">
+  <button class="fl-btn cur" id="fl1">Passports</button>
+  <button class="fl-btn" id="fl2" disabled>Customs</button>
+  <button class="fl-btn" id="fl3" disabled>The apron</button>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">Lisbon · 07:39 · one minute inside the deadline</div>
+  <h1>FRONT <span class="num">PAGE</span></h1>
+  <p class="intro-story" id="victory-story"></p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Return to Home Screen</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
+  <div class="series-note">— End of The Red-Eye —</div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="../assets/redeye.js"></script>
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:30*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  zone:1,
+  inv:{},
+  flags:{ clocks:false, crewdoor:false, seized:false, ledger:false,
+          cage:false, sawCoralie:false, decoded:false, handedOver:false },
+  hintLevel:{},
+  soundOn:false, audioCtx:null, noiseGain:null,
+  soundLowpass:260, soundGainUp:3.0,   /* concourse murmur */
+};
+
+const HINT_LABELS = { first:'Ask at the currency window', again:'Ask again — quietly' };
+
+const BEATS = {
+  [20*60]:'Somewhere behind you a hand radio crackles in English, which nobody in this building speaks.',
+  [10*60]:'The security man has stopped pretending to read his newspaper.',
+  [4*60]:'A telephone rings at the currency window and the clerk looks straight at you while he answers it.'
+};
+function onOvertime(){
+  toast('Lisbon has missed the edition. The desk will run it tomorrow — if there is still a reel tomorrow. Keep moving.');
+}
+
+/* ---- the courier's challenge (Roscoe's cipher, from redeye.js) ---- */
+const CHALLENGE = 'PTTL';
+const ANSWER = cipherDecode(CHALLENGE);      /* -> LAMP */
+
+/* ================= ZONES ================= */
+function goZone(n){
+  S.zone = n;
+  [1,2,3].forEach(i => {
+    document.getElementById('zone-'+i).classList.toggle('on', i===n);
+    document.getElementById('fl'+i).classList.toggle('cur', i===n);
+  });
+}
+document.getElementById('fl1').addEventListener('click',()=>goZone(1));
+document.getElementById('fl2').addEventListener('click',()=>goZone(2));
+document.getElementById('fl3').addEventListener('click',()=>goZone(3));
+function unlockZones(){
+  document.getElementById('fl2').disabled = false;
+  document.getElementById('fl3').disabled = false;
+}
+
+/* ================= INVENTORY ================= */
+function inspectItem(k){
+  if (k === 'vnote'){
+    openModal({
+      title:"V's Note",
+      body:'Pressed into your hand on the airstairs, already folded to the size of a stamp:',
+      extra:'<div class="paper">"The desk holds the front page until <span class="mono">02:40, New York time</span>. The crew door takes that hour — but in <em>ours</em>, not theirs. Read the wall.<br><br>And when they take the canister: <em>let them.</em> A bonded cage has a lock. A customs officer has a memory. — V"</div>',
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  if (k === 'reel'){
+    openModal({
+      title:'The Reel',
+      body:'Thirty-six frames of a ledger that Meridian Airways would spend a great deal of money to keep in a safe in Long Island City.',
+      extra:'<div class="paper straight"><span class="mono">MERIDIAN AIR — CORPORATE<br>REEL 3 · DO NOT DEVELOP</span></div>',
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  if (k === 'letters'){
+    openModal({
+      title:'The Love Letters',
+      body:'Four numbers, in every letter, for twenty-two months. The most patient thing anyone has ever done for anyone.',
+      extra:keyStripHTML('the key — 4, 19, 7, 22, repeating'),
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  if (k === 'cipher'){
+    openModal({
+      title:"Roscoe's Cipher Card",
+      body:'Add the key to send. Subtract it to read. The key is hers.',
+      extra:keyStripHTML('A=1 … Z=26 · wrap past Z back to A') + cipherTableHTML(),
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  if (k === 'tag'){
+    openModal({
+      title:'Seizure Tag',
+      body:'The carbon copy the officer tore off and handed you without looking up:',
+      extra:'<div class="tag">ALFÂNDEGA DE LISBOA<br>ARTIGO RETIDO / ITEM DETAINED<br>1 × CANISTER, CINE<br><br>DEPÓSITO — <b>BAY 3</b></div>',
+      actions:[closeBtn()],
+      puzzleId:'cage'
+    });
+    return;
+  }
+}
+
+/* ================= ZONE 1 — PASSPORT HALL ================= */
+
+bindHotspot('hs-clocks', () => {
+  S.flags.clocks = true;
+  const rows = [
+    ['New York','01:12',false],['Lisbon','06:12',true],['Rome','07:12',false],
+    ['Dakar','06:12',false],['Cairo','08:12',false]
+  ];
+  let wall = '<div class="clockwall">';
+  rows.forEach(r => {
+    wall += '<div class="clock'+(r[2]?' here':'')+'"><div class="city">'+r[0]+'</div><div class="time">'+r[1]+'</div></div>';
+  });
+  wall += '</div>';
+  openModal({
+    title:'The Wall of Clocks',
+    body:'Five faces in a row above the passport booths, each with a brass city plate. The whole building runs on them.',
+    extra: wall + '<div style="font-style:italic;opacity:.75;font-size:14px">Lisbon is the one you are standing in.</div>',
+    actions:[closeBtn()],
+    puzzleId:'crewdoor'
+  });
+});
+
+bindHotspot('hs-queue', () => {
+  openModal({
+    title:'Passport Control',
+    body:'Three booths, one open. The queue shuffles. Ten places ahead, a woman in dark glasses hands over a passport in a name that is not the one on her films, and the officer stamps it without a second glance.<br><br>She does not look back at you. That is the arrangement.',
+    actions:[closeBtn()]
+  });
+});
+
+bindHotspot('hs-halloran', () => {
+  openModal({
+    title:'The Man in the Good Coat',
+    body:'He is not police, and he is not pretending to be. Airline security: a company man with a company problem.<br><br>He has your photograph — a bad one, taken through glass at Idlewild — and he is working the hall in a slow, patient sweep. He has not matched it to your face yet.<br><br><em>Yet.</em>',
+    actions:[closeBtn()]
+  });
+});
+
+bindHotspot('hs-crewdoor', () => {
+  if (S.flags.crewdoor){ goZone(2); return; }
+  const row = codeRow(4);
+  const submit = actionBtn('Try the lock', () => {
+    if (readCode(row) === '0740'){
+      S.flags.crewdoor = true;
+      unlockZones();
+      feedback('The bolt clacks back. Nobody turns around.',true);
+      setTimeout(() => { closeModal(); goZone(2);
+        openModal({
+          title:'Customs',
+          body:'Through the crew door and down a corridor that smells of coffee and hot rubber — into the customs hall, where every bag off 077 is being opened on a long steel table.<br><br>You have perhaps two minutes before somebody asks who you are.',
+          actions:[closeBtn()]
+        });
+      }, 900);
+    } else {
+      feedback('The lock does not care what time it is where you came from.',false);
+    }
+  });
+  openModal({
+    title:'The Crew Door',
+    body:'Unmarked, four digits, and the only way into the customs hall that does not pass the man in the good coat.<br><br>V\'s note gave you an hour — <em>in New York.</em> The lock wants it in Lisbon.',
+    actions:[submit, closeBtn()],
+    puzzleId:'crewdoor',
+    onOpen:() => mountCode(row)
+  });
+});
+
+/* ================= ZONE 2 — CUSTOMS HALL ================= */
+
+bindHotspot('hs-inspection', () => {
+  if (!S.flags.seized){
+    S.flags.seized = true;
+    removeItem('reel');
+    addItem('tag','🏷','Seizure tag');
+    openModal({
+      title:'The Inspection Table',
+      body:'The officer works without hurry. Coat. Shoes. Pockets.<br><br>The canister comes out and he turns it over once, reads <em>DO NOT DEVELOP</em>, and sets it in a tray — undeveloped film is a customs matter in every country on earth. He writes a tag, tears off the carbon, and hands you the copy without ever looking at your face.<br><br><em>Let them,</em> V said. So you let them.',
+      extra:'<div class="tag">ALFÂNDEGA DE LISBOA<br>ARTIGO RETIDO / ITEM DETAINED<br>1 × CANISTER, CINE<br><br>DEPÓSITO — <b>BAY 3</b></div>',
+      actions:[closeBtn('Take the carbon')],
+      puzzleId:'cage'
+    });
+  } else {
+    openModal({title:'The Inspection Table',body:'The next passenger\'s suitcase is open on the steel. Yours is finished with.',actions:[closeBtn()]});
+  }
+});
+
+bindHotspot('hs-ledger', () => {
+  S.flags.ledger = true;
+  openModal({
+    title:'The Seizure Ledger',
+    body:'On the officer\'s desk, open, because nobody in this building imagines a passenger would read it. Every detained item, and where in the bonded store it goes:',
+    extra:'<div class="paper straight"><span class="mono">DEPÓSITO — DISPOSIÇÃO<br><br>'
+      +'BAY 1 &nbsp;·&nbsp; TEXT &nbsp; (livros, papéis)<br>'
+      +'BAY 2 &nbsp;·&nbsp; COIN &nbsp; (moeda, ouro)<br>'
+      +'BAY 3 &nbsp;·&nbsp; FILM &nbsp; (película)<br>'
+      +'BAY 4 &nbsp;·&nbsp; ARMS &nbsp; (armas)</span><br><br>'
+      +'<em>pencil, in the margin:</em> "A fechadura é a categoria." — <span class="mono">the lock is the category</span></div>',
+    actions:[closeBtn()],
+    puzzleId:'cage'
+  });
+});
+
+bindHotspot('hs-cage', () => {
+  if (S.flags.cage){
+    openModal({title:'The Bonded Store',body:'Bay 3 is empty now, and the wire door is swinging very slightly.',actions:[closeBtn()]});
+    return;
+  }
+  if (!S.flags.seized){
+    openModal({
+      title:'The Bonded Store',
+      body:'A wire cage of shelves and numbered bays, everything the hall has taken today tagged and filed. Four brass letter-wheels on the door.<br><br>Nothing of yours is in there. <em>Yet.</em>',
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  const row = codeRow(4,'alpha');
+  const submit = actionBtn('Try the letters', () => {
+    if (readCode(row) === 'FILM'){
+      S.flags.cage = true;
+      removeItem('tag');
+      addItem('reel','🎞','The reel');
+      feedback('The wheels line up and the wire door gives.',true);
+      setTimeout(() => openModal({
+        title:'Bay 3',
+        body:'Two confiscated cameras, a box of Spanish cigars, and one steel canister with a carbon tag through its handle.<br><br>You take the reel and leave the tag hanging on the empty shelf, because a bay that looks emptied is noticed and a bay that looks filed is not.',
+        actions:[closeBtn('Pocket it and go')]
+      }), 700);
+    } else {
+      feedback('The wheels spin loose. That is not what they filed it under.',false);
+    }
+  });
+  openModal({
+    title:'The Bonded Store',
+    body:'Four brass letter-wheels. The ledger said the lock <em>is</em> the category — and your carbon says which bay they put it in.',
+    actions:[submit, closeBtn()],
+    puzzleId:'cage',
+    onOpen:() => mountCode(row)
+  });
+});
+
+bindHotspot('hs-coralie', () => {
+  S.flags.sawCoralie = true;
+  openModal({
+    title:'Coralie Vance',
+    body:'She is standing at the barrier with her glasses pushed up into her hair, and without them she looks exactly her age and nothing like her photographs.<br><br><em>"He posted it to me a frame at a time for two years,"</em> she says, to the middle distance. <em>"Do you know what that is? That is a man writing to you every week for two years about nothing but numbers, and me reading every one of them like it was a love letter. And it was. It was the most romantic thing anyone has ever done and I couldn\'t tell a living soul."</em><br><br>She puts the glasses back down.<br><br><em>"Get it out. Then let them look at me instead. I am extremely good at being looked at."</em>',
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= ZONE 3 — THE APRON ================= */
+
+bindHotspot('hs-gate', () => {
+  openModal({
+    title:'The Press Gate',
+    body:'A wire gate at the edge of the apron where the newspapers send boys to meet the mail flights. Beyond it, Lisbon is going grey-gold and a scooter is idling with its lamp still on.',
+    actions:[closeBtn()]
+  });
+});
+
+bindHotspot('hs-halloran3', () => {
+  openModal({
+    title:'Closing',
+    body: S.flags.handedOver
+      ? 'He has seen you now — properly, photograph-to-face — and he is walking. Not running. Men in good coats never run.'
+      : 'He came through the crew door ninety seconds after you did. He is at the far end of the apron, and he is looking at every face except the one at the gate.<br><br>Whatever happens next, it happens in about four minutes.',
+    actions:[closeBtn()]
+  });
+});
+
+bindHotspot('hs-courier', () => {
+  if (S.flags.handedOver){ finale(); return; }
+  if (!S.inv.reel){
+    openModal({
+      title:'The Courier',
+      body:'A boy of maybe nineteen with ink on his fingers and a scooter behind him. He looks at your empty hands and shrugs.<br><br><em>"Sem filme, sem história."</em> No film, no story.',
+      actions:[closeBtn()],
+      puzzleId:'courier'
+    });
+    return;
+  }
+  const input = document.createElement('input');
+  input.className = 'word-input'; input.maxLength = 8; input.placeholder = 'THE WORD';
+  input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z]/g,'').toUpperCase(); });
+
+  const submit = actionBtn('Say it', () => {
+    if (input.value === ANSWER){
+      S.flags.handedOver = true;
+      S.flags.decoded = true;
+      feedback('He grins, and puts out his hand for the canister.',true);
+      setTimeout(finale, 900);
+    } else if (input.value === CHALLENGE){
+      feedback('He shakes his head. "Isso é o que eu disse." That is what I said — not what you answer.',false);
+    } else {
+      feedback('He does not move. Whoever sent you would know the word.',false);
+    }
+  });
+
+  openModal({
+    title:'The Courier',
+    body:'He does not ask your name. He takes a slip of newsprint from his sleeve, holds it where only you can see it, and waits.<br><br><em>"Disseram-me que sabia responder."</em> — They told me you would know the answer.',
+    extra:'<div class="telex"><span class="dim">DESK LIS — CHALLENGE</span><br><span class="grp">'+CHALLENGE+'</span></div>'
+      + keyStripHTML('subtract the key · A=1 … Z=26')
+      + cipherTableHTML(),
+    actions:[submit, closeBtn()],
+    puzzleId:'courier',
+    onOpen:() => { document.getElementById('m-extra').appendChild(input); input.focus(); }
+  });
+});
+
+/* ---- the last choice ---- */
+function finale(){
+  openModal({
+    title:'The Last Thing',
+    body:'The reel goes into his jacket. The scooter coughs, catches, and is gone through the wire before the man in the good coat has covered half the apron.<br><br>Which leaves you, and Coralie at the barrier forty feet away, and a security man who now has to choose which of you to follow.<br><br>He will follow whoever moves.',
+    actions:[
+      actionBtn('Walk toward him', () => { win(); }),
+      actionBtn('Stand still', () => {
+        feedback('Standing still just means he picks — and he will pick her. She is the one worth a headline.',false);
+      })
+    ]
+  });
+}
+
+/* ================= HINTS ================= */
+const HINTS = {
+  crewdoor:[
+    'The clerk at the currency window, counting escudos twice: <em>"Everything in this building runs on two clocks. The one on the wall, and the one back home."</em>',
+    '<em>"Your note gives you an hour in New York. The wall gives you New York and Lisbon together. The lock wants it in ours."</em>',
+    '<em>"New York reads 01:12; we read 06:12. Five hours. So 02:40 there is 07:40 here — zero-seven-four-zero."</em>'
+  ],
+  cage:[
+    '<em>"Nothing is ever lost in this building. It is only filed."</em>',
+    '<em>"Your carbon has a bay number on it. The ledger on the officer\'s desk says what each bay is for — and the margin says the lock is the category."</em>',
+    '<em>"Bay three is film. Four letters: F-I-L-M."</em>'
+  ],
+  courier:[
+    '<em>"He will not take a word from anybody who simply says it. He wants one that proves who sent you."</em>',
+    '<em>"That slip is in Roscoe\'s hand — same key, same table. He has given you the cipher; give him back the clear."</em>',
+    '<em>"P minus 4 is L, T minus 19 is A. The word is LAMP — which is, as it happens, what she wears on her collar."</em>'
+  ]
+};
+
+/* ================= WIN ================= */
+function win(){
+  document.getElementById('victory-story').innerHTML =
+    'You walk toward the man in the good coat, and you make it easy for him.<br><br>'
+    + 'He is polite about it. There is an office, and a telephone call to New York, and four hours of questions from a lawyer who keeps explaining that you are not under arrest, which is the sort of thing people only say when they wish you were. They take your letters. They take your passport. They find no film, because there is no film, because a nineteen-year-old on a scooter put it on a night desk at 07:39 — one minute inside the deadline.<br><br>'
+    + 'By the time they let you go, the afternoon edition is on every kiosk on the Avenida, and Meridian Airways has stopped being a story about a film star.<br><br>'
+    + '<em>Coralie Vance walked out of Portela through the front doors, into thirty photographers, wearing the dark glasses and a smile like a knife. Not one of them asked her about a ledger.</em><br><br>'
+    + 'V finds you on the steps at dusk with your passport in her hand and the lantern pin on her collar catching the last of the light.<br><br>'
+    + '<em>"Twenty-eight years my grandmother ran this out of a chart room on a ship,"</em> she says. <em>"We have never once carried anything for ourselves."</em><br><br>'
+    + '<span style="font-family:\'IBM Plex Mono\',monospace;letter-spacing:.25em;color:var(--accent)">PTTL</span>';
+  finishChapter(30*60, [
+    {maxMinutes:15, maxHints:0, name:'Front Page'},
+    {maxMinutes:21, maxHints:2, name:'Night Desk'},
+    {maxMinutes:30, name:'Cleared'},
+    {name:'Detained'}
+  ]);
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click', () => {
+  startChapter();
+  addItem('reel','🎞','The reel');
+  addItem('letters','✉','Love letters');
+  addItem('cipher','🗝','Cipher card');
+  addItem('vnote','📝',"V's note");
+});
+renderInv();
+</script>
+</body>
+</html>

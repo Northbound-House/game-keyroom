@@ -1,0 +1,65 @@
+/* ============================================================
+   THE RED-EYE — shared chapter components
+   Props that appear in more than one chapter of Series Two.
+   Formatting only; colours come from palette-redeye.css.
+   Load after theme.css + palette-redeye.css.
+   ============================================================ */
+
+/* ---- teleprinter printout ---- */
+.telex{
+  background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.95;
+  padding:16px 14px;margin:14px 0;text-align:left;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);
+  border-left:3px dotted #b9ab8c;border-right:3px dotted #b9ab8c;
+}
+.telex .grp{background:#ddcfae;padding:1px 6px;letter-spacing:.24em;font-weight:500}
+.telex .dim{color:#7a715e}
+
+.tx-lamp{
+  width:22px;height:22px;border-radius:50%;background:#2b2f36;margin:0 auto 10px;
+  border:2px solid var(--accent-dim);
+}
+.tx-lamp.lit{background:var(--accent);box-shadow:0 0 16px 3px var(--accent-glow)}
+
+.tx-echo{
+  font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.28em;
+  color:var(--accent);min-height:30px;margin:8px 0;
+}
+
+/* ---- the cipher: A=1..Z=26 reference + the repeating key ---- */
+.cipher-table{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin:12px 0}
+.cipher-table div{
+  background:var(--input-bg);border:1px solid var(--accent-ghost);
+  padding:5px 1px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text);
+}
+.cipher-table b{display:block;color:var(--accent);font-weight:500;font-size:12px}
+
+.keystrip{
+  font-family:'IBM Plex Mono',monospace;font-size:17px;letter-spacing:.28em;
+  color:var(--accent);background:var(--input-bg);
+  border:1px dashed var(--accent-dim);padding:11px 8px;margin:12px 0;
+}
+.keystrip small{
+  display:block;letter-spacing:.14em;font-size:10px;color:var(--muted);margin-top:6px;
+}
+
+/* ---- lipstick-blotted napkin ---- */
+.napkin{
+  background:#f7f2ea;color:#8d2f3f;font-style:italic;font-size:17px;line-height:1.5;
+  padding:20px 18px;margin:14px 0;transform:rotate(1.3deg);
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+
+/* ---- the lantern-and-flags pin ---- */
+.pin{
+  display:inline-block;border:1px solid var(--accent);border-radius:50%;
+  width:74px;height:74px;line-height:70px;text-align:center;font-size:30px;
+  color:var(--accent);margin:10px auto;
+}
+
+@media (max-width:480px){
+  .cipher-table{grid-template-columns:repeat(7,1fr)}
+  .telex{font-size:11px}
+}

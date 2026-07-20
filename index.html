@@ -228,9 +228,19 @@ footer a:hover{color:var(--brass)}
       <div class="ep-info">
         <div class="ep-title">ARRIVALS</div>
         <div class="ep-sub">Dawn landing. Get the truth through customs before it turns back into the dark. Finale.</div>
-        <div class="ep-meta">≈ 28 min · in production</div>
+        <div class="ep-meta" id="meta-r3">≈ 30 min · sealed</div>
       </div>
-      <div class="ep-action"><span class="btn locked" aria-disabled="true">In production</span></div>
+      <div class="ep-action" id="action-r3"></div>
+    </div>
+    <div class="gate" id="gate-r3">
+      <div class="gate-inner">
+        <p>This chapter is sealed. Enter the word you sent from the teleprinter in Chapter II.</p>
+        <div class="gate-row">
+          <input class="gate-input" id="input-r3" maxlength="8" placeholder="····" aria-label="Red-Eye Chapter III code">
+          <button class="btn" id="try-r3">Unseal</button>
+        </div>
+        <div class="gate-feedback" id="fb-r3"></div>
+      </div>
     </div>
   </section>
 
@@ -268,6 +278,12 @@ const EPISODES = {
     hash: 'fdee4726c2847c8788b39cb69f2777cf672711bb11d9622b07f0fe23fac1480e',
     wrong: 'The gate agent shakes her head. Nobody sat there on 077.',
     right: 'Seat confirmed. Welcome aboard the red-eye.'
+  },
+  r3: {
+    href: 'games/redeye-3-arrivals.html',
+    hash: 'ce953a0eb08246617b7f849486c4b26a7af37e9d2e8f0e13b3ae1bf0da8a70a2',
+    wrong: 'The desk in Lisbon does not answer to that.',
+    right: 'The desk answers. Go and meet the morning.'
   }
 };
 
