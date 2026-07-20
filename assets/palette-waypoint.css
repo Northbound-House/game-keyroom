@@ -1,0 +1,46 @@
+/* ============================================================
+   PALETTE — THE WAYPOINT (Future tense, deep space)
+   Ultraviolet on a near-black ground. Colours + tense fonts only;
+   formatting lives in theme.css. Load AFTER theme.css.
+
+   Future tense fonts: Michroma (display) + IBM Plex Mono (body/mono).
+   Michroma is single-weight — hierarchy comes from size / spacing /
+   colour, never bold.
+   ============================================================ */
+:root{
+  /* --- font-by-tense: Future --- */
+  --font-display: 'Michroma', sans-serif;
+  --font-body:    'IBM Plex Mono', monospace;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  /* --- semantic contract (consumed by theme.css) --- */
+  --night:        #0a0912;
+  --surface:      #16132a;
+  --surface-soft: rgba(30,24,58,.72);
+  --accent:       #9b7bff;
+  --accent-dim:   rgba(155,123,255,.52);
+  --accent-soft:  rgba(155,123,255,.42);
+  --accent-ghost: rgba(155,123,255,.22);
+  --accent-wash:  rgba(155,123,255,.15);
+  --accent-glow:  rgba(155,123,255,.62);
+  --text:         #ded9f2;
+  --text-soft:    #ece8fa;
+  --text-faint:   rgba(222,217,242,.45);
+  --muted:        #a7a1d6;
+  --muted-bright: #c8c3ee;
+  --muted-rule:   rgba(167,161,214,.5);
+  --paper:        #e8e4f4;   /* luminous console readout / log slate */
+  --ink:          #17132a;
+  --error:        #ff5f7a;
+  --success:      #4fd8b6;
+  --veil:         rgba(4,3,12,.8);
+  --veil-fade:    rgba(7,5,18,.94);
+  --input-bg:     rgba(11,9,26,.9);
+
+  /* --- trilogy-specific (used by chapter component CSS) --- */
+  --uv:      #b98cff;   /* the "and beyond" band — past the visible */
+  --beacon:  #c9b3ff;   /* beacon pulse at full brightness */
+  --hull:    #1c2740;   /* station structure */
+  --panel:   #101a2c;   /* console chrome */
+  --star:    #e9e6ff;   /* fixed-marker stars */
+}
