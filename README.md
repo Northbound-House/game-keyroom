@@ -1,6 +1,6 @@
 # The Key Room
 
-Browser escape adventures by seeking77degrees. Static site — no build step, no dependencies, deploys anywhere that serves HTML.
+Browser escape adventures by Northbound House. Static site — no build step, no dependencies, deploys anywhere that serves HTML.
 
 ## Structure
 

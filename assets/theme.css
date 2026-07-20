@@ -27,7 +27,7 @@ html{height:100%}
 body{
   background:var(--night);
   color:var(--text);
-  font-family:'Cormorant Garamond',serif;
+  font-family:var(--font-body);
   min-height:100%;
 }
 /* Chapters are fixed-viewport experiences; the landing page scrolls.
@@ -60,11 +60,11 @@ a{color:inherit}
 .screen.active{display:flex}
 
 .eyebrow{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.4em;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.4em;
   text-transform:uppercase;color:var(--accent);margin-bottom:18px;
 }
 h1{
-  font-family:'Poiret One',cursive;font-weight:400;
+  font-family:var(--font-display);font-weight:400;
   font-size:clamp(42px,9vw,84px);letter-spacing:.08em;line-height:1.05;
 }
 h1 .num{color:var(--accent)}
@@ -77,7 +77,7 @@ h1 .num{color:var(--accent)}
 /* ---------- Buttons ---------- */
 .btn{
   background:none;border:1px solid var(--accent);color:var(--accent);
-  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.3em;
+  font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;
   text-transform:uppercase;padding:14px 34px;transition:all .25s;
 }
 .btn:hover,.btn:focus-visible{background:var(--accent);color:var(--night);outline:none}
@@ -94,11 +94,11 @@ h1 .num{color:var(--accent)}
   padding:16px 20px;text-align:center;
 }
 .next-note .nn-label{
-  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.22em;
   text-transform:uppercase;opacity:.7;
 }
 .next-note .nn-code{
-  font-family:'IBM Plex Mono',monospace;font-size:30px;letter-spacing:.35em;
+  font-family:var(--font-mono);font-size:30px;letter-spacing:.35em;
   color:var(--accent);margin:8px 0 6px;
 }
 .next-note .nn-hint{font-size:13px;opacity:.62;line-height:1.5}
@@ -113,13 +113,13 @@ h1 .num{color:var(--accent)}
 }
 #hud.on{display:flex}
 #timer{
-  font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:.15em;
+  font-family:var(--font-mono);font-size:18px;letter-spacing:.15em;
   color:var(--accent);
 }
 #timer.late{color:var(--error);animation:pulse 1.2s infinite}
 @keyframes pulse{50%{opacity:.45}}
 #hud .title-sm{
-  font-family:'Poiret One',cursive;font-size:16px;letter-spacing:.25em;opacity:.7;
+  font-family:var(--font-display);font-size:16px;letter-spacing:.25em;opacity:.7;
 }
 #hud .hud-right{display:flex;gap:10px;align-items:center}
 .icon-btn{
@@ -160,7 +160,7 @@ h1 .num{color:var(--accent)}
 .inv-item:hover{border-color:var(--accent);transform:translateY(-2px)}
 .inv-item .tag{
   position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
-  font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;
   color:var(--accent);white-space:nowrap;text-transform:uppercase;
 }
 #inv-empty{font-style:italic;opacity:.4;font-size:15px;align-self:center}
@@ -182,7 +182,7 @@ h1 .num{color:var(--accent)}
   pointer-events:none;
 }
 #modal h2{
-  font-family:'Poiret One',cursive;font-weight:400;font-size:26px;
+  font-family:var(--font-display);font-weight:400;font-size:26px;
   letter-spacing:.12em;color:var(--accent);margin-bottom:14px;
 }
 #modal .body{font-size:18px;line-height:1.55;color:var(--text-soft);margin-bottom:18px}
@@ -196,19 +196,19 @@ h1 .num{color:var(--accent)}
   transform:rotate(-.6deg);
 }
 .paper.straight{transform:none}
-.paper .mono{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:14px;letter-spacing:.08em}
+.paper .mono{font-family:var(--font-mono);font-style:normal;font-size:14px;letter-spacing:.08em}
 
 /* ---------- Code entry ---------- */
 .code-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
 .code-input{
-  width:52px;height:60px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  width:52px;height:60px;text-align:center;font-family:var(--font-mono);
   font-size:26px;background:var(--input-bg);border:1px solid var(--accent-dim);
   color:var(--text);caret-color:var(--accent);text-transform:uppercase;
 }
 .code-input:focus{outline:none;border-color:var(--accent)}
 .word-input{
   width:min(80%,260px);height:52px;text-align:center;
-  font-family:'IBM Plex Mono',monospace;font-size:20px;
+  font-family:var(--font-mono);font-size:20px;
   background:var(--input-bg);border:1px solid var(--accent-dim);
   color:var(--text);text-transform:uppercase;margin:14px 0;letter-spacing:.2em;
 }
@@ -233,13 +233,13 @@ h1 .num{color:var(--accent)}
 
 /* ---------- Victory ---------- */
 .stats{display:flex;gap:36px;margin:26px 0 34px}
-.stat .v{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--accent)}
+.stat .v{font-family:var(--font-mono);font-size:30px;color:var(--accent)}
 .stat .l{
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.3em;
   text-transform:uppercase;opacity:.6;margin-top:6px;
 }
 .series-note{
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.3em;
   text-transform:uppercase;opacity:.45;margin-top:26px;
 }
 

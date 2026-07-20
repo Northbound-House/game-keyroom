@@ -5,6 +5,11 @@
    ============================================================ */
 :root{
   /* --- semantic contract (consumed by theme.css) --- */
+  /* --- font-by-tense: Past (Poiret / Cormorant / Plex) --- */
+  --font-display: 'Poiret One', cursive;
+  --font-body:    'Cormorant Garamond', serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
   --night:        #0A1622;
   --surface:      #122436;
   --surface-soft: rgba(18,36,54,.8);
