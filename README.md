@@ -125,6 +125,43 @@ This repo lives at **`Northbound-House/game-keyroom`** and deploys from `main` /
   subdomains. The DNS `CNAME` record `keyroom` → `northbound-house.github.io`
   must exist for the custom domain to serve.
 
+## Install as an app (PWA)
+
+The Key Room is a Progressive Web App — it installs to a phone's home screen, opens
+full-screen with no browser chrome, and (once opened online once) **plays offline**,
+so testers can take it on a plane. Same setup as `app-waypoint`: a
+[`manifest.webmanifest`](manifest.webmanifest), a Workbox service worker
+([`sw.js`](sw.js)) registered by [`assets/pwa.js`](assets/pwa.js), and
+`apple-mobile-web-app-*` meta on every page.
+
+**For testers — how to install (from `https://keyroom.northboundhouse.com`):**
+
+- **iPhone / iPad (Safari):** tap **Share** (the square-with-arrow) → **Add to Home
+  Screen** → **Add**. Launch it from the new "Key Room" icon — it opens full-screen.
+- **Android (Chrome):** tap **⋮** (top-right) → **Install app** (or **Add to Home
+  Screen**) → **Install**. Or accept the "Install" banner if it appears.
+- **Desktop (Chrome/Edge):** click the **install icon** in the address bar (a monitor
+  with a down-arrow), or **⋮ → Install The Key Room**.
+
+Offline works after the first online visit (the service worker precaches the whole
+game shell). To update the cache after a deploy, **bump `VERSION` in `sw.js`**.
+
+> Notes: PWA install requires HTTPS — it only kicks in on the live site, not on
+> `file://` or plain `http://`. Installability is per-origin, so it's tied to
+> `keyroom.northboundhouse.com`.
+
+## Sharing / social preview
+
+Pasting the link anywhere (Slack, iMessage, Twitter/X, LinkedIn) shows a branded
+card: the lantern crest, **THE KEY ROOM** wordmark, the tense spectrum, and the
+Northbound House byline — driven by the Open Graph / Twitter meta in each page's
+`<head>` and [`icons/og-card.png`](icons/og-card.png).
+
+**Branding assets** live in `icons/` (favicon, apple-touch, 192/512/maskable, the OG
+card) plus [`favicon.svg`](favicon.svg). They're generated from source SVGs in the
+project's `branding/` working files by rasterising with macOS `qlmanage` + `sips`
+(no image libraries required) — re-run that if the crest or wordmark ever change.
+
 ## Adding a new series
 
 Every series is filed under a **tense** (Past / Present / Future) and inherits that
