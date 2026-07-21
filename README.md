@@ -6,15 +6,27 @@ Browser escape adventures by Northbound House. Static site — no build step, no
 
 ```
 /
-├── index.html                          # Landing page + password gates
-├── SERIES-PLAN.md                      # Anthology plan (grammar, trilogies, roadmap)
+├── index.html                          # Tense hub (Past / Present / Future) + gates
+├── SERIES-PLAN.md                      # Canonical plan (structure, every trilogy, roadmap)
+├── assets/                             # Shared, loaded by every page
+│   ├── theme.css                       #   all formatting + the type system
+│   ├── engine.js                       #   timer, modal, inventory, hints, code entry
+│   ├── easter-eggs.js                  #   77 · lantern-crest · curator card
+│   ├── palette-meridian.css            #   Past · brass          ┐ colours + font
+│   ├── palette-redeye.css              #   Past · Pan-Am blue    │ vars only
+│   ├── palette-waypoint.css            #   Future · ultraviolet  ┘
+│   ├── redeye-components.css / .js     #   Red-Eye props + cipher
+│   └── waypoint-components.css / .js   #   Waypoint props + beacon/approach
 └── games/
-    ├── level-1-stateroom-77.html       # Series 1 · Chapter I (open)
-    ├── level-2-chart-room.html         # Series 1 · Chapter II (sealed)
-    ├── level-3-the-lantern.html        # Series 1 · Chapter III (sealed)
-    ├── redeye-1-the-terminal.html      # Series 2 · Chapter I (open)
-    ├── redeye-2-the-red-eye.html       # Series 2 · Chapter II (sealed)
-    └── redeye-3-arrivals.html          # Series 2 · Chapter III (sealed)
+    ├── level-1-stateroom-77.html       # Past · The Meridian · I (open)
+    ├── level-2-chart-room.html         # Past · The Meridian · II (sealed)
+    ├── level-3-the-lantern.html        # Past · The Meridian · III (sealed)
+    ├── redeye-1-the-terminal.html      # Past · The Red-Eye · I (open)
+    ├── redeye-2-the-red-eye.html       # Past · The Red-Eye · II (sealed)
+    ├── redeye-3-arrivals.html          # Past · The Red-Eye · III (sealed)
+    ├── waypoint-1-the-station.html     # Future · The Waypoint · I (open)
+    ├── waypoint-2-the-approach.html    # Future · The Waypoint · II (sealed)
+    └── waypoint-3-the-threshold.html   # Future · The Waypoint · III (sealed)
 ```
 
 See **[`SERIES-PLAN.md`](SERIES-PLAN.md)** for the full anthology plan — the shared
@@ -58,10 +70,27 @@ Morse & flags) · tone & verb (glamour-noir scandal; *intercept & uncover* vs ea
 rescue; escape *out*) · structure (terminal → confined cabin → multi-zone arrivals
 vs room → dual room → multi-floor).
 
-> **House rule — same font, same formatting, own colours.** Every trilogy uses the
-> same type system (Poiret One · Cormorant Garamond · IBM Plex Mono) and the same
-> component formatting. **Colour is the only visual variable.** See
-> [`SERIES-PLAN.md`](SERIES-PLAN.md) for the palette contract.
+### Series Three — The Waypoint *(complete · Future)*
+**Waypoint 0077 · deep transit.** You wake alone on a relay-and-beacon station — a
+lighthouse of the shipping lanes — whose light has gone out, with a ship inbound
+through the dark. Earnest and luminous. Language: the approach board and the beacon
+characteristic (`Fl(N) Ps` — read a pulse, then set one).
+
+| Ch | Room | Structure | What you do |
+|----|------|-----------|-------------|
+| **I** | **The Station** | single deck | Read the approach board and beacon pulse, crack the equipment locker (`0077`) and console (`LANTERN`), and discover the inbound isn't in distress — it's your relief. *Carries out → `214`.* |
+| **II** | **The Approach** | dual-track (systems + comms, meet at the beacon) | Cold-start the reactor (`0308`), tune the receiver to `214`, name the tender from her characteristic (`MERIDIAN`), then *set and broadcast* the station's own light. *Carries out → `KEPT`.* |
+| **III** | **The Threshold** | 3-zone finale (outer marker → alignment → threshold) | Light the outer marker (`0143`), match the tender's docking pulse, send clearance (`CROSS`), and choose: take the relief berth, or **hold the light**. |
+
+**The twist (the relief ship):** the "distress" was your relief; the station is what's
+failing, and you can only be relieved by *becoming* the keeper. You came to escape
+the dark and stayed to be the light in it.
+
+> **House rule — same formatting everywhere; colour by trilogy; font by tense; mono
+> is universal.** Every trilogy shares identical component formatting. Colour varies
+> per trilogy; the display/body font varies per tense (Past = Poiret One/Cormorant;
+> Present = Space Grotesk; Future = Michroma/Plex) while IBM Plex Mono stays constant.
+> See [`SERIES-PLAN.md`](SERIES-PLAN.md) for the palette + font contract.
 
 ## Gating
 
@@ -98,8 +127,19 @@ This repo lives at **`Northbound-House/game-keyroom`** and deploys from `main` /
 
 ## Adding a new series
 
-1. Drop the game files in `games/`.
-2. Copy a `<section class="series">` block in `index.html`, update titles and
-   episode rows.
-3. Add entries to the `EPISODES` map with each chapter's `href` and code hash.
-4. Replace the "Series Two" coming-soon card, or move it below the new series.
+Every series is filed under a **tense** (Past / Present / Future) and inherits that
+tense's fonts automatically. Formatting and plumbing are shared — a new trilogy is
+"author the rooms, pick the colours."
+
+1. **Palette.** Add `assets/palette-<name>.css` defining the full palette contract
+   (all `--*` colour vars + `--font-display/--font-body/--font-mono` for its tense).
+   Contrast-check the dimmed text. See `SERIES-PLAN.md` §3.
+2. **Chapter files.** Drop them in `games/`. Each loads `theme.css` + its palette +
+   `engine.js` (+ any shared trilogy module), carries `<body class="chapter">`, and
+   defines only `S`, `HINTS`, `inspectItem`, its rooms, and its puzzle logic.
+3. **Shared mechanic (optional).** If a mechanic spans the trilogy (like the Red-Eye
+   cipher or the Waypoint beacon), extract `assets/<name>-components.css` + `.js`.
+4. **Landing.** Add the series card to the matching tense view in `index.html`
+   (Ch I open, later chapters sealed), and add `EPISODES` entries with the SHA-256
+   hash of each unseal code (loop is `Object.keys(EPISODES)`, so no code change).
+5. **Docs.** Record the trilogy (codes, carries, twist) in `SERIES-PLAN.md`.

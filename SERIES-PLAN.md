@@ -1,254 +1,349 @@
 # The Key Room — Series Plan
 
-An anthology of browser escape trilogies. Each trilogy is its own world, but they
-all speak the same design language. This doc captures that language, the trilogy
-that shipped (**The Meridian**), the one in production (**The Red-Eye**), and a
-bank of concepts for later.
+An anthology of browser escapes by **Northbound House**, organised by **tense**.
+Each trilogy is its own world; they all speak one design language. This doc is the
+canonical record: the structure, the shared architecture, every built trilogy with
+its codes, the designed-but-unbuilt ones, and the roadmap.
+
+## Status snapshot
+
+| Tense | Trilogy | Chapters | State |
+|---|---|---|---|
+| **Past** (brass) | The Meridian · 1934 | Stateroom 77 · The Chart Room · The Lantern | ✅ live |
+| **Past** (brass) | The Red-Eye · 1962 | The Terminal · The Red-Eye · Arrivals | ✅ live |
+| **Future** (ultraviolet) | The Waypoint · deep transit | The Station · The Approach · The Threshold | ✅ live |
+| **Present** (sky) | The Unit · now | The Unit · The Trail · The Address | ◻ designed (Part 9) |
+| — | The Vigil (Future capstone) | Stacks · Relay · Beacon | ◻ **deferred** (Part 11) |
+
+**9 chapters live, 6 sealed gates.** Hosted at `keyroom.northboundhouse.com`
+(`Northbound-House/game-keyroom`, GitHub Pages).
+
+> **Verification caveat (2026-07):** every chapter has been verified by syntax,
+> engine-contract, reference, and headless solve-chain checks. Only **Stateroom 77**
+> and **The Terminal** have been played end-to-end by a human. The other seven are
+> logic-verified but not yet playtested in a browser.
 
 ---
 
-## 1. The Key Room "grammar" — what every trilogy shares vs. what it changes
+## 1. The tense anthology
 
-The anthology works because each series holds a set of **constants** (so it feels
-like *The Key Room*) and turns a set of **variables** (so it feels like a new
-world). Design a new trilogy by keeping the left column and re-inventing the right.
+The top level of the collection is **tense**. The landing page (`index.html`) is a
+hub with three doors — **PAST / PRESENT / FUTURE** — each in its own accent under a
+gold→blue→violet spectrum rule, with `#past` / `#present` / `#future` hash routes.
+Every trilogy is filed under one tense and inherits that tense's typography.
 
-### Constants — keep these every time
+| Tense | Accent | Holds |
+|---|---|---|
+| **Past** | brass `#C9A227` | The Meridian, The Red-Eye — and any historical trilogy (Bureau, Orrery, Take, Conservatory, Signal) |
+| **Present** | sky `#3a8dde` | The Unit (launch) |
+| **Future** | ultraviolet `#9b7bff` | The Waypoint (launch) · The Vigil (deferred capstone) |
+
+---
+
+## 2. The Key Room "grammar" — constants vs. variables
+
+Design a new trilogy by keeping the left column and re-inventing the right.
+
+### Constants — every trilogy
 - **The gate ritual.** Finish a chapter, carry its answer forward to unlock the
-  next. Diegetic: *keep what it taught you; the next door asks for it.*
-- **The safe and the desk.** Every world has at least one locked container puzzle
-  (a safe/vault/locker) and one desk with a locked drawer. This is the signature
-  furniture.
-- **Paper you can read.** Letters, logs, charts, tickets, tables — handwritten
-  voice, usually from the absent guide.
-- **A language to learn, then use.** You first learn to *read* a code system
-  (Morse, ciphers, flags, airport codes), then the finale forces you to *write*
-  in it.
-- **The absent mentor + late reveal.** A guiding figure ("R") whose true identity
-  and relationship reframes the whole puzzle chain at the end.
-- **The recontextualization twist.** Something you accepted early (the
-  constellations) turns out to be something else (signal stations).
+  next. *Keep what it taught you; the next door asks for it.*
+- **The safe and the desk.** At least one locked container (safe/vault/locker) and
+  one desk with a locked panel/drawer. The signature furniture.
+- **Paper you can read.** Letters, logs, charts, tickets, tables, rosters — a
+  handwritten voice, usually the absent guide.
+- **A language to learn, then use.** You first learn to *read* a code system, then
+  the finale forces you to *write* in it.
+- **The absent mentor + late reveal.** A guiding figure whose identity reframes the
+  puzzle chain at the end.
+- **The recontextualization twist.** Something accepted early turns out to be
+  something else.
 - **Two-axis escalation.** *Structure:* one room → dual-track room → multi-area
   finale. *Emotion:* escape yourself → act for someone else.
-- **The plumbing.** 3-tier in-character hints, a countdown with an overtime grace
-  and story beats, SVG hotspot rooms, an inventory, and victory ranks.
-- **The type system and formatting.** Every trilogy uses the same typography —
-  **Poiret One** (display) + **Cormorant Garamond** (body) + **IBM Plex Mono**
-  (codes, boards, labels) — and the same component formatting: sizes, spacing,
-  letter-spacing, button and modal proportions. A player should never be able to
-  tell two trilogies apart by their layout.
+- **The final act is a choice, not a lock** (finales): the last beat is a decision,
+  not a code.
+- **The plumbing.** 3-tier in-character hints, a countdown with overtime grace and
+  story beats, SVG hotspot rooms, inventory, victory ranks — all from `engine.js`.
+- **Shared formatting.** Identical component layout, spacing, and proportions across
+  every trilogy (see the house rule).
 
-### Variables — turn these differently every time
-**Colour is the only visual variable.** Era & place · **palette** · the new
-"language" mechanic · the POV verb · tone · the structural gimmick.
+### Variables — turned differently each time
+Era & place · **palette (colour)** · **font (by tense)** · the "language" mechanic ·
+the POV verb · tone · the structural gimmick.
 
-> **House rule:** *same font, same formatting, own colours.* Type and layout are
-> the constant that makes the anthology feel like one collection; the palette is
-> what makes each trilogy its own world.
+### The house rule *(evolved)*
 
-### Optional meta-thread
-A recurring **77** and a **lantern-over-crossed-flags crest** appear once, hidden,
-in every series. An unseen curator is assembling escapes across history; a later
-trilogy reveals who. It rewards completists without forcing series order.
+> **Same formatting everywhere. Colour varies by trilogy. Font varies by tense.
+> Mono is universal.**
+
+IBM Plex Mono staying universal (codes, boards, labels, buttons) is what keeps the
+collection reading as one thing across the font change.
+
+| Tense | Display | Body | Mono |
+|---|---|---|---|
+| Past | Poiret One | Cormorant Garamond | IBM Plex Mono |
+| Present | Space Grotesk | Space Grotesk | IBM Plex Mono |
+| Future | Michroma | IBM Plex Mono | IBM Plex Mono |
+
+*Michroma is single-weight — Future hierarchy comes from size / spacing / colour,
+never bold. Drop-in swaps if more weight range is wanted: Exo 2, Orbitron, Syne.*
 
 ---
 
-## 2. Trilogy One — THE MERIDIAN *(shipped)*
+## 3. Shared architecture *(the extraction is done)*
 
-**1934, the maiden voyage of the S.S. Meridian.** You're a courier smuggling 41
-refugee families to safety under false names. Palette: night-blue, brass,
-parchment. Type: Poiret One + Cormorant Garamond + IBM Plex Mono. Language: Morse
-& maritime signal flags.
+Formatting and plumbing were extracted so the house rule is enforced by code, not by
+hand. (An early audit found 31 formatting drifts between two chapters after a single
+hand-port — untenable across 12+ files.)
 
-| Ch | Room | Structure | Key locks | Carries out |
-|----|------|-----------|-----------|-------------|
-| I | **Stateroom 77** | single room | suitcase `0714`, safe `385`, door `4391` | `4391` |
-| II | **The Chart Room** | dual-track (both trails meet at the wireless) | strongbox `241`, cabinet `DAWN`, decode + transmit Morse | `HOME` |
-| III | **The Lantern** | 3-floor lighthouse finale | stair `2117`, oil store `HOME`, governor `41`, lamp sequence, signal flashes | — |
+```
+assets/
+├── theme.css                 ALL shared formatting + the type system (fonts as
+│                             variables; zero colour literals)
+├── engine.js                 timer, sound, modal, inventory, hotspots, 3-tier
+│                             hints, code entry, start/finish, ranks
+├── easter-eggs.js            the registry: 77 + crest + curator card (Part 10)
+├── palette-meridian.css      Past · brass          ┐ colours + the 3 font vars,
+├── palette-redeye.css        Past · Pan-Am blue    │ nothing else
+├── palette-waypoint.css      Future · ultraviolet  ┘ (palette-theunit.css = TODO)
+├── redeye-components.css     Red-Eye trilogy props (telex, cipher table, napkin…)
+├── redeye.js                 Red-Eye cipher logic (one-time key, encode/decode)
+├── waypoint-components.css   Waypoint props (approach board, beacon lamp, pulse…)
+└── waypoint.js               Waypoint logic (approach board, beacon characteristic)
+```
+
+**A chapter file now contains only:** its SVG rooms, its clue prose, its own
+one-off components, and its puzzle logic. It loads `theme.css` + a palette + shared
+JS, and carries `<body class="chapter">`.
+
+**Per new trilogy you author:** new SVG rooms + prose, a new palette (~22 colour
+vars + 3 font vars), and one or two new mechanic modules. Type and formatting are
+inherited.
+
+### The palette contract
+Every palette must define all of these so shared CSS keeps working:
+
+```
+--night --surface --surface-soft
+--accent --accent-dim --accent-soft --accent-ghost --accent-wash --accent-glow
+--text --text-soft --text-faint --muted --muted-bright --muted-rule
+--paper --ink --error --success
+--veil --veil-fade --input-bg
+--font-display --font-body --font-mono          (mono is always IBM Plex Mono)
+```
+**Contrast-check the dimmed text** (`--muted`, hints, `.ep-meta`, `.nn-hint`) against
+the dark ground — that's where a new scheme goes illegible first. (Waypoint's violet
+dims were checked: `--muted` clears WCAG AA at 8.2:1.)
+
+### Gating
+Sealed chapters live in the `EPISODES` map in `index.html`, keyed
+`2, 3` (Meridian), `r2, r3` (Red-Eye), `w2, w3` (Waypoint). Each entry has an `href`
+and the **SHA-256 hash** of the unseal code (codes normalized `.trim().toLowerCase()`
+before hashing). The render loop is `Object.keys(EPISODES)`, so a new series just
+adds entries. Unlocks persist in `localStorage`; honor-system (URLs aren't secret).
+
+```bash
+python3 -c "import hashlib; print(hashlib.sha256('code'.encode()).hexdigest())"
+```
+
+---
+
+## 4. Trilogy One — THE MERIDIAN · Past · 1934 *(live)*
+
+**The maiden voyage of the S.S. Meridian.** You're a courier smuggling 41 refugee
+families to safety under false names. Language: **Morse & maritime signal flags**.
+
+| Ch | Room | Structure | Locks | Carries |
+|----|------|-----------|-------|---------|
+| I | **Stateroom 77** | single room | suitcase `0714` · safe `385` · door `4391` | `4391` |
+| II | **The Chart Room** | dual-track (meet at the wireless) | strongbox `241` · cabinet `DAWN` · Morse decode + transmit | `HOME` |
+| III | **The Lantern** | 3-floor lighthouse finale | stair `2117` · oil store `HOME` · governor `41` · lamp sequence · answer the ship's 3-flash with 2 | — |
 
 **Reveal:** R = Captain Rhea Moran; Emmet, the keeper, is her brother.
-**Twist:** the "constellations" from Ch I were signal stations all along.
-**Emotional arc:** escape self → light the way out for strangers.
+**Twist:** the "constellations" of Ch I were signal stations all along.
+**Arc:** escape self → light the way out for strangers.
 
 ---
 
-## 3. Trilogy Two — THE RED-EYE *(complete)*
+## 5. Trilogy Two — THE RED-EYE · Past · 1962 *(live)*
 
-### Meridian Airways · 1962 — a scandal at 30,000 feet
+**Meridian Airways — a scandal at 30,000 feet.** Film star **Coralie Vance** and
+airline exec **Julian Roscoe**; the affair is the cover for **corruption inside the
+airline**, and the film canister is the proof. The stewardess **"V"** guides you.
+Language: **split-flap board, IATA/phonetic codes, time-zone math, the telex**.
 
-> You're handed a stranger's locker claim-ticket at a Meridian Airways gate and
-> asked to carry a bundle of love letters onto the midnight transatlantic. By the
-> time the wheels leave the runway, you'll learn the affair was never the
-> scandal — it was the cover for it.
+| Ch | Room | Structure | Locks | Carries |
+|----|------|-----------|-------|---------|
+| I | **The Terminal** | single space | locker `2347` · ops desk `LIS` · gate/seat `7A` | `7A` |
+| II | **The Red-Eye** | dual-track jet cabin (meet at the telex) | attaché `077` · decode `PXKCIK→LEDGER` · transmit `PRINT→TKPJX` | `PRINT` |
+| III | **Arrivals** | 3-zone finale (passports → customs → apron) | crew door `0740` (NY→Lisbon time) · bonded cage `FILM` · courier `PTTL→LAMP` · **choice** | — |
 
-**Canon.** The affair is between film star **Coralie Vance** and Meridian Airways
-executive **Julian Roscoe**. The real secret beneath it is **corruption inside the
-airline** — Roscoe is a whistleblower, and the "affair" was the cover the two used
-to pass evidence without suspicion. The film canister everyone's chasing isn't a
-sex tape; it's the proof. An unseen stewardess who signs only **"V"** guides you
-(a shadow of R from Trilogy One).
-
-**Tone flip.** The Meridian was earnest, humane rescue. The Red-Eye is
-glamour-noir: blackmail, lies, a morally gray world. You *think* you're covering a
-celebrity affair; you end up getting a whistleblower — and the truth — through
-customs before the doors close.
-
-**Twist (the anthology constant).** The numbers scattered through the love letters
-aren't sweet-nothings; they're a one-time cipher key. *The stars were lanterns; the
+**Cipher (`redeye.js`):** one-time key `4·19·7·22` from the love letters, A=1…Z=26,
+add to send / subtract to read.
+**Twist:** the numbers in the letters are the key. *The stars were lanterns; the
 love letters were code.*
-
-**Anthology tie-in.** The airline is **Meridian Airways** — the same name as the
-1934 ship. **Stateroom 77 → Seat 7A → Gate 77.** The crest recurs on a luggage tag.
-
-### What overlaps with The Meridian (the "safe and a desk" DNA)
-
-| Constant | In The Red-Eye |
-|---|---|
-| The safe | coin-op **left-luggage locker** (Ch I); locked **attaché case** in the overhead (Ch II) |
-| The desk | airline **ops/ticketing desk** (Ch I); **purser's station** (Ch II) |
-| Paper you read | boarding passes, luggage tags, telex printouts, the love letters, a passenger **manifest**, a timetable |
-| Carry-the-code gating | a seat/flight code carried forward to unseal the next chapter |
-| A language to learn, then use | the **teleprinter/telex** — read a coded message, then send one |
-| Absent guide + late reveal | "V," the stewardess; the affair's other party is not who you think |
-| Plumbing | 3-tier hints via **PA announcements / the gate agent**, countdown with boarding-call beats, ranks |
-
-### What's completely different
-
-| Variable | The Meridian | The Red-Eye |
-|---|---|---|
-| Era / place | 1934 ocean liner | 1962 international airport + a transatlantic jet |
-| Palette | night-blue, brass, parchment | **Pan-Am blue, chrome, terrazzo, tan leather, red DEPARTURES neon** |
-| Type & formatting | Poiret One · Cormorant Garamond · IBM Plex Mono | *identical — shared house style* |
-| Core mechanic | Morse & signal flags | **split-flap departures board · airport (IATA) & phonetic codes · time-zone / meridian math · telex** |
-| Tone / verb | earnest rescue; escape *out* | glamour-noir scandal; *intercept & uncover*, then get someone through |
-| Structure gimmick | room → dual-track room → multi-floor | **terminal (many gates) → confined jet cabin → multi-zone arrivals/customs** |
-
-### The three chapters
-
-**I — THE TERMINAL** · *~15 min · the airport, before the flight*
-A film starlet presses a locker claim-ticket into your hand and vanishes. Work the
-terminal: read the **split-flap departures board** to find Flight MA 077, crack the
-**left-luggage locker** (*the safe*), pick the **ops desk** drawer (*the desk*) for
-the boarding pass + manifest, and recover the love letters + film canister. Board
-before final call.
-*Locks:* locker `2347` (her departure time), desk drawer `LIS` (destination IATA),
-gate/seat `7A` (cross-ref boarding pass + manifest). *Twist seed:* the letters are
-full of oddly precise numbers. *Carries out → `7A`.*
-
-**II — THE RED-EYE** · *~20–25 min · aboard the jet, over the Atlantic, night*
-Two trails that meet at the teleprinter (echo of the Chart Room). **Cabin track:**
-seat 7A, the galley, a lipstick-marked napkin, the **attaché case** in the overhead
-(*the safe again*). **Purser track:** the **telex** clatters a coded message — you
-learn to read it, and the letters' numbers turn out to be the **one-time key**.
-Decode (`PXKCIK` → `LEDGER`) → the film is evidence of corruption, not romance. Then
-the finale makes you *write* in the cipher: encode `PRINT` → `TKPJX` and send it.
-"V" reveals the lantern-and-flags pin — the Meridian crest, in 1962.
-*Locks:* attaché `077` · decode `LEDGER` · transmit `TKPJX`. *Carries out → `PRINT`.*
-
-**III — ARRIVALS** · *~30 min · Lisbon, dawn landing · finale*
-Three zones (passports → customs → the apron), the trilogy's multi-area close.
-V's note gives the press deadline in **New York** time; the **wall of world clocks**
-gives the offset, so the crew door takes it in Lisbon time (`0740`) — the literal
-*meridian* math the anthology is named for. Customs seizes the reel on purpose
-(*"a bonded cage has a lock; a customs officer has a memory"*); the seizure tag plus
-the ledger's bay→category map opens the bonded store (`FILM`). At the press gate the
-courier will not take a word from just anyone: he offers Roscoe's cipher one last
-time (`PTTL`), and you must give back the clear — **`LAMP`**, which is what V wears
-on her collar. The last move is a choice, not a lock: the company man follows
-whoever moves, so you walk toward him and let Coralie through.
-*Locks:* crew door `0740` · bonded cage `FILM` · courier `LAMP`. *Carries out → —*
-
-**Reveal:** V's network has run since 1934 — *"twenty-eight years my grandmother ran
-this out of a chart room on a ship."* R's lantern-and-flags crest, still on a collar.
-
-
-### Hint voice
-The **PA / gate agent** (Ch I), the **purser** (Ch II), a **customs clerk / "V"**
-(Ch III). Three tiers each, escalating from atmospheric to explicit, same as The
-Meridian's speaking tube / Emmet's almanac.
-
-### Ranks (Ch I)
-Standby Passenger → Frequent Flyer → First Class → **The Jet Set**.
+**Reveal:** V's network has run since 1934 — *"my grandmother ran this out of a chart
+room on a ship."* The lantern-and-flags crest, still on a collar.
+**Anthology tie:** the airline is **Meridian Airways**; **Stateroom 77 → Seat 7A →
+Gate 77**.
 
 ---
 
-## 4. Concept bank — future trilogies
+## 6. Trilogy Three — THE WAYPOINT · Future · deep transit *(live)*
 
-Kept warm from earlier brainstorming. Each already has its overlap/contrast worked
-out; promote one to production when The Red-Eye ships.
+**Waypoint 0077, a relay-and-beacon station between inhabited systems — a lighthouse
+of the shipping lanes.** You wake alone; its light has gone out; a ship is inbound.
+Earnest and luminous — the Future's hopeful flagship, a turn back toward warmth after
+the Red-Eye's noir. Language: **the approach board + the beacon characteristic**
+(`Fl(N) Ps` — read a pulse, then set one). Deliberately un-obtuse: nothing to
+memorise, everything to notice.
 
-- **THE BUREAU** · 1971 Cold War courier. *Overlaps:* safe + desk (a case
-  officer's study), courier premise, learn-a-language = **ciphers / one-time pad /
-  numbers station**, absent handler. *Contrasts:* concrete-and-cathode palette,
-  paranoia tone, smuggle a *person* across, "who do you trust" branching.
-  Chapters: The Safe House → The Checkpoint → The Crossing.
+| Ch | Room | Structure | Locks | Carries |
+|----|------|-----------|-------|---------|
+| I | **The Station** | single deck | equipment locker `0077` · console `LANTERN` · identify the relief → bearing `214` | `214` |
+| II | **The Approach** | dual-track (systems + comms, meet at the beacon) | reactor `0308` (Fl(3)/8s as digits) · receiver tune `214` · name tender `Fl(5)→MERIDIAN` · **set** the station's `Fl(3)/8s` (first *write*) | `KEPT` |
+| III | **The Threshold** | 3-zone finale (outer marker → alignment → threshold) | outer marker `0143` · dock-align match her `Fl(2)/6s` · clearance `CROSS` · **choice: hold the light** | — |
 
-- **THE ORRERY** · 1897 gothic astronomy. *The warm cousin — brings the stars
-  back.* *Overlaps:* safe + desk (a scholar's study), the constellation motif made
-  literal, brass/clockwork grown into a full **orrery**, optics puzzles, cipher
-  volvelle. *Contrasts:* verdigris/candle-amber gothic palette, eerie mystery tone,
-  *uncover* rather than escape. Chapters: The Study → The Observatory Dome → The
-  Crypt.
+**Mechanic (`waypoint.js`):** `approachBoardHTML` (read traffic) and the beacon
+characteristic — always shown as a blinking lamp **and** a static positional
+pulse-strip, so reduced-motion / colour-blind paths stay solvable.
+**Twist (the relief ship):** the inbound "distress" is your **relief** — the station
+is what's failing, and you can't be relieved until you *become* the keeper and light
+the way. You're the rescuer, not the rescued.
+**Absent mentor:** the previous keeper "K," through the logbook.
+**Reveal:** you came to escape the dark and stayed to be the light in it. Final log:
+`WAYPOINT 0077 — KEPT`.
+**Anthology tie:** the relief tender is named **Meridian** — the line's name carried
+into deep future; **77** is the station designation (incidental). `HOME` is *not*
+used here — reserved for The Vigil.
 
-- **THE TAKE** · 1926 jazz-age heist. *The bold inversion — you break in, not out.*
-  *Overlaps:* the **safe is the whole game** (cracking by feel), desk, crew handler,
-  heist countdown, carry-the-take gating. *Contrasts:* emerald/gold caper palette,
-  playful con tone, three escalating marks (townhouse → bank → moving train).
+---
 
-### Also sketched
-- **THE CONSERVATORY** · 1950s botanical-poison mystery in a glass estate.
-  Language = the language of flowers + a chemist's formulae. Verb = diagnose &
-  antidote. Palette = green glass & rain. Quiet-menace, domestic tone.
+## 7. Anthology threads (the meta-layer)
+
+Three quiet threads run across tenses, rewarding completists without forcing order:
+
+1. **77** — Stateroom 77 → Seat 7A / Flight 077 / Gate 77 → Waypoint 0077 + the
+   landing watermark. **Incidental everywhere; its payoff (77 = keeper number) is
+   reserved for The Vigil.**
+2. **The lantern-over-crossed-flags crest** — Meridian's manifest seal / keeper
+   emblem → V's lapel pin (1962) → the Waypoint keeper's logbook, chair, and key.
+   Appears once, subtly, per series. Owned by `easter-eggs.js`.
+3. **The name "Meridian"** — the S.S. Meridian (1934) → Meridian Airways (1962) →
+   the tender *Meridian* (deep future). The line, across all time.
+
+The **curator** (typed `77` / the crest) is the unseen hand behind the collection;
+who they are is The Vigil's reveal.
+
+---
+
+## 8. Concept bank — future **Past** trilogies
+
+Designed, not built. Promote one when a Past slot is wanted. (All are Past-tense:
+brass accent, Poiret/Cormorant/Plex.)
+
+- **THE BUREAU** · 1971 Cold War courier. Safe + desk (a case officer's study),
+  courier premise, language = **ciphers / one-time pad / numbers station**, absent
+  handler. Concrete-and-cathode palette, paranoia tone, smuggle a *person* across,
+  "who do you trust" branching. → The Safe House · The Checkpoint · The Crossing.
+- **THE ORRERY** · 1897 gothic astronomy — *the warm cousin, stars brought back.*
+  Safe + desk (a scholar's study), constellation motif made literal, brass/clockwork
+  grown into an **orrery**, optics + a cipher volvelle. Verdigris/candle-amber,
+  eerie mystery, *uncover* not escape. → The Study · The Observatory Dome · The Crypt.
+- **THE TAKE** · 1926 jazz-age heist — *the inversion: you break in, not out.* The
+  **safe is the whole game**, crew handler, heist countdown, carry-the-take gating.
+  Emerald/gold caper. → townhouse · bank · moving train.
+- **THE CONSERVATORY** · 1950s botanical-poison mystery in a glass estate. Language =
+  the language of flowers + a chemist's formulae. Verb = diagnose & antidote. Green
+  glass & rain, quiet-menace.
 - **THE SIGNAL** · 1969 mission control + a capsule. Language = telemetry / radio.
-  Verb = **bring someone home** — `HOME` returns as the anthology's closing rhyme.
-  Palette = steel & amber CRT. A candidate **capstone** that reveals the curator.
+  Verb = bring someone home. Steel & amber CRT. *(Now filed as a **Past** trilogy —
+  the capstone/curator role moved to The Vigil.)*
 
 ---
 
-## 5. Build & tech plan
+## 9. THE UNIT · Present · now *(designed — build after a playtest / when Present is wanted)*
 
-**The platform is ready.** `README.md` documents "Adding a new series," and the
-engine (state, timer, sound, modal, inventory, hotspots, 3-tier hints, code/morse
-builders) is proven across three Meridian chapters and is copy-pasteable.
+**No connection to the keeper-line — a self-contained present-tense human mystery.**
+You buy an abandoned storage unit at auction; it went to auction because the owner
+**stopped paying**. Clearing it, you find their recent digital exhaust — phone,
+laptop, geotagged prints, a still-pinging tracker — and realise they dropped off
+mid-something only **days** ago. You come to know a stranger **entirely through their
+data.**
 
-**Per new series you author:** new SVG rooms, new clue prose, one or two new
-mechanic modules (e.g., a split-flap board replaces the Morse lamp), and **a new
-palette only** — type and formatting are inherited.
+**Twist [LOCKED]:** the sloppy, broken trail was **authored** — they erased
+themselves on purpose (scrubbed geotags, spoofed timestamps, false pins). The noise
+*was* the signal. **The verb flips: find → protect.** Even going dark, they were
+reaching for **one person** before a window closed; the finale is completing that
+connection **without blowing their cover.** *(Danger stays off-page and non-lurid.)*
 
-**The structural upgrade the house rule now requires.** Today each chapter file
-duplicates the whole engine *and* the formatting, so "same font and formatting
-everywhere" is enforced only by hand. It already drifted: an audit of the 76 CSS
-rules shared between `level-1-stateroom-77.html` and `redeye-1-the-terminal.html`
-found **31 formatting differences** (letter-spacing, font sizes, modal widths)
-after nothing more than one careful hand-port. At 4 trilogies × 3 chapters = 12
-files, hand-enforcement will not hold.
+**Fair-play twist:** every "broken" clue in Ch I is real and re-readable in Ch III
+with inverted meaning (a photo's GPS says one city, its shadows say another;
+timestamps run impossibly; a tag pings two places at once). Ch I reads them as
+corruption; Ch III, as authorship.
 
-Extract:
-- **`theme.css`** — all shared formatting and the type system. One file, one truth.
-- **a per-trilogy palette block** — each series defines only its colour variables.
-- **`engine.js`** — state, timer, modal, inventory, hotspots, hints, code entry.
+**Language:** coordinates & metadata (geotags, EXIF, plus-codes, read-receipts). Read
+clean ones (Ch I) → spot spoofing, the shadow-vs-GPS tell (Ch II) → **write** in it
+at the finale: compose the true destination *and cover your own approach* (scrub the
+pin behind you) — you learn their language well enough to forge in it, to shield them.
 
-Then a new trilogy is genuinely "author the rooms, pick ~10 colours."
+| Ch | Room | Structure | Metadata beat | Carries |
+|----|------|-----------|---------------|---------|
+| **I · The Unit** | the storage unit | single space | read one clean geotag + timestamp; padlock + lockbox (*safe*); phone/laptop (*desk*); place the "last seen"; gaps read as sloppiness | a plus-code |
+| **II · The Trail** | emptied flat ⇄ devices | dual-track (meet at the message timeline) | reconstruct the last week; the gaps start to rhyme; learn the spoofing tells; glimpse the one person | the true next stop |
+| **III · The Address** | where it actually points | multi-zone finale | re-read Ch I's clues as deliberate; reach not *them* but the person they were reaching for; **choice:** deliver + cover the trail, or complete it in the open | — |
 
-**The palette contract.** Every trilogy must define the same semantic variables so
-shared CSS keeps working: `--night` (page bg) · `--surface` (modal/panel) ·
-`--accent` (primary/brass-equivalent) · `--accent-dim` · `--muted` (secondary text)
-· `--paper` (prop bg) · `--ink` (text on paper) · `--error` · `--success`.
-Check each new palette for contrast — dimmed text (hints, `.ep-meta`, `.nn-hint`)
-is where a new colour scheme usually goes illegible.
+- **Palette [LOCKED]:** its **own** present-blue (`palette-theunit.css`) — cooler,
+  more screen-lit/electric than the Red-Eye's warm Pan-Am blue, so the two blues
+  never read as one trilogy. **Space Grotesk** display+body; Plex Mono for coordinates.
+- **Mentor:** the owner — alive, unreachable, still emitting timestamps, never met.
+- **77:** the unit number. **Crest:** hides once (a laptop sticker / keyring fob).
+- **Hints:** the devices themselves, escalating into the owner's own notes-to-self.
+- **Ranks:** Winning Bidder → Finder → Reader → The One Who Covered It.
+- **[AUTHOR — the one open call]:** *who* is at the end of the trail. Candidates: a
+  child they gave up; a sibling/parent behind a closing window; or **someone from
+  "before"** they can never safely contact again. *Lead: the "before" person* — it
+  couples the danger, the vanishing, and the cost most tightly (reaching them is
+  exactly what risks re-exposing the vanisher, which is what makes the cover-the-trail
+  choice fraught). **Owner to confirm before authoring.**
 
-**Wiring a chapter's gate** (unchanged from README):
-1. Drop the game file in `games/`.
-2. Add a `<section class="series">` block to `index.html` (or extend the existing
-   Red-Eye block) with the episode rows.
-3. Add an `EPISODES` entry with the chapter `href` and the **SHA-256 hash** of its
-   unseal code:
-   ```bash
-   python3 -c "import hashlib; print(hashlib.sha256('7a'.encode()).hexdigest())"
-   ```
-   (codes are normalized `.trim().toLowerCase()` before hashing).
+---
 
-**Suggested sequence for The Red-Eye:** Chapter I vertical slice ✅ → validate the
-split-flap mechanic → author II (telex) → author III (time-zone finale) → extract
-shared engine → wire all three gates → flip the landing card from "in production"
-to sealed.
+## 10. Easter-egg registry (`assets/easter-eggs.js`)
+
+One source of truth, loaded by every page (self-initialising, idempotent).
+
+1. **77** — persistent motif; incidental everywhere, payoff reserved for The Vigil.
+2. **The lantern-crest** — `keyroomCrestSVG()`; appears once per surface.
+3. **The curator card** — summoned by typing `77` (guarded against `INPUT`/`TEXTAREA`
+   focus so it never eats a gate code) or activating a `.crest`. Adopts each page's
+   `--accent`, so the curator wears each series' colour.
+
+`[AUTHOR]` slots are reserved in the registry for the owner's remaining canon eggs.
+
+---
+
+## 11. THE VIGIL · Future capstone *(deferred — do not build yet)*
+
+The far-future capstone that finally reveals the curator: a repository at the end of
+human time — **the Archive** — whose contents are the earlier escapes themselves. The
+guide is the Archive's voice, resolving into the last keeper; the language is a
+**spectral signal** (light matured past the visible into ultraviolet — *"and beyond"*
+as a real puzzle band); **77 is paid off as the player's keeper number**; the final
+emission is **`HOME`**, the anthology's closing rhyme. Rooms: **Stacks → Relay →
+Beacon**. Anthology-level twist: *the trilogies were the archive.* Gets its own
+ultraviolet palette variant.
+
+**Build-order guard:** ship The Vigil only *after* at least one Past trilogy with a
+hidden 77/crest has shipped, so the reveal has something to pay off. Until then every
+non-Vigil series (including The Waypoint) keeps the motif incidental.
+
+---
+
+## 12. Roadmap
+
+1. **Playtest** the seven logic-verified-but-unplayed chapters (both Red-Eye finales,
+   all three Waypoint chapters). Highest-value next step — a finale bug is cheap now.
+2. **The Unit** — confirm the E8 "before-person" call, add `palette-theunit.css`,
+   author I → II → III, wire the Present-view gates (replace the empty state).
+3. **A Past concept-bank trilogy** with a hidden 77/crest, to set up The Vigil.
+4. **The Vigil** — the capstone, once (3) has shipped.
