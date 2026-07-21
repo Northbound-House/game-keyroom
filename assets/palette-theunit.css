@@ -1,0 +1,47 @@
+/* ============================================================
+   PALETTE — THE UNIT (Present tense, now)
+   Screen-lit blue on cold concrete-black: the glow of somebody
+   else's phone in a storage unit at night. Deliberately COOLER
+   and higher-chroma than the Red-Eye's warm Pan-Am blue so the
+   two blues never read as the same trilogy.
+
+   Present tense fonts: Space Grotesk (display + body) + IBM Plex
+   Mono (codes, coordinates, metadata).
+   ============================================================ */
+:root{
+  /* --- font-by-tense: Present --- */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  /* --- semantic contract (consumed by theme.css) --- */
+  --night:        #0a0f16;
+  --surface:      #131c27;
+  --surface-soft: rgba(19,28,39,.72);
+  --accent:       #35cdf0;
+  --accent-dim:   rgba(53,205,240,.5);
+  --accent-soft:  rgba(53,205,240,.42);
+  --accent-ghost: rgba(53,205,240,.2);
+  --accent-wash:  rgba(53,205,240,.13);
+  --accent-glow:  rgba(53,205,240,.6);
+  --text:         #dbe4ec;
+  --text-soft:    #eef4f9;
+  --text-faint:   rgba(219,228,236,.45);
+  --muted:        #8fa3b5;
+  --muted-bright: #bdd0dd;
+  --muted-rule:   rgba(143,163,181,.5);
+  --paper:        #efece4;   /* printed photo / receipt — warm, against the cold UI */
+  --ink:          #16181d;
+  --error:        #ff5f74;
+  --success:      #46d69b;
+  --veil:         rgba(3,6,10,.82);
+  --veil-fade:    rgba(5,9,14,.94);
+  --input-bg:     rgba(7,11,17,.9);
+
+  /* --- trilogy-specific (used by chapter component CSS) --- */
+  --screen:  #0d1620;   /* a device screen, powered but idle */
+  --led:     #6fe3ff;   /* status LEDs, a live ping */
+  --concrete:#1a2129;   /* the unit's walls and floor */
+  --steel:   #2c3742;   /* roll-up door, shelving, lockbox */
+  --marker:  #e2574c;   /* map pins, red marker ink */
+}

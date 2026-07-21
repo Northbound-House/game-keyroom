@@ -1,0 +1,120 @@
+/* ============================================================
+   THE UNIT — shared chapter components
+   Props used across Series Four (Present). Formatting only;
+   colours come from palette-theunit.css. Load after theme.css
+   + palette-theunit.css.
+   ============================================================ */
+
+/* ---- an out-of-story observation under a prop ---- */
+.note-line{
+  font-family:var(--font-body);font-size:14px;font-style:italic;
+  color:var(--muted);margin-top:10px;line-height:1.5;
+}
+.note-line b{color:var(--text-soft);font-style:normal;font-weight:500}
+
+/* ---- metadata / EXIF readout ---- */
+.exif{
+  background:var(--screen);border:1px solid var(--accent-ghost);
+  font-family:var(--font-mono);font-size:12.5px;color:var(--text);
+  padding:12px 12px;margin:14px 0;text-align:left;
+}
+.exif-h{
+  font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;
+}
+.exif table{width:100%;border-collapse:collapse}
+.exif td{padding:3px 0;vertical-align:top}
+.exif td.k{color:var(--muted);white-space:nowrap;padding-right:12px;width:38%}
+.exif td.v{color:var(--text)}
+.exif .tok{display:inline-block;width:1.1em;color:var(--error);font-weight:500}
+.exif tr.ok td.v{color:var(--success)}
+.exif tr.off td.v{color:var(--error)}
+.exif b.blk{color:var(--accent);font-weight:500}
+
+/* ---- printed photo with a lab stamp ---- */
+.photo{
+  background:var(--paper);color:var(--ink);padding:10px 10px 12px;margin:14px auto;
+  max-width:260px;box-shadow:0 3px 12px rgba(0,0,0,.5);transform:rotate(-1deg);
+}
+.photo .frame{
+  background:#c9c3b4;height:120px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:#5d574c;text-align:center;padding:8px;
+}
+.photo .stamp{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;
+  color:#8a8272;margin-top:8px;text-align:right;
+}
+.photo .cap{
+  font-family:var(--font-body);font-size:13px;font-style:italic;
+  color:#3f3a33;margin-top:4px;
+}
+
+/* ---- map pins ---- */
+.pins{
+  border:1px solid var(--accent-ghost);background:var(--screen);
+  padding:10px 12px;margin:14px 0;text-align:left;
+}
+.pins-h{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:8px;
+}
+.pin{
+  display:grid;grid-template-columns:14px 92px 1fr auto;gap:8px;align-items:baseline;
+  font-family:var(--font-mono);font-size:12px;color:var(--text);
+  padding:5px 0;border-bottom:1px solid rgba(143,163,181,.14);
+}
+.pin:last-child{border-bottom:none}
+.pin .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);align-self:center}
+.pin.last .dot{background:var(--accent);box-shadow:0 0 8px 2px var(--accent-glow)}
+.pin.off .dot{background:var(--marker)}
+.pin.off .dot::after{content:"";}
+.pin .when{color:var(--muted)}
+.pin .plus{color:var(--accent);font-size:11px}
+.pin .note{
+  grid-column:2 / -1;font-family:var(--font-body);font-style:italic;
+  font-size:12.5px;color:var(--muted);
+}
+.pin.off .note{color:var(--marker)}
+/* shape token so "off" never depends on colour alone */
+.pin.off .when::before{content:"≠ ";color:var(--marker);font-weight:500}
+.pin.last .when::before{content:"● ";color:var(--accent)}
+
+/* ---- a device screen (phone / laptop) ---- */
+.device{
+  background:var(--screen);border:1px solid var(--accent-soft);border-radius:10px;
+  padding:14px 14px 16px;margin:14px auto;max-width:300px;
+  box-shadow:0 0 24px rgba(53,205,240,.09);
+}
+.device .bar{
+  display:flex;justify-content:space-between;font-family:var(--font-mono);
+  font-size:9.5px;color:var(--muted);letter-spacing:.1em;margin-bottom:10px;
+}
+.device .big{
+  font-family:var(--font-mono);font-size:26px;letter-spacing:.24em;
+  color:var(--accent);text-align:center;margin:6px 0;
+}
+.device .sub{
+  font-family:var(--font-body);font-size:13px;color:var(--muted);
+  text-align:center;line-height:1.5;
+}
+
+/* ---- a live tracker ping ---- */
+.ping{display:flex;align-items:center;gap:10px;justify-content:center;margin:12px 0}
+.ping .led{
+  width:10px;height:10px;border-radius:50%;background:var(--led);
+  box-shadow:0 0 10px 3px rgba(111,227,255,.5);
+}
+@media (prefers-reduced-motion: no-preference){
+  .ping .led{animation:pingpulse 1.8s ease-in-out infinite}
+  @keyframes pingpulse{50%{opacity:.35}}
+}
+.ping .txt{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--led);
+}
+
+@media (max-width:480px){
+  .pin{grid-template-columns:12px 76px 1fr;font-size:11px}
+  .pin .plus{grid-column:2 / -1}
+}

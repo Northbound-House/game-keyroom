@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- PWA + share preview · Northbound House -->
+<meta name="theme-color" content="#070c13">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Key Room">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Key Room">
+<meta property="og:title" content="The Key Room — escape adventures by Northbound House">
+<meta property="og:description" content="Browser escape rooms, played in order and earned in order. Solve one to earn the key to the next.">
+<meta property="og:image" content="https://keyroom.northboundhouse.com/icons/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:url" content="https://keyroom.northboundhouse.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Key Room">
+<meta name="twitter:description" content="Browser escape rooms by Northbound House. Solve one to earn the key to the next.">
+<meta name="twitter:image" content="https://keyroom.northboundhouse.com/icons/og-card.png">
+<script src="/assets/pwa.js" defer></script>
+
+<title>The Unit — The Unit, Chapter I</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-theunit.css">
+<link rel="stylesheet" href="../assets/theunit-components.css">
+<style>
+/* ---- Chapter I components only ---- */
+#intro{background:radial-gradient(ellipse at 50% 120%, #14293a 0%, var(--night) 64%)}
+#victory{background:radial-gradient(ellipse at 50% -20%, #123243 0%, var(--night) 70%)}
+/* Present tense runs a little tighter than the serif tenses */
+h1{letter-spacing:-.01em}
+</style>
+</head>
+<body class="chapter">
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">Storage lot · Unit 77 · bought sight unseen · Tuesday, 9:40 PM</div>
+  <h1>THE UNIT</h1>
+  <p class="intro-story">You paid four hundred dollars for a padlock someone else stopped paying for. That's the whole business: units go to auction when the rent stops, and the rent stops for ordinary reasons — a move, a divorce, a death.<br><br>But standing in it now, under a light that buzzes, this one is wrong. Nobody abandons a unit they were <em>using last week</em>. There's a phone in here. There's a tracker still pinging.<br><br>Somebody stopped paying eleven days ago, and everything in here says they didn't mean to stop anything.</p>
+  <button class="btn" id="start-btn">Roll the door up</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.55">Everything you need is in this unit. Read what the data says — and what it doesn't.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">18:00</div>
+  <div class="title-sm">UNIT 77</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="Inside a rented storage unit at night">
+    <defs>
+      <radialGradient id="unitbg" cx="50%" cy="30%" r="88%">
+        <stop offset="0%" stop-color="#1c2733"/><stop offset="100%" stop-color="#080d13"/>
+      </radialGradient>
+      <linearGradient id="doorlight" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#35cdf0" stop-opacity="0.20"/>
+        <stop offset="100%" stop-color="#35cdf0" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+
+    <rect x="0" y="0" width="800" height="392" fill="url(#unitbg)"/>
+    <rect x="0" y="392" width="800" height="108" fill="#1a2129"/>
+    <!-- concrete seams -->
+    <g stroke="#232c36" stroke-width="2" opacity=".8">
+      <line x1="0" y1="428" x2="800" y2="428"/><line x1="0" y1="466" x2="800" y2="466"/>
+      <line x1="266" y1="392" x2="266" y2="500"/><line x1="534" y1="392" x2="534" y2="500"/>
+    </g>
+    <!-- corrugated roll-up door, partly up, light spilling under -->
+    <rect x="0" y="0" width="800" height="86" fill="#2c3742"/>
+    <g stroke="#212a33" stroke-width="3">
+      <line x1="0" y1="18" x2="800" y2="18"/><line x1="0" y1="38" x2="800" y2="38"/>
+      <line x1="0" y1="58" x2="800" y2="58"/><line x1="0" y1="78" x2="800" y2="78"/>
+    </g>
+    <rect x="0" y="86" width="800" height="60" fill="url(#doorlight)"/>
+
+    <!-- AUCTION SLIP taped to the door track -->
+    <g id="hs-slip" class="hotspot" tabindex="0" role="button" aria-label="The auction slip">
+      <rect x="52" y="104" width="96" height="62" fill="#efece4" transform="rotate(-3 100 135)"/>
+      <g stroke="#a9a396" stroke-width="1" opacity=".75">
+        <line x1="62" y1="122" x2="138" y2="118"/><line x1="62" y1="136" x2="138" y2="132"/>
+        <line x1="62" y1="150" x2="120" y2="146"/>
+      </g>
+      <text x="100" y="112" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="8" fill="#5d574c">UNIT 77</text>
+    </g>
+
+    <!-- PAPER MAP taped to the back wall, pins in it -->
+    <g id="hs-map" class="hotspot" tabindex="0" role="button" aria-label="A paper map with pins">
+      <rect x="300" y="112" width="200" height="132" fill="#e6e2d8" transform="rotate(1 400 178)"/>
+      <g stroke="#b9b3a4" stroke-width="1" opacity=".8" transform="rotate(1 400 178)">
+        <path d="M312 168 q40 -22 84 -6 t92 -10"/><path d="M312 200 q52 -10 96 6 t80 -2"/>
+        <line x1="356" y1="120" x2="356" y2="238"/><line x1="440" y1="120" x2="440" y2="238"/>
+      </g>
+      <g transform="rotate(1 400 178)">
+        <circle cx="352" cy="162" r="4" fill="#e2574c"/><circle cx="404" cy="186" r="4" fill="#e2574c"/>
+        <circle cx="452" cy="150" r="4" fill="#e2574c"/><circle cx="430" cy="214" r="4" fill="#e2574c"/>
+      </g>
+    </g>
+
+    <!-- SHELF with the PHOTO BOX -->
+    <g id="hs-photobox" class="hotspot" tabindex="0" role="button" aria-label="A box of printed photographs">
+      <rect x="596" y="196" width="164" height="14" fill="#2c3742"/>
+      <rect x="616" y="150" width="124" height="46" fill="#3a3327"/>
+      <rect x="622" y="156" width="112" height="34" fill="#4a4234"/>
+      <g fill="#efece4">
+        <rect x="628" y="150" width="26" height="34" transform="rotate(-4 641 167)"/>
+        <rect x="660" y="148" width="26" height="34" transform="rotate(3 673 165)"/>
+        <rect x="692" y="151" width="26" height="34" transform="rotate(-2 705 168)"/>
+      </g>
+    </g>
+
+    <!-- FOOTLOCKER with combination padlock (the safe) -->
+    <g id="hs-footlocker" class="hotspot" tabindex="0" role="button" aria-label="A footlocker with a combination padlock">
+      <rect x="80" y="286" width="180" height="100" rx="6" fill="#2f3a45" stroke="#43505d" stroke-width="2"/>
+      <rect x="80" y="316" width="180" height="10" fill="#222b34"/>
+      <rect x="152" y="322" width="36" height="26" rx="3" fill="#1b232b" stroke="#35cdf0" stroke-width="1.4"/>
+      <text x="170" y="339" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#35cdf0">▢▢▢▢</text>
+      <path d="M162 322 v-10 a8 8 0 0 1 16 0 v10" fill="none" stroke="#8fa3b5" stroke-width="3"/>
+    </g>
+
+    <!-- WORKBENCH + LAPTOP (the desk) -->
+    <g id="hs-laptop" class="hotspot" tabindex="0" role="button" aria-label="Their laptop on the workbench">
+      <rect x="470" y="296" width="230" height="12" fill="#3a3327"/>
+      <rect x="486" y="308" width="14" height="80" fill="#2f2a20"/>
+      <rect x="670" y="308" width="14" height="80" fill="#2f2a20"/>
+      <!-- open laptop -->
+      <path d="M520 296 l16 -66 h118 l16 66 z" fill="#232c36"/>
+      <path d="M534 288 l12 -52 h98 l12 52 z" fill="#0d1620"/>
+      <rect x="512" y="296" width="176" height="8" rx="3" fill="#2c3742"/>
+      <!-- crest sticker on the lid corner -->
+      <g transform="translate(548,244) scale(0.42)" stroke="#35cdf0" stroke-width="2" fill="none" opacity=".85">
+        <line x1="8" y1="30" x2="22" y2="16"/><line x1="32" y1="30" x2="18" y2="16"/>
+        <rect x="16" y="10" width="8" height="10" rx="1"/>
+      </g>
+    </g>
+
+    <!-- TRACKER TAG on a keyring, still pinging -->
+    <g id="hs-tag" class="hotspot" tabindex="0" role="button" aria-label="A tracker tag on a keyring, still pinging">
+      <circle cx="330" cy="352" r="16" fill="#e9e6df"/>
+      <circle cx="330" cy="352" r="9" fill="#d7d2c7"/>
+      <circle id="tag-led" cx="330" cy="352" r="3.4" fill="#6fe3ff"/>
+      <path d="M344 344 a18 18 0 0 1 0 16" fill="none" stroke="#8fa3b5" stroke-width="2"/>
+      <circle cx="352" cy="336" r="7" fill="none" stroke="#8fa3b5" stroke-width="2"/>
+    </g>
+
+    <!-- BOXES / clutter -->
+    <g opacity=".9">
+      <rect x="286" y="300" width="86" height="60" fill="#3a3327"/>
+      <rect x="286" y="300" width="86" height="10" fill="#4a4234"/>
+      <rect x="384" y="316" width="70" height="46" fill="#3a3327"/>
+      <rect x="384" y="316" width="70" height="8" fill="#4a4234"/>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">11:58 PM · the trail is eleven days cold and still warm</div>
+  <h1>LAST SEEN</h1>
+  <p class="intro-story" id="victory-story">You log the last place their data and the daylight agree on, and close the laptop on a stranger you now know better than some of your friends.<br><br>Eleven days. A phone left charging. A tag still calling out every ninety seconds to a network nobody's listening to. And a trail that goes sloppy right at the end — gaps, doubles, timestamps that run backwards — the way a careful person's trail never does.<br><br>You keep telling yourself that's what it is. Carelessness.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <div class="next-note">
+    <div class="nn-label">Remember this — you'll need it to unseal Chapter II</div>
+    <div class="nn-code">VC96</div>
+    <div class="nn-hint">The plus-code block of the last place that checked out. Return to the home screen and enter it to open <em>Chapter II — The Trail</em>.</div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Continue to Chapter II →</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="../assets/theunit.js"></script>
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:18*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  inv:{},
+  flags:{ slip:false, photos:false, map:false, locker:false, phone:false,
+          laptop:false, tag:false },
+  hintLevel:{},
+  soundOn:false, audioCtx:null, noiseGain:null,
+  soundLowpass:320, soundGainUp:2.4,     /* fluorescent buzz + far traffic */
+};
+
+const HINT_LABELS = { first:'Ask the assistant', again:'Read their notes-to-self' };
+
+const BEATS = {
+  [12*60]:'The tracker chirps again. Ninety seconds, like clockwork, to nobody.',
+  [6*60]:'A car turns into the lot, sweeps the row with its headlights, and keeps going.',
+  [2*60]:'The lot lights go to half power. The office closes at midnight.'
+};
+function onOvertime(){
+  toast('Midnight. The gate arm comes down at 12:15 whether you are on this side of it or not.');
+}
+
+/* ---- the answers ---- */
+const PADLOCK = '0314';        /* the day the rent stopped — also the last clean photo */
+const LAPTOP_PW = 'ALDER';     /* the street that keeps recurring */
+const LAST_PLUS = '8FW4VC96+9G';
+const LAST_BLOCK = plusBlock(LAST_PLUS);   /* -> VC96 */
+
+/* ================= INVENTORY ================= */
+function inspectItem(k){
+  if (k === 'phone'){
+    if (!S.flags.phone){
+      openModal({title:'Their Phone',body:'Dead, and warm-dead — the battery went down recently, not months ago. It needs the charger that was coiled beside it.',actions:[closeBtn()]});
+      return;
+    }
+    openModal({
+      title:'Their Phone',
+      body:'Powered, and stubbornly ordinary: no passcode, because they were not hiding it from anyone in this room. The camera roll is the last eleven days of somebody\'s life, and every frame carries its own paperwork.',
+      extra: exifHTML([
+        {k:'IMG_4471.HEIC', v:'Mar 14 · 6:42 PM'},
+        {k:'GPS', v:'43.0731, −89.4012'},
+        {k:'Plus code', v: plusHTML(LAST_PLUS), flag:'ok'},
+        {k:'Altitude', v:'271 m'},
+        {k:'Device', v:'this phone'}
+      ], 'photo metadata · last clean frame')
+      + '<div class="note-line">Every photo carries this. Learn to read it and a camera roll becomes a map with timestamps.</div>',
+      actions:[closeBtn()]
+    });
+    return;
+  }
+  if (k === 'charger'){
+    openModal({title:'The Charger',body:'A coiled cable, plugged into the strip under the bench. Whoever left did not unplug anything. People who plan to be away unplug things.',actions:[closeBtn()]});
+    return;
+  }
+  if (k === 'fob'){
+    openModal({
+      title:'Keyring Fob',
+      body:'A worn enamel fob off the tracker\'s keyring — a lantern over crossed marks, the kind of thing you get given rather than buy.',
+      extra:'<div class="note-line">On the back, scratched thin: <span class="mono">ALDER</span>.</div>',
+      actions:[closeBtn()],
+      puzzleId:'laptop'
+    });
+    return;
+  }
+}
+
+/* ================= AUCTION SLIP ================= */
+bindHotspot('hs-slip', () => {
+  S.flags.slip = true;
+  openModal({
+    title:'The Auction Slip',
+    body:'Still taped to the door track, because the lot manager tapes them up and never takes them down:',
+    extra:'<div class="paper straight"><span class="mono">RIVERSIDE SELF STORAGE — LIEN SALE<br>'
+      + 'UNIT ....... 77<br>'
+      + 'TENANT ..... M. ELLERY<br>'
+      + 'DELINQUENT SINCE ... <b>MAR 14</b><br>'
+      + 'CONTENTS ... SOLD AS-IS, SIGHT UNSEEN</span></div>'
+      + '<div class="note-line">Eleven days between the day the money stopped and the day the lot sold the door.</div>',
+    actions:[closeBtn()],
+    puzzleId:'padlock'
+  });
+});
+
+/* ================= PHOTO BOX (teach the language) ================= */
+bindHotspot('hs-photobox', () => {
+  S.flags.photos = true;
+  openModal({
+    title:'A Box of Prints',
+    body:'Actual prints, drugstore stock, each with the lab\'s stamp along the bottom edge. Somebody who photographs a life <em>and prints it</em> is not somebody who walks away from a storage unit.',
+    extra: photoHTML({ scene:'a diner counter · winter light', stamp:'LAB 03·09  ALDER ST', caption:'"the usual booth"' })
+      + photoHTML({ scene:'a rail-yard row at dusk', stamp:'LAB 03·14  RIVERSIDE', caption:'"last one printed"' })
+      + '<div class="note-line">Two things every print carries: <b>when</b>, and <b>where</b>. The same two things the phone writes into every frame — only the phone writes them precisely.</div>',
+    actions:[closeBtn()],
+    puzzleId:'laptop'
+  });
+});
+
+/* ================= FOOTLOCKER (the safe · 0314) ================= */
+bindHotspot('hs-footlocker', () => {
+  if (S.flags.locker){
+    openModal({title:'The Footlocker',body:'Open. You took the phone, the charger, and the fob off the keyring.',actions:[closeBtn()]});
+    return;
+  }
+  const row = codeRow(4);
+  const submit = actionBtn('Pull the shackle', () => {
+    if (readCode(row) === PADLOCK){
+      S.flags.locker = true;
+      addItem('phone','▭','Their phone');
+      addItem('charger','⌁','Charger');
+      addItem('fob','◎','Keyring fob');
+      feedback('The shackle drops out of the body.', true);
+      setTimeout(() => openModal({
+        title:'Inside the Footlocker',
+        body:'Not valuables. <em>Continuity.</em> A phone on a coiled charger, a keyring with an enamel fob, a shoebox of receipts, and — folded once — a paper map with pins already in it.<br><br>People put the things they cannot lose in a footlocker. Then they leave the footlocker in a unit they stop paying for.',
+        actions:[closeBtn('Take the phone, charger and fob')]
+      }), 700);
+    } else {
+      feedback('Four wheels, and none of them that.', false);
+    }
+  });
+  openModal({
+    title:'The Footlocker',
+    body:'A steel footlocker with a four-wheel combination padlock. Not a good lock — a <em>habit</em> lock, the kind set to a date the owner will never have to look up.',
+    actions:[submit, closeBtn()],
+    puzzleId:'padlock',
+    onOpen:() => mountCode(row)
+  });
+});
+
+/* ================= THE MAP (the "last seen" + the wrong note) ================= */
+bindHotspot('hs-map', () => {
+  S.flags.map = true;
+  openModal({
+    title:'The Paper Map',
+    body:'Taped flat, four pins in it, and a red pen tied to the frame with a shoelace. Cross-read against the phone, the pins line up with the camera roll — until, at the end, they don\'t:',
+    extra: pinsHTML([
+      { when:'Mar 09', place:'Alder St · the diner', plus:'8FW4V75V+8Q' },
+      { when:'Mar 12', place:'Public library, 3rd fl', plus:'8FW4V8Q2+4F' },
+      { when:'Mar 14', place:'Riverside rail-yard row', plus:'8FW4VC96+9G', flag:'last', note:'Last frame the phone and the daylight agree on.' },
+      { when:'Mar 16', place:'two pins, 40 km apart', plus:'—', flag:'off', note:'Same minute, both places. One of them is a lie — or the tag is broken.' }
+    ], 'pins · cross-read with the camera roll')
+    + '<div class="note-line">You file the last one under <em>broken</em>. Cheap tags glitch; phones lose their clocks. It is the ordinary explanation, and it is the one you take.</div>',
+    actions:[closeBtn()],
+    puzzleId:'lastseen'
+  });
+});
+
+/* ================= TRACKER TAG ================= */
+bindHotspot('hs-tag', () => {
+  S.flags.tag = true;
+  openModal({
+    title:'The Tracker Tag',
+    body:'A coin-sized tag on the keyring, still alive, still announcing itself to a network that has no one on the other end of it.',
+    extra:'<div class="ping"><span class="led" aria-hidden="true"></span><span class="txt">ping · 90s · last seen: here</span></div>'
+      + '<div class="note-line">Eleven days of battery left, give or take. Whatever happened, it happened faster than a battery dies.</div>',
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= LAPTOP (the desk · ALDER → the final log) ================= */
+bindHotspot('hs-laptop', () => {
+  if (!S.flags.laptop){
+    const input = document.createElement('input');
+    input.className = 'word-input'; input.maxLength = 10; input.placeholder = 'PASSWORD';
+    input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z]/g,'').toUpperCase(); });
+    const submit = actionBtn('Sign in', () => {
+      if (input.value === LAPTOP_PW){
+        S.flags.laptop = true;
+        feedback('It opens on a half-written map. They were mid-thought.', true);
+        setTimeout(laptopOpen, 800);
+      } else {
+        feedback('Wrong. The hint is not a riddle — they were not hiding from you.', false);
+      }
+    });
+    openModal({
+      title:'Their Laptop',
+      body:'Open, asleep, a crest sticker peeling off the lid. It wakes to a password field with the hint they set themselves:',
+      extra:'<div class="device"><div class="bar"><span>M. ELLERY</span><span>7%</span></div>'
+        + '<div class="sub">password hint —<br><b>"the street, always the street"</b></div></div>',
+      actions:[submit, closeBtn()],
+      puzzleId:'laptop',
+      onOpen:() => { document.getElementById('m-extra').appendChild(input); input.focus(); }
+    });
+    return;
+  }
+  laptopOpen();
+});
+
+function laptopOpen(){
+  const input = document.createElement('input');
+  input.className = 'word-input'; input.maxLength = 4; input.placeholder = 'BLOCK';
+  input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z0-9]/g,'').toUpperCase(); });
+  const submit = actionBtn('Log last seen', () => {
+    if (input.value === LAST_BLOCK){
+      win();
+    } else if (input.value === 'V75V' || input.value === 'V8Q2'){
+      feedback('Earlier than that. Something later still checks out.', false);
+    } else {
+      feedback('That is not a block off any pin on this map.', false);
+    }
+  });
+  openModal({
+    title:'Their Laptop — the map file',
+    body:'A map document, open, unsaved. They were building the same trail you just built — from the other end. One field is blank and blinking: <em>LAST CONFIRMED</em>.<br><br>Enter the four-character plus-code block of the last location whose data actually holds up.',
+    extra:'<div class="device"><div class="bar"><span>map · unsaved</span><span>LAST CONFIRMED</span></div>'
+      + '<div class="big">▢ ▢ ▢ ▢ +</div>'
+      + '<div class="sub">the four characters before the plus</div></div>',
+    actions:[submit, closeBtn()],
+    puzzleId:'lastseen',
+    onOpen:() => { document.getElementById('m-extra').appendChild(input); input.focus(); }
+  });
+}
+
+/* ================= HINTS ================= */
+const HINTS = {
+  padlock:[
+    'The phone\'s assistant, helpfully: <em>"Most people set a four-wheel lock to a date they already know by heart."</em>',
+    '<em>"The auction slip names the day the rent stopped — and the last print in the box carries the same date."</em>',
+    '<em>"March 14. Four wheels: 0-3-1-4."</em>'
+  ],
+  laptop:[
+    '<em>"The hint says the street. Which street does this unit keep returning to?"</em>',
+    '<em>"The diner print is stamped ALDER ST, and the back of the keyring fob is scratched with the same word."</em>',
+    '<em>"The password is ALDER."</em>'
+  ],
+  lastseen:[
+    '<em>"Last confirmed is not the last pin. It is the last pin whose fields agree with each other."</em>',
+    '<em>"The Mar 16 entry puts them in two places in the same minute — that one cannot be confirmed. Take the one before it."</em>',
+    '<em>"Mar 14, the rail-yard row: 8FW4VC96+9G. The block before the plus is VC96."</em>'
+  ]
+};
+
+/* ================= WIN ================= */
+function win(){
+  finishChapter(18*60, [
+    {maxMinutes:9,  maxHints:0, name:'Reader'},
+    {maxMinutes:13, maxHints:2, name:'Finder'},
+    {maxMinutes:18, name:'Winning Bidder'},
+    {name:'Winning Bidder'}
+  ]);
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click', () => {
+  startChapter();
+});
+renderInv();
+</script>
+<script src="../assets/easter-eggs.js"></script>
+</body>
+</html>
