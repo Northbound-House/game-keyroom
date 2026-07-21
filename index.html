@@ -540,9 +540,19 @@ footer a:hover{opacity:1}
         <div class="ep-info">
           <div class="ep-title">THE THRESHOLD</div>
           <div class="ep-sub">Hold the light and bring her across. Finale.</div>
-          <div class="ep-meta">≈ 30 min · in production</div>
+          <div class="ep-meta" id="meta-w3">≈ 30 min · sealed</div>
         </div>
-        <div class="ep-action"><span class="btn locked" aria-disabled="true">In production</span></div>
+        <div class="ep-action" id="action-w3"></div>
+      </div>
+      <div class="gate" id="gate-w3">
+        <div class="gate-inner">
+          <p>Sealed. Enter the word the beacon logged when it lit.</p>
+          <div class="gate-row">
+            <input class="gate-input" id="input-w3" maxlength="8" placeholder="····" aria-label="Waypoint Chapter III code">
+            <button class="btn" id="try-w3">Unseal</button>
+          </div>
+          <div class="gate-feedback" id="fb-w3"></div>
+        </div>
       </div>
     </section>
   </div>
@@ -633,6 +643,12 @@ const EPISODES = {
     hash: '802b906a18591ead8a6dd809b262ace4c65c16e89764c40ae326cfcff811e10c',
     wrong: 'The line stays dark. No ship was ever inbound on that bearing.',
     right: 'Bearing logged. The watch is yours.'
+  },
+  w3: {
+    href: 'games/waypoint-3-the-threshold.html',
+    hash: '79f076abdd19a752db7267bfff2f9022161d120dea919fdaca2ffdfc24ca8c96',
+    wrong: 'The log does not answer to that. What did the light write when it caught?',
+    right: 'The watch is kept. Cross over.'
   }
 };
 

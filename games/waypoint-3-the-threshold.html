@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Threshold — The Waypoint, Chapter III</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-waypoint.css">
+<link rel="stylesheet" href="../assets/waypoint-components.css">
+<style>
+/* ---- Chapter III components only ---- */
+#intro{background:radial-gradient(ellipse at 50% 120%, #201a44 0%, var(--night) 66%)}
+#victory{background:radial-gradient(ellipse at 50% -24%, #2f2560 0%, var(--night) 72%)}
+
+/* zone nav */
+#floornav{
+  position:fixed;left:0;right:0;bottom:84px;z-index:31;display:none;
+  justify-content:center;gap:8px;
+}
+#floornav.on{display:flex}
+.fl-btn{
+  background:var(--surface-soft);border:1px solid var(--accent-soft);color:var(--text);
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;
+  text-transform:uppercase;padding:8px 14px;transition:all .2s;
+}
+.fl-btn.cur{background:var(--accent);color:var(--night);border-color:var(--accent)}
+.fl-btn:disabled{opacity:.35;cursor:not-allowed}
+.fl-btn:not(:disabled):not(.cur):hover{border-color:var(--accent)}
+.zone{display:none}
+.zone.on{display:block}
+
+@media (max-width:600px){ #floornav{bottom:92px} }
+</style>
+</head>
+<body class="chapter">
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">Waypoint 0077 · the light burning · the tender inbound · Finale</div>
+  <h1>THE THRESHOLD</h1>
+  <p class="intro-story">The beacon burns behind you, throwing its old three-flash promise out along the line, and far out in the dark the tender <em>Meridian</em> has turned in toward it. She is coming — slow, dark, and trusting a light you only learned to make an hour ago.<br><br>Three stretches of black stand between her and the dock: the outer marker, the alignment, and the threshold itself. You keep the light for every one of them.</p>
+  <button class="btn" id="start-btn">Hold the watch</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.55;font-style:italic">This time you are not getting out. You are the way in.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">30:00</div>
+  <div class="title-sm">THE THRESHOLD</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="The station, the light burning, a tender inbound">
+    <defs>
+      <radialGradient id="deck3" cx="50%" cy="26%" r="90%">
+        <stop offset="0%" stop-color="#241c48"/><stop offset="100%" stop-color="#080611"/>
+      </radialGradient>
+      <radialGradient id="void3" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#140f2c"/><stop offset="100%" stop-color="#04030a"/>
+      </radialGradient>
+      <radialGradient id="lamp3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#e9e6ff"/><stop offset="100%" stop-color="#7a5fc0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- ============ ZONE 1 — OUTER MARKER ============ -->
+    <g id="zone-1" class="zone on">
+      <rect x="0" y="0" width="800" height="392" fill="url(#deck3)"/>
+      <rect x="0" y="392" width="800" height="108" fill="#100c22"/>
+
+      <!-- long-range viewport -->
+      <g id="hs-view1" class="hotspot" tabindex="0" role="button" aria-label="Long-range viewport">
+        <rect x="300" y="42" width="200" height="110" rx="8" fill="#9b7bff"/>
+        <rect x="308" y="50" width="184" height="94" rx="6" fill="url(#void3)"/>
+        <g fill="#e9e6ff"><circle cx="342" cy="80" r="1.3"/><circle cx="398" cy="112" r="1.1"/><circle cx="452" cy="74" r="1.4"/></g>
+        <circle cx="400" cy="96" r="2.4" fill="#c9b3ff"/>
+      </g>
+
+      <!-- relay list (clue) -->
+      <g id="hs-relaylist" class="hotspot" tabindex="0" role="button" aria-label="Marker relay list">
+        <rect x="70" y="216" width="120" height="96" fill="#17122e" stroke="#4a3a86" stroke-width="2"/>
+        <g stroke="#6b5aa6" stroke-width="1" opacity=".7"><line x1="82" y1="238" x2="178" y2="238"/><line x1="82" y1="256" x2="178" y2="256"/><line x1="82" y1="274" x2="178" y2="274"/></g>
+        <text x="130" y="230" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="7" fill="#c9b3ff">RELAYS</text>
+      </g>
+
+      <!-- outer marker console (keypad) -->
+      <g id="hs-marker" class="hotspot" tabindex="0" role="button" aria-label="Outer marker relay console">
+        <rect x="330" y="270" width="150" height="120" fill="#1a1436" stroke="#9b7bff" stroke-width="2"/>
+        <rect x="352" y="292" width="106" height="30" fill="#0e0b1e" stroke="#4a3a86" stroke-width="1.2"/>
+        <text x="405" y="312" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff">OUTER MARKER</text>
+        <rect x="360" y="336" width="90" height="24" fill="#0a0814" stroke="#c9b3ff" stroke-width="1.2"/>
+        <text x="405" y="353" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#c9b3ff">▢▢▢▢</text>
+      </g>
+    </g>
+
+    <!-- ============ ZONE 2 — DOCK ALIGNMENT ============ -->
+    <g id="zone-2" class="zone">
+      <rect x="0" y="0" width="800" height="392" fill="url(#deck3)"/>
+      <rect x="0" y="392" width="800" height="108" fill="#100c22"/>
+
+      <!-- her docking signal readout -->
+      <g id="hs-docksig" class="hotspot" tabindex="0" role="button" aria-label="The tender's docking signal">
+        <rect x="70" y="210" width="180" height="100" fill="#0e0b1e" stroke="#9b7bff" stroke-width="2"/>
+        <text x="82" y="230" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff" letter-spacing="2">MERIDIAN — DOCKING</text>
+        <circle cx="160" cy="270" r="14" fill="#c9b3ff"/>
+      </g>
+
+      <!-- the berth + guide light (align) -->
+      <g id="hs-berth" class="hotspot" tabindex="0" role="button" aria-label="The berth guide-light">
+        <rect x="470" y="150" width="260" height="200" fill="#0c0920" stroke="#4a3a86" stroke-width="2"/>
+        <path d="M470 150 L600 60 L730 150" fill="none" stroke="#9b7bff" stroke-width="2" opacity=".6"/>
+        <circle id="guide-lamp" cx="600" cy="250" r="18" fill="#241c3a" stroke="#4a3a86" stroke-width="2"/>
+        <rect x="560" y="330" width="80" height="16" fill="#1a1436"/>
+        <text x="600" y="343" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="8" fill="#a7a1d6">BERTH</text>
+      </g>
+    </g>
+
+    <!-- ============ ZONE 3 — THE THRESHOLD ============ -->
+    <g id="zone-3" class="zone">
+      <rect x="0" y="0" width="800" height="392" fill="url(#deck3)"/>
+      <rect x="0" y="392" width="800" height="108" fill="#100c22"/>
+
+      <!-- the threshold viewport, tender close -->
+      <g id="hs-view3" class="hotspot" tabindex="0" role="button" aria-label="The threshold viewport">
+        <rect x="250" y="40" width="300" height="150" rx="10" fill="#9b7bff"/>
+        <rect x="258" y="48" width="284" height="134" rx="8" fill="url(#void3)"/>
+        <g fill="#e9e6ff"><circle cx="300" cy="80" r="1.3"/><circle cx="360" cy="140" r="1.1"/><circle cx="480" cy="90" r="1.4"/></g>
+        <!-- tender, close now: a small hull -->
+        <g id="tender-hull" fill="#3a2f66" opacity=".9">
+          <ellipse cx="400" cy="120" rx="46" ry="9"/>
+          <rect x="392" y="104" width="16" height="16"/>
+          <circle cx="356" cy="120" r="2" fill="#4fd8b6"/>
+        </g>
+      </g>
+
+      <!-- the great lamp -->
+      <g id="hs-lamp" class="hotspot" tabindex="0" role="button" aria-label="The great lamp, burning">
+        <rect x="356" y="322" width="88" height="60" fill="#2a2054"/>
+        <path d="M368 322 L378 246 h44 L432 322 z" fill="#221a44" stroke="#9b7bff" stroke-width="2"/>
+        <circle id="great-lamp" cx="400" cy="286" r="24" fill="url(#lamp3)"/>
+      </g>
+
+      <!-- the keeper's chair (crest) -->
+      <g id="hs-chair" class="hotspot" tabindex="0" role="button" aria-label="The keeper's chair">
+        <rect x="120" y="300" width="70" height="90" rx="8" fill="#17122e" stroke="#4a3a86" stroke-width="2"/>
+        <rect x="130" y="312" width="50" height="46" rx="6" fill="#0c0920"/>
+        <!-- crest pressed into the headrest -->
+        <g transform="translate(140 300) scale(0.5)" stroke="#c9b3ff" stroke-width="1.6" fill="none" opacity=".7">
+          <line x1="8" y1="30" x2="22" y2="16"/><line x1="32" y1="30" x2="18" y2="16"/>
+          <rect x="16" y="10" width="8" height="10" rx="1"/>
+        </g>
+      </g>
+
+      <!-- the threshold console -->
+      <g id="hs-threshold" class="hotspot" tabindex="0" role="button" aria-label="The threshold console">
+        <rect x="560" y="300" width="150" height="90" fill="#1a1436" stroke="#9b7bff" stroke-width="2"/>
+        <rect x="580" y="320" width="110" height="26" fill="#0e0b1e" stroke="#4a3a86" stroke-width="1.2"/>
+        <text x="635" y="337" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff">CLEARANCE</text>
+      </g>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- ZONE NAV -->
+<div id="floornav">
+  <button class="fl-btn cur" id="fl1">Outer marker</button>
+  <button class="fl-btn" id="fl2" disabled>Alignment</button>
+  <button class="fl-btn" id="fl3" disabled>The threshold</button>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">First light on the far shore</div>
+  <h1>THE KEEPER</h1>
+  <p class="intro-story" id="victory-story"></p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Return to Home Screen</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
+  <div class="series-note">— End of The Waypoint —</div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="../assets/waypoint.js"></script>
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:30*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  zone:1,
+  inv:{},
+  flags:{ sawRelays:false, marker:false, sawDockSig:false, aligned:false,
+          sawChair:false, cleared:false, crossed:false },
+  hintLevel:{},
+  soundOn:false, audioCtx:null, noiseGain:null,
+  soundLowpass:150, soundGainUp:3.6,
+};
+
+const HINT_LABELS = { first:"Consult the keeper's log", again:'Read further' };
+
+const BEATS = {
+  [20*60]:'On the readout, Meridian steadies for the run. She will not rush a dark approach — she trusts you to keep it lit.',
+  [10*60]:'The tender is close enough now to see with the naked eye: a shape against the stars, holding dead on the light.',
+  [4*60]:'She is nearly on the threshold. Whatever you decide, decide it before she reaches it.'
+};
+function onOvertime(){
+  toast('She holds off the threshold, waiting on your clearance. A keeper who wavers is worse than a dark one. Finish it.');
+}
+
+/* no inventory items this chapter; satisfy the engine contract */
+function inspectItem(){}
+
+const MARKER_CODE = '0143';                 /* outer marker relay ID */
+const DOCK_CHAR = { flashes:2, period:6 };  /* Meridian's docking characteristic Fl(2) 6s */
+const CLEARANCE_WORD = 'CROSS';
+
+/* ================= ZONES ================= */
+function goZone(n){
+  S.zone = n;
+  [1,2,3].forEach(i => {
+    document.getElementById('zone-'+i).classList.toggle('on', i===n);
+    document.getElementById('fl'+i).classList.toggle('cur', i===n);
+  });
+}
+document.getElementById('fl1').addEventListener('click',()=>goZone(1));
+document.getElementById('fl2').addEventListener('click',()=>goZone(2));
+document.getElementById('fl3').addEventListener('click',()=>goZone(3));
+
+/* ================= ZONE 1 — OUTER MARKER ================= */
+bindHotspot('hs-view1', () => {
+  openModal({title:'Long-Range Viewport',body:'The tender is a steady mote off the bow, holding her turn into the lane. She has committed to your light. There is no turning a ship on a dark approach; she comes in or she doesn\'t.',actions:[closeBtn()]});
+});
+bindHotspot('hs-relaylist', () => {
+  S.flags.sawRelays = true;
+  openModal({
+    title:'The Marker Relays',
+    body:'Every marker on the approach, filed inner to outer — the last one before the dock is the one she\'s reaching now:',
+    extra:'<div class="readout">'
+      + '<span class="k">APPROACH MARKERS — RELAY ID</span><br>'
+      + 'INNER (1st) ..... 0091<br>'
+      + 'MID (2nd) ....... 0117<br>'
+      + '<span class="ok">OUTER (3rd / last)</span> ... <span class="k">0143</span><br>'
+      + '</div>'
+      + '<div class="note">She is at the outer marker — the last before the dock. Bring that relay online.</div>',
+    actions:[closeBtn()],
+    puzzleId:'marker'
+  });
+});
+bindHotspot('hs-marker', () => {
+  if (S.flags.marker){ goZone(2); return; }
+  const row = codeRow(4);
+  const submit = actionBtn('Bring relay online', () => {
+    if (readCode(row) === MARKER_CODE){
+      S.flags.marker = true;
+      document.getElementById('fl2').disabled = false;
+      feedback('The outer marker wakes. She has the lane now.', true);
+      setTimeout(() => { closeModal(); goZone(2);
+        openModal({title:'Alignment',body:'The marker throws its light down the lane and the tender slides onto it, dead centre. Now the berth: she can follow a lane in the dark, but she cannot dock blind. Give her a guide-light she can match.',actions:[closeBtn()]});
+      }, 900);
+    } else {
+      feedback('Wrong relay. That is an inner marker — she is already past it.', false);
+    }
+  });
+  openModal({
+    title:'The Outer Marker',
+    body:'A dead relay buoy at the mouth of the approach, keyed by its four-digit ID. The relay list says which marker is which.',
+    actions:[submit, closeBtn()],
+    puzzleId:'marker',
+    onOpen:() => mountCode(row)
+  });
+});
+
+/* ================= ZONE 2 — DOCK ALIGNMENT (pulse) ================= */
+bindHotspot('hs-docksig', () => {
+  S.flags.sawDockSig = true;
+  openModal({
+    title:'Meridian — Docking Signal',
+    body:'As she lines up on the berth, the tender shows her <em>docking</em> characteristic — slower than her running light, a rhythm meant to be matched, not just read:',
+    extra:'<div class="beacon-lamp lit" aria-hidden="true"></div>'
+      + pulseStripHTML(DOCK_CHAR.flashes, DOCK_CHAR.period, 'her docking light · ' + charNotation(DOCK_CHAR.flashes, DOCK_CHAR.period))
+      + '<div class="note">To align the berth, set the guide-light to <em>her</em> docking characteristic — the one she\'s showing now. Not the station\'s. Hers.</div>',
+    actions:[closeBtn()],
+    puzzleId:'align'
+  });
+});
+bindHotspot('hs-berth', () => {
+  if (S.flags.aligned){
+    openModal({title:'The Berth',body:'Guide-light matched to her docking rhythm, the two lights beating as one. She is on final now.',actions:[closeBtn()]});
+    return;
+  }
+  let sf = 1, sp = 4;
+  const notation = document.createElement('div'); notation.className = 'char-notation';
+  const preview = document.createElement('div');
+  function render(){ notation.textContent = charNotation(sf, sp); preview.innerHTML = pulseStripHTML(sf, sp, 'guide-light'); }
+  const setter = document.createElement('div'); setter.className = 'char-set';
+  setter.innerHTML =
+    '<div class="char-field"><label>Flashes</label><div class="char-step">'
+    + '<button type="button" data-f="-1">−</button><span class="val" id="fv">1</span><button type="button" data-f="1">+</button></div></div>'
+    + '<div class="char-field"><label>Period (s)</label><div class="char-step">'
+    + '<button type="button" data-p="-1">−</button><span class="val" id="pv">4</span><button type="button" data-p="1">+</button></div></div>';
+  setter.addEventListener('click', e => {
+    const df = e.target.getAttribute && e.target.getAttribute('data-f');
+    const dp = e.target.getAttribute && e.target.getAttribute('data-p');
+    if (df){ sf = Math.max(1, Math.min(9, sf + (+df))); }
+    if (dp){ sp = Math.max(sf, Math.min(20, sp + (+dp))); }
+    if (df || dp){ setter.querySelector('#fv').textContent = sf; setter.querySelector('#pv').textContent = sp; render(); }
+  });
+  const send = actionBtn('Match & hold', () => {
+    if (beaconMatches(sf, sp, DOCK_CHAR)){
+      S.flags.aligned = true;
+      document.getElementById('guide-lamp').setAttribute('fill', '#c9b3ff');
+      document.getElementById('fl3').disabled = false;
+      feedback('The guide-light catches her rhythm. She locks on.', true);
+      setTimeout(() => { closeModal(); goZone(3);
+        openModal({title:'The Threshold',body:'Two lights beating as one, the tender rides them straight toward the dock — until she reaches the last line, the threshold itself, and holds. She will not cross it without a keeper\'s clearance. She has come all this way to be let in by a person, not a machine.',actions:[closeBtn()]});
+      }, 900);
+    } else {
+      feedback('The lights beat against each other and she eases off. Match HER docking characteristic exactly.', false);
+    }
+  });
+  openModal({
+    title:'The Berth Guide-Light',
+    body:'The berth\'s guide-light, dark and adjustable. Set it to match the tender\'s docking characteristic so she can ride it in.',
+    actions:[send, closeBtn()],
+    puzzleId:'align',
+    onOpen:() => { const ex=document.getElementById('m-extra'); ex.appendChild(setter); ex.appendChild(notation); ex.appendChild(preview); render(); }
+  });
+});
+
+/* ================= ZONE 3 — THE THRESHOLD (word + choice) ================= */
+bindHotspot('hs-view3', () => {
+  openModal({title:'The Threshold Viewport',body: S.flags.crossed
+    ? 'She is through — sliding past the glass close enough to see the frost on her hull, close enough that someone aboard lifts a hand.'
+    : 'The tender fills the viewport now, holding just short of the threshold line, running lights steady. Waiting. All that dark crossed, and she stops for you.',actions:[closeBtn()]});
+});
+bindHotspot('hs-lamp', () => {
+  openModal({title:'The Great Lamp',body:'Burning full and steady, the lens wheeling its three-flash characteristic out across the dark. The whole reason she found her way. The whole reason you can\'t leave it.',actions:[closeBtn()]});
+});
+bindHotspot('hs-chair', () => {
+  S.flags.sawChair = true;
+  openModal({
+    title:"The Keeper's Chair",
+    body:'Worn to the shape of one person over a very long time. The headrest carries a pressed emblem — a lantern over crossed marks — and, scratched below it in a tired hand:',
+    extra:'<div class="paper">"To whoever takes this chair after me: they will offer you the relief berth, and you will want it. The dark out here gets into you.<br><br>But a keeper is only a keeper while the light is lit. Send them across, then decide who you are. — K, Waypoint 0077"</div>',
+    actions:[closeBtn()],
+    puzzleId:'clear'
+  });
+});
+bindHotspot('hs-threshold', () => {
+  if (S.flags.crossed){
+    openModal({title:'Clearance',body:'Sent. She is across.',actions:[closeBtn()]});
+    return;
+  }
+  if (!S.flags.cleared){
+    const input = document.createElement('input');
+    input.className = 'word-input'; input.maxLength = 6; input.placeholder = 'CLEARANCE';
+    input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z]/g,'').toUpperCase(); });
+    const submit = actionBtn('Send clearance', () => {
+      if (input.value === CLEARANCE_WORD){
+        S.flags.cleared = true;
+        S.flags.crossed = true;
+        document.getElementById('tender-hull').setAttribute('opacity', '1');
+        feedback('The word goes out on the light. She answers, and moves.', true);
+        setTimeout(theChoice, 900);
+      } else {
+        feedback('She holds. That is not the clearance a keeper sends a ship across a threshold.', false);
+      }
+    });
+    openModal({
+      title:'The Threshold Console',
+      body:'One thing left to send: the clearance that tells a waiting ship the way is open and the light is held. Every keeper on this line has sent the same word across this last line — the plainest instruction there is. <span style="font-family:\'IBM Plex Mono\',monospace">C _ _ _ _</span>',
+      actions:[submit, closeBtn()],
+      puzzleId:'clear',
+      onOpen:() => { document.getElementById('m-extra').appendChild(input); input.focus(); }
+    });
+    return;
+  }
+  theChoice();
+});
+
+/* --- the final act: a choice, not a lock --- */
+function theChoice(){
+  openModal({
+    title:'The Berth Is Open',
+    body:'Meridian is across the threshold and swinging toward the dock. Her airlock is lit, and there is a berth aboard her with your name on the manifest — the relief, come at last to take the dark off whoever was left.<br><br>You could go. Warm decks, other faces, a system with a sun. All you have to do is step away from the light.<br><br>But the moment you leave the chair, the beacon\'s no one\'s, and the next ship down this line finds only dark.',
+    actions:[
+      actionBtn('Take the relief berth', () => {
+        feedback('You reach for your coat — and stop. If you go, the light goes. That was never the trade. Someone has to keep it.', false);
+      }),
+      actionBtn('Hold the light', () => { win(); })
+    ]
+  });
+}
+
+/* ================= HINTS ================= */
+const HINTS = {
+  marker:[
+    'The keeper\'s log: <em>"She comes in past three markers. The last is the one that matters."</em>',
+    '<em>"The relay list files every marker by ID, inner to outer. She is at the outer — the last before the dock."</em>',
+    '<em>"The outer marker\'s relay ID is 0143."</em>'
+  ],
+  align:[
+    '<em>"A ship shows a slower light to dock by — one meant to be matched, not just read."</em>',
+    '<em>"Read the tender\'s docking characteristic off her signal, then set the berth guide-light to the same."</em>',
+    '<em>"She is docking on Fl(2), period 6. Set the guide-light to two flashes, period 6."</em>'
+  ],
+  clear:[
+    '<em>"She will not cross a threshold on a machine\'s say-so. She waits for a keeper\'s word."</em>',
+    '<em>"The chair\'s note says every keeper sends the same plain word across this last line — it begins with C."</em>',
+    '<em>"The clearance word is CROSS."</em>'
+  ]
+};
+
+/* ================= WIN ================= */
+function win(){
+  document.getElementById('victory-story').innerHTML =
+    'You take your hand off your coat and put it back on the light.<br><br>'
+    + 'Meridian slides into the berth with a keeper\'s clearance and a keeper\'s light, and somewhere in her warm hull the crew that came to relieve you realise there is no one to relieve — only someone who stayed. They leave you the rations, the spare lens, and a long, unreadable look, and then they are gone on down the line, carried by the light you hold.<br><br>'
+    + 'You came out here to escape the dark. You stayed to be the thing that stands against it.<br><br>'
+    + '<em>The station log writes the entry the way it always has, one word for every ship a keeper ever let through, and one flash for every station the line has ever kept:</em><br><br>'
+    + '<span style="font-family:\'IBM Plex Mono\',monospace;letter-spacing:.3em;color:var(--accent)">WAYPOINT 0077 — KEPT</span>';
+  finishChapter(30*60, [
+    {maxMinutes:16, maxHints:0, name:'The Waypoint'},
+    {maxMinutes:22, maxHints:2, name:'Lightkeeper'},
+    {maxMinutes:30, name:'Watchkeeper'},
+    {name:'Castaway'}
+  ]);
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click', () => {
+  startChapter();
+  document.getElementById('floornav').classList.add('on');
+});
+renderInv();
+</script>
+<script src="../assets/easter-eggs.js"></script>
+</body>
+</html>
