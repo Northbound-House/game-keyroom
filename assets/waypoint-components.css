@@ -71,3 +71,14 @@
   .approach-board{font-size:11px}
   .pulse-strip .cell{width:13px;height:19px}
 }
+
+/* ---- console readout / roster (shared across chapters) ---- */
+.readout{
+  background:var(--panel);border:1px solid var(--accent-ghost);
+  font-family:var(--font-mono);font-size:13px;line-height:1.9;color:var(--text);
+  padding:14px 14px;margin:14px 0;text-align:left;
+}
+.readout .k{color:var(--accent)}
+.readout .warn{color:var(--error)}
+.readout .ok{color:var(--success)}
+.note{font-family:var(--font-body);font-style:italic;font-size:14px;color:var(--muted);margin-top:8px;line-height:1.5}

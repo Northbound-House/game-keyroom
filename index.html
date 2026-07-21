@@ -520,9 +520,19 @@ footer a:hover{opacity:1}
         <div class="ep-info">
           <div class="ep-title">THE APPROACH</div>
           <div class="ep-sub">Restore the light, decode the ship's call, and answer it in kind.</div>
-          <div class="ep-meta">≈ 22 min · in production</div>
+          <div class="ep-meta" id="meta-w2">≈ 22 min · sealed</div>
         </div>
-        <div class="ep-action"><span class="btn locked" aria-disabled="true">In production</span></div>
+        <div class="ep-action" id="action-w2"></div>
+      </div>
+      <div class="gate" id="gate-w2">
+        <div class="gate-inner">
+          <p>Sealed. Enter the bearing the relief was inbound on.</p>
+          <div class="gate-row">
+            <input class="gate-input" id="input-w2" inputmode="numeric" maxlength="8" placeholder="····" aria-label="Waypoint Chapter II code">
+            <button class="btn" id="try-w2">Unseal</button>
+          </div>
+          <div class="gate-feedback" id="fb-w2"></div>
+        </div>
       </div>
 
       <div class="episode">
@@ -616,6 +626,13 @@ const EPISODES = {
     hash: 'ce953a0eb08246617b7f849486c4b26a7af37e9d2e8f0e13b3ae1bf0da8a70a2',
     wrong: 'The desk in Lisbon does not answer to that.',
     right: 'The desk answers. Go and meet the morning.'
+  },
+  /* --- Series Three: The Waypoint --- */
+  w2: {
+    href: 'games/waypoint-2-the-approach.html',
+    hash: '802b906a18591ead8a6dd809b262ace4c65c16e89764c40ae326cfcff811e10c',
+    wrong: 'The line stays dark. No ship was ever inbound on that bearing.',
+    right: 'Bearing logged. The watch is yours.'
   }
 };
 

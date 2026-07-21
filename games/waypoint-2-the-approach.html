@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Approach — The Waypoint, Chapter II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<link rel="stylesheet" href="../assets/palette-waypoint.css">
+<link rel="stylesheet" href="../assets/waypoint-components.css">
+<style>
+/* ---- Chapter II components only ---- */
+#intro{background:radial-gradient(ellipse at 50% 120%, #201a44 0%, var(--night) 66%)}
+#victory{background:radial-gradient(ellipse at 50% -20%, #2a2054 0%, var(--night) 72%)}
+/* powered-state tint on the deck */
+#room.powered #deck-fill{opacity:1}
+</style>
+</head>
+<body class="chapter">
+
+<div class="deco-frame" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="intro">
+  <div class="eyebrow">Waypoint 0077 · main power offline · the relief inbound on 214</div>
+  <h1>THE APPROACH</h1>
+  <p class="intro-story">You have the watch, the keeper's key in your pocket, and a bearing burned into your memory: <em>two-one-four.</em> Somewhere out on that line, the tender is holding — running dark, waiting for a light that isn't lit.<br><br>Two things stand between her and the dock: a station with no power, and a keeper who has never once made this light speak. Time to learn both.</p>
+  <button class="btn" id="start-btn">Take the watch</button>
+  <p style="margin-top:22px;font-size:14px;opacity:.55;font-style:italic">Two trails run through this deck — the reactor and the receiver. They meet at the beacon.</p>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="timer">22:00</div>
+  <div class="title-sm">THE APPROACH</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+  </div>
+</div>
+
+<!-- ROOM -->
+<div id="room-wrap">
+  <div id="room">
+  <svg viewBox="0 0 800 500" role="img" aria-label="The watch deck, power offline">
+    <defs>
+      <radialGradient id="deckdark" cx="50%" cy="26%" r="90%">
+        <stop offset="0%" stop-color="#120e26"/><stop offset="100%" stop-color="#050409"/>
+      </radialGradient>
+      <radialGradient id="deckglow" cx="50%" cy="26%" r="90%">
+        <stop offset="0%" stop-color="#241c48"/><stop offset="100%" stop-color="#080611"/>
+      </radialGradient>
+      <radialGradient id="void2" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#140f2c"/><stop offset="100%" stop-color="#04030a"/>
+      </radialGradient>
+    </defs>
+
+    <rect x="0" y="0" width="800" height="392" fill="url(#deckdark)"/>
+    <rect id="deck-fill" x="0" y="0" width="800" height="392" fill="url(#deckglow)" opacity="0" style="transition:opacity .8s"/>
+    <rect x="0" y="392" width="800" height="108" fill="#100c22"/>
+    <line x1="0" y1="392" x2="800" y2="392" stroke="#9b7bff" stroke-width="1" opacity=".25"/>
+
+    <!-- REACTOR HOUSING (safe) -->
+    <g id="hs-reactor" class="hotspot" tabindex="0" role="button" aria-label="Reactor housing with a keypad">
+      <rect x="46" y="210" width="150" height="180" fill="#17122e" stroke="#9b7bff" stroke-width="2"/>
+      <circle cx="121" cy="285" r="40" fill="#0c0920" stroke="#4a3a86" stroke-width="3"/>
+      <circle id="core-glow" cx="121" cy="285" r="24" fill="#241c3a"/>
+      <g stroke="#4a3a86" stroke-width="2"><path d="M121 245 v-14"/><path d="M121 325 v14"/><path d="M81 285 h-14"/><path d="M161 285 h14"/></g>
+      <rect x="96" y="352" width="50" height="20" fill="#0a0814" stroke="#c9b3ff" stroke-width="1.2"/>
+      <text x="121" y="367" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff">▢▢▢▢</text>
+    </g>
+
+    <!-- REACTOR PLACARD -->
+    <g id="hs-placard" class="hotspot" tabindex="0" role="button" aria-label="Cold-start placard">
+      <rect x="212" y="214" width="96" height="60" fill="#efe7d6" transform="rotate(-2 260 244)"/>
+      <g stroke="#8a7f9c" stroke-width="1" opacity=".6"><line x1="222" y1="232" x2="298" y2="230"/><line x1="222" y1="244" x2="298" y2="242"/><line x1="222" y1="256" x2="298" y2="254"/></g>
+    </g>
+
+    <!-- SURVIVAL CACHE (pod) -->
+    <g id="hs-cache" class="hotspot" tabindex="0" role="button" aria-label="Survival cache pod">
+      <rect x="214" y="308" width="120" height="80" rx="12" fill="#17122e" stroke="#9b7bff" stroke-width="2"/>
+      <rect x="226" y="322" width="96" height="40" rx="6" fill="#0c0920"/>
+      <circle cx="322" cy="348" r="4" fill="#b98cff"/>
+      <text x="274" y="347" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="8" fill="#a7a1d6">SURVIVAL</text>
+    </g>
+
+    <!-- VIEWPORT + tender far off -->
+    <g id="hs-viewport" class="hotspot" tabindex="0" role="button" aria-label="The forward viewport">
+      <rect x="300" y="42" width="200" height="112" rx="8" fill="#9b7bff"/>
+      <rect x="308" y="50" width="184" height="96" rx="6" fill="url(#void2)"/>
+      <g fill="#e9e6ff"><circle cx="340" cy="82" r="1.4"/><circle cx="392" cy="112" r="1.1"/><circle cx="446" cy="74" r="1.5"/><circle cx="470" cy="120" r="1.1"/></g>
+      <circle id="tender-dot" cx="430" cy="96" r="2.4" fill="#c9b3ff"/>
+    </g>
+
+    <!-- RECEIVER (comms) -->
+    <g id="hs-receiver" class="hotspot" tabindex="0" role="button" aria-label="The comms receiver">
+      <rect x="512" y="212" width="146" height="96" fill="#0e0b1e" stroke="#9b7bff" stroke-width="2"/>
+      <text x="524" y="232" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#c9b3ff" letter-spacing="2">RECEIVER</text>
+      <rect x="524" y="242" width="122" height="18" fill="#0a0814" stroke="#4a3a86" stroke-width="1"/>
+      <circle id="rx-lamp2" cx="640" cy="288" r="7" fill="#241c3a" stroke="#4a3a86" stroke-width="1.4"/>
+      <rect x="524" y="276" width="70" height="8" fill="#4a3a86"/>
+    </g>
+
+    <!-- SHIP REGISTRY / LOG -->
+    <g id="hs-registry" class="hotspot" tabindex="0" role="button" aria-label="The ship registry">
+      <rect x="676" y="220" width="90" height="88" fill="#17122e" stroke="#4a3a86" stroke-width="2"/>
+      <g stroke="#6b5aa6" stroke-width="1" opacity=".7"><line x1="686" y1="240" x2="756" y2="240"/><line x1="686" y1="256" x2="756" y2="256"/><line x1="686" y1="272" x2="756" y2="272"/><line x1="686" y1="288" x2="756" y2="288"/></g>
+      <text x="721" y="234" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="7" fill="#c9b3ff">REGISTRY</text>
+    </g>
+
+    <!-- THE BEACON (where the tracks meet) -->
+    <g id="hs-beacon" class="hotspot" tabindex="0" role="button" aria-label="The beacon drive">
+      <rect x="360" y="300" width="120" height="90" fill="#1a1436" stroke="#9b7bff" stroke-width="2"/>
+      <path d="M384 300 L400 250 h40 L456 300 z" fill="#221a44" stroke="#9b7bff" stroke-width="1.5"/>
+      <circle id="beacon-core" cx="420" cy="286" r="20" fill="#241c3a" stroke="#4a3a86" stroke-width="2"/>
+      <g stroke="#4a3a86" stroke-width="1.4" opacity=".7"><path d="M396 266 h48"/><path d="M392 286 h56"/><path d="M396 306 h48"/></g>
+    </g>
+  </svg>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory"></div>
+
+<!-- MODAL -->
+<div id="modal-veil">
+  <div id="modal" role="dialog" aria-modal="true">
+    <h2 id="m-title"></h2>
+    <div class="body" id="m-body"></div>
+    <div id="m-extra"></div>
+    <div class="feedback" id="m-feedback"></div>
+    <div class="modal-actions" id="m-actions"></div>
+    <div id="m-hintzone"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="screen" id="victory">
+  <div class="eyebrow">The light, answered</div>
+  <h1>THE LIGHT</h1>
+  <p class="intro-story" id="victory-story">Three flashes cross the dark, and out on the line the tender <em>Meridian</em> answers — one long acknowledgement, steady as a held breath. She has your light now. She is coming in.<br><br>The station log writes one word against the entry, the way it has for every keeper who ever held this watch and refused to let it go dark.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="stat-time">—</div><div class="l">Time</div></div>
+    <div class="stat"><div class="v" id="stat-hints">0</div><div class="l">Hints</div></div>
+    <div class="stat"><div class="v" id="stat-rank">—</div><div class="l">Rating</div></div>
+  </div>
+  <div class="next-note">
+    <div class="nn-label">Remember this word — you'll need it to unseal Chapter III</div>
+    <div class="nn-code">KEPT</div>
+    <div class="nn-hint">The word the beacon logged when it lit. Return to the home screen and enter it to open <em>Chapter III — The Threshold</em>.</div>
+  </div>
+  <div class="victory-actions">
+    <a class="btn" href="../index.html">Continue to Chapter III →</a>
+    <button class="btn ghost" onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script src="../assets/engine.js"></script>
+<script src="../assets/waypoint.js"></script>
+<script>
+/* ================= STATE ================= */
+const S = {
+  started:false, t:22*60, timerId:null, overtime:false,
+  hintsUsed:0,
+  inv:{},
+  flags:{ powered:false, cache:false, sawPlacard:false, sawRegistry:false,
+          tuned:false, named:false, lit:false },
+  hintLevel:{},
+  soundOn:false, audioCtx:null, noiseGain:null,
+  soundLowpass:150, soundGainUp:3.6,
+};
+
+const HINT_LABELS = { first:"Consult the keeper's log", again:'Read further' };
+
+const BEATS = {
+  [14*60]:'The receiver hisses once, as if the tender tried to raise you and gave up.',
+  [7*60]:'On the viewport, the tender\'s mote has not moved. She is holding station exactly where she said she would. Waiting.',
+  [3*60]:'The tender will reach the outer marker soon. A marker with no light is a reason to turn back.'
+};
+function onOvertime(){
+  toast('Meridian holds a little longer than she should. She was promised a keeper. Don\'t make a liar of the promise.');
+}
+
+/* --- the station's own characteristic (from Ch I): Fl(3) 8s --- */
+const STATION_CHAR = { flashes:3, period:8 };
+const REACTOR_CODE = '0308';            /* the light's numbers: 03 flashes, 08 seconds */
+const TENDER_BEARING = '214';           /* carried from Chapter I */
+const TENDER_CHAR = { flashes:5, period:12 };   /* Fl(5) -> registry -> MERIDIAN */
+const TENDER_NAME = 'MERIDIAN';
+
+/* ================= INVENTORY ================= */
+function inspectItem(k){
+  if (k === 'bkey') openModal({title:'Beacon Key',body:'The keeper\'s crank-key, lantern-and-crossed-marks stamped on the handle. It arms the beacon\'s sending drive — once there is power to arm.',actions:[closeBtn()]});
+  if (k === 'lamp') openModal({title:'Hand-Lamp',body:'Enough light to work by. Not enough to reach a ship. That is what the beacon is for.',actions:[closeBtn()]});
+  if (k === 'lens') openModal({title:'Beacon Lens',body:'A first-order lens in a padded case — the one part the cold could have cracked. It seats into the beacon drum and throws a fist of flame twenty million kilometres.',actions:[closeBtn()]});
+}
+
+/* ================= SYSTEMS TRACK ================= */
+
+/* --- reactor placard (clue for 0308) --- */
+bindHotspot('hs-placard', () => {
+  S.flags.sawPlacard = true;
+  openModal({
+    title:'Cold-Start Placard',
+    body:'Bolted beside the reactor, scratched and thumb-worn:',
+    extra:'<div class="paper straight"><span class="mono">COLD-START SEQUENCE</span><br>"She wakes to her own light. Key the characteristic as numbers —<br><span class="mono">flashes, then seconds.</span> Nothing else has ever started her."</div>'
+      + '<div class="note">The light\'s characteristic is logged on the beacon, cold or not: how many flashes, over how many seconds.</div>',
+    actions:[closeBtn()],
+    puzzleId:'reactor'
+  });
+});
+
+/* --- reactor housing (safe · 0308) --- */
+bindHotspot('hs-reactor', () => {
+  if (S.flags.powered){
+    openModal({title:'Reactor Housing',body:'The core turns over steadily, violet light breathing behind the shield. Power is up across the deck.',actions:[closeBtn()]});
+    return;
+  }
+  const row = codeRow(4);
+  const submit = actionBtn('Key the sequence', () => {
+    if (readCode(row) === REACTOR_CODE){
+      S.flags.powered = true;
+      document.getElementById('room').classList.add('powered');
+      document.getElementById('core-glow').setAttribute('fill', 'url(#void2)');
+      document.getElementById('core-glow').setAttribute('fill', '#6b4fb0');
+      document.getElementById('rx-lamp2').setAttribute('fill', '#9b7bff');
+      feedback('The core catches. Light crawls back across the deck.', true);
+      setTimeout(() => openModal({
+        title:'Power',
+        body:'The reactor breathes in, and the station comes half-alive around you — consoles waking, the receiver\'s lamp glowing, the beacon drive humming for a charge it can\'t yet throw.<br><br>Now: the receiver, and the ship on 214.',
+        actions:[closeBtn()]
+      }), 700);
+    } else {
+      feedback('The core stays cold. That was not her sequence.', false);
+    }
+  });
+  openModal({
+    title:'The Reactor Housing',
+    body:'A four-digit cold-start keypad below the shield. The placard beside it says the core wakes only to the light\'s own numbers.',
+    actions:[submit, closeBtn()],
+    puzzleId:'reactor',
+    onOpen:() => mountCode(row)
+  });
+});
+
+/* --- survival cache (pod · the lens) --- */
+bindHotspot('hs-cache', () => {
+  if (S.flags.cache){
+    openModal({title:'Survival Cache',body:'Empty foam cradles. You took the lens.',actions:[closeBtn()]});
+    return;
+  }
+  S.flags.cache = true;
+  addItem('lens','◈','Beacon lens');
+  openModal({
+    title:'The Survival Cache',
+    body:'The one pod the keeper kept pressurised against exactly this. Inside, in padded cradles: rations, a rebreather — and the spare <em>beacon lens</em>, sealed against the cold that cracks everything else.',
+    actions:[closeBtn('Take the lens')]
+  });
+});
+
+/* ================= COMMS TRACK ================= */
+
+/* --- ship registry (Fl -> name) --- */
+bindHotspot('hs-registry', () => {
+  S.flags.sawRegistry = true;
+  openModal({
+    title:'The Ship Registry',
+    body:'The keeper\'s crib of every hull that runs this line, filed the only way a keeper thinks — by the light each one shows:',
+    extra:'<div class="readout">'
+      + '<span class="k">RELIEF TENDERS — BY CHARACTERISTIC</span><br>'
+      + 'Fl(2) ....... SENTINEL<br>'
+      + 'Fl(3) ....... <span class="k">LANTERN</span> (this station)<br>'
+      + 'Fl(4) ....... KESTREL<br>'
+      + 'Fl(5) ....... <span class="ok">MERIDIAN</span><br>'
+      + '</div>'
+      + '<div class="note">Count a ship\'s flashes and you have her name. It is the oldest recognition there is.</div>',
+    actions:[closeBtn()],
+    puzzleId:'name'
+  });
+});
+
+/* --- receiver: tune to 214, read her characteristic, name her --- */
+bindHotspot('hs-receiver', () => {
+  if (!S.flags.powered){
+    openModal({title:'The Receiver',body:'Dead. Its lamp is dark. Nothing crosses a receiver with no power behind it.',actions:[closeBtn()],puzzleId:'reactor'});
+    return;
+  }
+  if (S.flags.named){ receiverTuned(); return; }
+  if (!S.flags.tuned){
+    const row = codeRow(3);
+    const submit = actionBtn('Tune', () => {
+      if (readCode(row) === TENDER_BEARING){
+        S.flags.tuned = true;
+        feedback('The hiss narrows to a signal. She is there.', true);
+        setTimeout(receiverTuned, 700);
+      } else {
+        feedback('Static. She is not on that bearing. You logged the right one last watch.', false);
+      }
+    });
+    openModal({
+      title:'The Receiver — Tune',
+      body:'The band is a wall of noise. To hear one ship you aim the receiver down her bearing — the one you logged when you took the watch.',
+      actions:[submit, closeBtn()],
+      puzzleId:'tune',
+      onOpen:() => mountCode(row)
+    });
+    return;
+  }
+  receiverTuned();
+});
+
+function receiverTuned(){
+  if (S.flags.named){
+    openModal({
+      title:'The Receiver — Meridian',
+      body:'<em>"…Meridian to Waypoint. Still holding. Show me the light and I\'ll show you the way in."</em><br><br>She is waiting on your answer — the station\'s own characteristic, so she knows a keeper holds this marker and not a ghost.',
+      actions:[closeBtn()],
+      puzzleId:'broadcast'
+    });
+    return;
+  }
+  document.getElementById('rx-lamp2').setAttribute('fill', '#c9b3ff');
+  const input = document.createElement('input');
+  input.className = 'word-input'; input.maxLength = 10; input.placeholder = 'HER NAME';
+  input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z]/g,'').toUpperCase(); });
+  const submit = actionBtn('Name her', () => {
+    if (input.value === TENDER_NAME){
+      S.flags.named = true;
+      document.getElementById('tender-dot').setAttribute('fill', '#4fd8b6');
+      feedback('Contact confirmed. The tender Meridian, running dark, holding for the light.', true);
+      setTimeout(() => openModal({
+        title:'Meridian',
+        body:'Her message resolves in the clear:<br><br><em>"Waypoint, Meridian. I am your relief — I came to take the watch off whoever\'s left. But the marker\'s dark, and a dark marker I can\'t dock on. Light it, answer with your own three, and I\'ll bring her in."</em><br><br>The relief was never coming to rescue <em>her.</em> It was coming for <em>you.</em> And it cannot arrive until you become the keeper — until you make the light.',
+        actions:[closeBtn('To the beacon')]
+      }), 900);
+    } else {
+      feedback('That is not what her light says. Count her flashes and check the registry.', false);
+    }
+  });
+  openModal({
+    title:'The Receiver — A Signal',
+    body:'Tuned to 214, one contact rings clear. Before words, she shows her light — a ship always names herself in flashes first. Read her characteristic, then find her in the registry.',
+    extra:'<div class="beacon-lamp lit" aria-hidden="true"></div>'
+      + pulseStripHTML(TENDER_CHAR.flashes, TENDER_CHAR.period, 'her characteristic · one cycle')
+      + '<div class="note">How many flashes? The registry turns that count into a name.</div>',
+    actions:[submit, closeBtn()],
+    puzzleId:'name',
+    onOpen:() => document.getElementById('m-extra').appendChild(input)
+  });
+}
+
+/* ================= THE BEACON — where the tracks meet (WRITE) ================= */
+bindHotspot('hs-beacon', () => {
+  if (S.flags.lit){
+    openModal({title:'The Beacon',body:'Burning steady, throwing its three-flash characteristic out along the line. Meridian has it. She is inbound.',actions:[closeBtn()]});
+    return;
+  }
+  const missing = [];
+  if (!S.flags.powered) missing.push('power (the reactor is cold)');
+  if (!S.inv.lens)      missing.push('the lens (still in the cache)');
+  if (!S.flags.named)   missing.push("the tender's call (the receiver hasn't raised her)");
+  if (missing.length){
+    openModal({
+      title:'The Beacon Drive',
+      body:'The great lamp, dark and waiting. Before it can speak it needs: <em>' + missing.join('</em>, <em>') + '</em>.',
+      actions:[closeBtn()],
+      puzzleId:'broadcast'
+    });
+    return;
+  }
+
+  /* the WRITE: set the station's characteristic and broadcast */
+  let sf = 1, sp = 6;
+  const notation = document.createElement('div');
+  notation.className = 'char-notation';
+  const preview = document.createElement('div');
+  function renderSet(){
+    notation.textContent = charNotation(sf, sp);
+    preview.innerHTML = pulseStripHTML(sf, sp, 'your light');
+  }
+  const setter = document.createElement('div');
+  setter.className = 'char-set';
+  setter.innerHTML =
+    '<div class="char-field"><label>Flashes</label><div class="char-step">'
+    + '<button type="button" data-f="-1">−</button><span class="val" id="fv">1</span><button type="button" data-f="1">+</button></div></div>'
+    + '<div class="char-field"><label>Period (s)</label><div class="char-step">'
+    + '<button type="button" data-p="-1">−</button><span class="val" id="pv">6</span><button type="button" data-p="1">+</button></div></div>';
+  setter.addEventListener('click', e => {
+    const df = e.target.getAttribute && e.target.getAttribute('data-f');
+    const dp = e.target.getAttribute && e.target.getAttribute('data-p');
+    if (df){ sf = Math.max(1, Math.min(9, sf + (+df))); }
+    if (dp){ sp = Math.max(sf, Math.min(20, sp + (+dp))); }
+    if (df || dp){ setter.querySelector('#fv').textContent = sf; setter.querySelector('#pv').textContent = sp; renderSet(); }
+  });
+
+  const send = actionBtn('Arm the key & broadcast', () => {
+    if (beaconMatches(sf, sp, STATION_CHAR)){
+      S.flags.lit = true;
+      document.getElementById('beacon-core').setAttribute('fill', 'url(#deckglow)');
+      document.getElementById('beacon-core').setAttribute('fill', '#c9b3ff');
+      win();
+    } else if (beaconMatches(sf, sp, TENDER_CHAR)){
+      feedback("That is HER light, not yours. Send the station's own — the three it has always shown.", false);
+    } else {
+      feedback('The line stays quiet. Set the station\'s characteristic: three flashes, the period the readout logged.', false);
+    }
+  });
+
+  openModal({
+    title:'The Beacon — Speak',
+    body:'Lens seated, key armed, power humming. You have spent this whole watch learning to <em>read</em> a light. Now Meridian needs you to <em>make</em> one — the station\'s own characteristic, so she knows a keeper answered.',
+    extra:'',
+    actions:[send, closeBtn()],
+    puzzleId:'broadcast',
+    onOpen:() => {
+      const ex = document.getElementById('m-extra');
+      ex.appendChild(setter); ex.appendChild(notation); ex.appendChild(preview);
+      renderSet();
+    }
+  });
+});
+
+/* --- viewport --- */
+bindHotspot('hs-viewport', () => {
+  openModal({
+    title:'The Forward Viewport',
+    body: S.flags.named
+      ? 'The tender holds her mark, dark and patient, exactly on 214. Waiting for the one thing only you can give her.'
+      : 'The dark, and somewhere in it a ship holding station. You can\'t see her yet. You can only answer her.',
+    actions:[closeBtn()]
+  });
+});
+
+/* ================= HINTS ================= */
+const HINTS = {
+  reactor:[
+    'The placard: <em>"She wakes to her own light — the characteristic, keyed as numbers."</em>',
+    '<em>"The beacon readout still logs the station\'s characteristic even cold: how many flashes, over how many seconds. Key flashes, then seconds."</em>',
+    '<em>"Fl(3) over 8s → 03 then 08 → 0-3-0-8."</em>'
+  ],
+  tune:[
+    '<em>"One ship in all that noise. You aim the receiver down her bearing to hear her."</em>',
+    '<em>"You logged her bearing the moment you took the watch, at the end of last chapter."</em>',
+    '<em>"She is inbound on bearing 214. Tune to 214."</em>'
+  ],
+  name:[
+    '<em>"A ship names herself in flashes before she ever uses words. Count them."</em>',
+    '<em>"Her characteristic is five flashes to a cycle. The registry turns a count into a name."</em>',
+    '<em>"Fl(5) is MERIDIAN. Name her Meridian."</em>'
+  ],
+  broadcast:[
+    '<em>"The beacon needs three things before it can speak: power, the lens, and the tender\'s call. Then it needs a light to send."</em>',
+    '<em>"She asked for the station\'s own characteristic — not hers. What does this light show? Three, as it always has."</em>',
+    '<em>"Set the beacon to Fl(3), period 8 — the station\'s characteristic — and broadcast."</em>'
+  ]
+};
+
+/* ================= WIN ================= */
+function win(){
+  finishChapter(22*60, [
+    {maxMinutes:12, maxHints:0, name:'The Waypoint'},
+    {maxMinutes:16, maxHints:2, name:'Lightkeeper'},
+    {maxMinutes:22, name:'Watchkeeper'},
+    {name:'Castaway'}
+  ]);
+}
+
+/* ================= START ================= */
+document.getElementById('start-btn').addEventListener('click', () => {
+  startChapter();
+  addItem('bkey','⚿','Beacon key');
+  addItem('lamp','▮','Hand-lamp');
+});
+renderInv();
+</script>
+<script src="../assets/easter-eggs.js"></script>
+</body>
+</html>
