@@ -2,6 +2,14 @@
 
 Browser escape adventures by Northbound House. Static site — no build step, no dependencies, deploys anywhere that serves HTML.
 
+## Where to look
+
+| File | Answers |
+| --- | --- |
+| `README.md` (this file) | How do I work on this? |
+| [`STATE.md`](STATE.md) | Where does it stand right now? |
+| [`PLAN.md`](PLAN.md) | What happens next? |
+
 ## Structure
 
 ```
